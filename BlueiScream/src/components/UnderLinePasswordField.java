@@ -8,6 +8,8 @@ public class UnderLinePasswordField extends JPasswordField {
     public UnderLinePasswordField() {
         setBorder(new EmptyBorder(20,0,10,0));
         setBackground(null);
+        setFont(new Font(getFont().getFontName(), getFont().getStyle(), 20));
+        setForeground(Color.white);
     }
 
     @Override

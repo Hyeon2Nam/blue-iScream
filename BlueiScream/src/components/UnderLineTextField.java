@@ -7,7 +7,7 @@ import java.awt.*;
 public class UnderLineTextField extends JTextField {
 
     public UnderLineTextField() {
-        setBorder(new EmptyBorder(20, 0, 10, 0));
+        setBorder(new EmptyBorder(5, 0, 10, 0));
         setBackground(null);
         setFont(new Font(getFont().getFontName(), getFont().getStyle(), 20));
         setForeground(Color.white);
