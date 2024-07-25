@@ -16,8 +16,9 @@ public class UserDao {
 
             if (conn != null) {
                 System.out.println("연결 성공");
+            } else {
+                System.out.println("연결 실패");
             }
-
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -40,7 +41,9 @@ public class UserDao {
 
     public int userInsert(String id, String name, String pw, String email) {
         joinAcces();
+
         int result = 0;
+
         try {
 
 
@@ -66,6 +69,7 @@ public class UserDao {
 
     public int userNameCheck(String id) {
         joinAcces();
+
         int resultCnt = 0;
 
         try {
@@ -94,7 +98,7 @@ public class UserDao {
         int res = 0;
 
         try {
-            String sql = "select password from frame_member where user_id = ?";
+            String sql = "select password from users where user_id = ?";
             pstmt = conn.prepareStatement(sql);
             pstmt.setString(1, id);
             rs = pstmt.executeQuery();

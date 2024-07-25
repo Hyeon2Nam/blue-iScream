@@ -12,6 +12,7 @@ public class UserLogin extends JFrame {
   private UnderLinePasswordField passwordField;
 
   public UserLogin() {
+    dao = new UserDao();
     Insets in = new Insets(50, 0, 0, 0);
     Color textColor = Color.white;
     float fontSize = 24f;
@@ -93,7 +94,9 @@ public class UserLogin extends JFrame {
 
     // 암호화 추가
     loginButton.addActionListener(e -> {
-      if (dao.userLoginCheck(userTextField.getText(), passwordField.getText()) > 0) {
+      int res = dao.userLoginCheck(userTextField.getText(), passwordField.getText());
+
+      if (res > 0) {
         JOptionPane.showMessageDialog(UserLogin.this, "로그인 성공");
       } else {
         JOptionPane.showMessageDialog(UserLogin.this, "로그인 실패");
