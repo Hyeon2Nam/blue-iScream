@@ -2,14 +2,20 @@ package components;
 
 import java.awt.*;
 import javax.swing.*;
-import javax.swing.border.*;
-import javax.swing.plaf.basic.BasicButtonUI;
 
-public class WhiteRoundeButton extends JButton {
+public class ColorRoundButton extends JButton {
 
-  public WhiteRoundeButton(String text) {
+  private Color bg;
+  private Color fc;
+  private int fontSize;
+
+  public ColorRoundButton(String text, Color bg, Color fc, int fontSize) {
     super(text);
-    setFont(new Font(getFont().getFontName(), Font.BOLD, 30));
+    this.bg = bg;
+    this.fc = fc;
+    this.fontSize = fontSize;
+
+    setFont(new Font(getFont().getFontName(), Font.BOLD, fontSize));
     setBorderPainted(false);
     setOpaque(false);
   }
@@ -17,8 +23,6 @@ public class WhiteRoundeButton extends JButton {
   @Override
   protected void paintComponent(Graphics g) {
     Graphics2D g2 = (Graphics2D) g;
-    Color bg = Color.white; //배경색 결정
-    Color fc = new Color(255, 214, 214); //글자색 결정
     int width = getWidth();
     int height = getHeight();
     int radius = 40;
@@ -37,7 +41,6 @@ public class WhiteRoundeButton extends JButton {
 
     g2.setColor(fc);
     g2.getFont();
-//    g2.setFont(new Font(getFont().getFontName(), getFont().getStyle(), 20));
     g2.drawString(getText(), textX, textY);
     g2.dispose();
 
