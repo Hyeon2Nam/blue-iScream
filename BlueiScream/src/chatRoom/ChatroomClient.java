@@ -10,7 +10,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.io.Console;
 import java.net.MulticastSocket;
 import java.util.List;
 
@@ -30,47 +29,50 @@ public class ChatroomClient extends JFrame {
     private int roomId;
     private boolean isFirst;
     private final Color BGC = Color.lightGray;
+    private JScrollPane scroll;
+    private final int TOTALWIDTH = 400;
 
     public ChatroomClient(String clientId, int roomId) {
         super(clientId + "'s room");
+
         this.clientId = clientId;
         this.roomId = roomId;
 
-
-        int totalWidth = 400;
         dao = new ChatRoomDao();
         isFirst = true;
 
-        setSize(totalWidth, 800);
+        setSize(TOTALWIDTH, 800);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         setBackground(Color.white);
 
         // header
         PinkPanel headerP = new PinkPanel();
         // 임시
-        chatroomName = "임시 타이틀";
+        chatroomName = dao.getChatRoomName(roomId);
         JLabel titleLb = new JLabel(chatroomName);
         titleLb.setFont(new Font(titleLb.getFont().getFontName(), titleLb.getFont().getStyle(), 20));
-        headerP.setSize(totalWidth, 70);
+        headerP.setSize(TOTALWIDTH, 70);
         headerP.setBorder(BorderFactory.createEmptyBorder(10, 0, 10, 0));
         headerP.add(titleLb);
         add(headerP, BorderLayout.NORTH);
+
+        // --
 
         // message view
         messageP = new JPanel();
         messageP.setBackground(Color.white);
         messageP.setLayout(new BoxLayout(messageP, BoxLayout.Y_AXIS));
-        messageP.setBorder(BorderFactory.createEmptyBorder(0,0,0,0));
-        JScrollPane scroll = new JScrollPane(messageP);
+        messageP.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
+        scroll = new JScrollPane(messageP);
         add(scroll, BorderLayout.CENTER);
 
         // bottom (input field, emoji etc...)
         PinkPanel lineP = new PinkPanel();
-        lineP.setSize(totalWidth, 10);
+        lineP.setSize(TOTALWIDTH, 10);
 
         JPanel buttonP = new JPanel();
         buttonP.setBackground(Color.white);
-        buttonP.setSize(totalWidth, 100);
+        buttonP.setSize(TOTALWIDTH, 100);
         buttonP.setLayout(new FlowLayout(FlowLayout.CENTER));
 
         moreContentsBtn = new JButton("+");
@@ -87,13 +89,12 @@ public class ChatroomClient extends JFrame {
         buttonP.add(sendBtn);
 
         JPanel bottomP = new JPanel();
-        bottomP.setSize(totalWidth, 110);
+        bottomP.setSize(TOTALWIDTH, 110);
         bottomP.setBackground(Color.white);
         bottomP.setLayout(new BorderLayout());
         bottomP.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
         bottomP.add(lineP, BorderLayout.NORTH);
         bottomP.add(buttonP, BorderLayout.CENTER);
-
         add(bottomP, BorderLayout.SOUTH);
 
         inputMessage.addMouseListener(new MouseAdapter() {
@@ -118,8 +119,12 @@ public class ChatroomClient extends JFrame {
                 makeMessageView(c, clientId, clientId);
                 dao.insertMessage(roomId, clientId, c, "text");
                 inputMessage.setText("");
+
                 validate();
                 repaint();
+
+                JScrollBar vertical = scroll.getVerticalScrollBar();
+                vertical.setValue(vertical.getMaximum());
             }
         });
 
@@ -133,13 +138,16 @@ public class ChatroomClient extends JFrame {
             String name = dao.getUserName(msg.getUserId());
             makeMessageView(msg.getContent(), msg.getUserId(), name);
         }
-
         validate();
         repaint();
+
+        JScrollBar vertical = scroll.getVerticalScrollBar();
+        vertical.setValue(vertical.getMaximum());
     }
 
     public void makeMessageView(String c, String id, String name) {
         JButton bb = new JButton(" ");
+        JPanel pp = new JPanel();
         JPanel p = new JPanel();
         JPanel wp = new JPanel();
         JPanel rp = new JPanel();
@@ -149,20 +157,38 @@ public class ChatroomClient extends JFrame {
         p.setBackground(null);
         wp.setBackground(null);
         rp.setBackground(null);
+        pp.setBackground(null);
 
         rp.setLayout(new BorderLayout());
+        p.setLayout(new FlowLayout(FlowLayout.LEFT));
 
         if (!id.equals(clientId)) {
-            p.setLayout(new FlowLayout(FlowLayout.LEFT));
+            pp.setLayout(new FlowLayout(FlowLayout.LEFT));
             wp.add(bb, BorderLayout.WEST);
             rp.add(n, BorderLayout.NORTH);
-        } else
-            p.setLayout(new FlowLayout(FlowLayout.RIGHT));
+        } else {
+            pp.setLayout(new FlowLayout(FlowLayout.RIGHT));
+        }
+        m.setMaximumSize(m.getPreferredSize());
 
         rp.add(m, BorderLayout.CENTER);
         wp.add(rp, BorderLayout.CENTER);
+        rp.setMaximumSize(m.getPreferredSize());
+        wp.setMaximumSize(wp.getPreferredSize());
+
+        Dimension wpd = wp.getPreferredSize();
+        Dimension rpd = rp.getPreferredSize();
+        double tw = wpd.getWidth() + rpd.getWidth();
+        double th = wpd.getWidth() + rpd.getWidth();
+        Dimension td = new Dimension((int) tw, (int) th);
+
         p.add(wp);
-        messageP.add(p);
+        p.add(rp);
+        p.setMaximumSize(td);
+        pp.add(p);
+        pp.setMaximumSize(new Dimension(TOTALWIDTH, (int) p.getPreferredSize()
+                .getHeight()));
+        messageP.add(pp);
     }
 
     public static void main(String[] args) {

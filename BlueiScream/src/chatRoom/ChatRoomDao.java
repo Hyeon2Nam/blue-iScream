@@ -2,7 +2,9 @@ package chatRoom;
 
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
+import java.util.TimeZone;
 
 public class ChatRoomDao {
     Connection conn;
@@ -74,6 +76,9 @@ public class ChatRoomDao {
     public int insertMessage(int roomId, String id, String content, String type) {
         int res = 0;
         int readCnt = getFirstReadCnt(roomId) - 1;
+        Timestamp ts = new Timestamp(System.currentTimeMillis());
+        Calendar cal = Calendar.getInstance(TimeZone.getTimeZone("Asia/Seoul"));
+
 
         joinAcces();
         try {
@@ -84,7 +89,7 @@ public class ChatRoomDao {
             pstmt.setInt(1, roomId);
             pstmt.setString(2, id);
             pstmt.setString(3, content);
-            pstmt.setTimestamp(4, new Timestamp(System.currentTimeMillis()));
+            pstmt.setTimestamp(4, ts,cal);
             pstmt.setString(5, type);
             pstmt.setInt(6, readCnt);
             pstmt.setBoolean(7, false);
@@ -103,6 +108,7 @@ public class ChatRoomDao {
     public int insertMessage(int roomId, String id, String content, String type, String to, String from) {
         int res = 0;
         int readCnt = getFirstReadCnt(roomId) - 1;
+        Calendar cal = Calendar.getInstance(TimeZone.getTimeZone("Asia/Seoul"));
 
         joinAcces();
         try {
@@ -113,7 +119,7 @@ public class ChatRoomDao {
             pstmt.setInt(1, roomId);
             pstmt.setString(2, id);
             pstmt.setString(3, content);
-            pstmt.setTimestamp(4, new Timestamp(System.currentTimeMillis()));
+            pstmt.setTimestamp(4, new Timestamp(System.currentTimeMillis()), cal);
             pstmt.setString(5, type);
             pstmt.setString(6, to);
             pstmt.setString(7, from);
@@ -162,6 +168,28 @@ public class ChatRoomDao {
             String sql = "select user_name from users where user_id = ?";
             pstmt = conn.prepareCall(sql);
             pstmt.setString(1, id);
+            rs = pstmt.executeQuery();
+
+            if (rs.next())
+                res = rs.getString(1);
+        } catch (SQLException e) {
+            e.printStackTrace();
+            res = "";
+        } finally {
+            closeAcces();
+        }
+
+        return res;
+    }
+
+    public String getChatRoomName(int id) {
+        joinAcces();
+        String res = "";
+
+        try {
+            String sql = "select chatroom_name from chat_rooms where chatroom_id = ?";
+            pstmt = conn.prepareCall(sql);
+            pstmt.setInt(1, id);
             rs = pstmt.executeQuery();
 
             if (rs.next())

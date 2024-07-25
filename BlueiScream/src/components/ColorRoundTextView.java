@@ -6,9 +6,6 @@ import java.awt.*;
 public class ColorRoundTextView extends JTextArea {
     private Color bg;
     private Color fc;
-    private final int MAXWIDTH = 10;
-    private final int MAXHEIGHT = 100;
-
 
     public ColorRoundTextView(String text, Color bg, Color fc) {
         super();
@@ -37,9 +34,9 @@ public class ColorRoundTextView extends JTextArea {
         // 글자 그리기
         FontMetrics fontMetrics = g2.getFontMetrics();
         Rectangle stringBounds = fontMetrics.getStringBounds(this.getText(), g2).getBounds();
-
         int textX = (width - stringBounds.width) / 2;
         int textY = (height - stringBounds.height) / 2 + fontMetrics.getAscent();
+
 
         g2.setColor(fc);
         g2.getFont();
