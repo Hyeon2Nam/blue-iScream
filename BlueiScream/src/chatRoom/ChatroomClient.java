@@ -14,7 +14,6 @@ import java.net.MulticastSocket;
 import java.util.List;
 
 public class ChatroomClient extends JFrame {
-    private JTextArea textAreaDisplay;
     private JTextField inputMessage;
     private ColorRoundButton sendBtn;
     private JButton emoticonBtn;
@@ -28,12 +27,23 @@ public class ChatroomClient extends JFrame {
     private JPanel messageP;
     private int roomId;
     private boolean isFirst;
-    private final Color BGC = Color.lightGray;
+    private final Color BGC = Color.white;
     private JScrollPane scroll;
     private final int TOTALWIDTH = 400;
+    private GridBagConstraints gbc;
+    private int gy;
 
     public ChatroomClient(String clientId, int roomId) {
         super(clientId + "'s room");
+
+        gy = 0;
+        gbc = new GridBagConstraints();
+        gbc.gridx = 0;
+        gbc.gridy = gy;
+        gbc.weightx = 1.0;
+        gbc.weighty = 0.0;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        gbc.anchor = GridBagConstraints.NORTH;
 
         this.clientId = clientId;
         this.roomId = roomId;
@@ -45,9 +55,9 @@ public class ChatroomClient extends JFrame {
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         setBackground(Color.white);
 
-        // header
+        // header----------------------------------------------------
+
         PinkPanel headerP = new PinkPanel();
-        // 임시
         chatroomName = dao.getChatRoomName(roomId);
         JLabel titleLb = new JLabel(chatroomName);
         titleLb.setFont(new Font(titleLb.getFont().getFontName(), titleLb.getFont().getStyle(), 20));
@@ -56,17 +66,17 @@ public class ChatroomClient extends JFrame {
         headerP.add(titleLb);
         add(headerP, BorderLayout.NORTH);
 
-        // --
+        // message view --------------------------------------------------------
 
-        // message view
         messageP = new JPanel();
-        messageP.setBackground(Color.white);
-        messageP.setLayout(new BoxLayout(messageP, BoxLayout.Y_AXIS));
-        messageP.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
+        messageP.setBackground(null);
+        messageP.setLayout(new GridBagLayout());
         scroll = new JScrollPane(messageP);
         add(scroll, BorderLayout.CENTER);
+        scroll.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
 
-        // bottom (input field, emoji etc...)
+        // bottom (input field, emoji etc...)------------------------------
+
         PinkPanel lineP = new PinkPanel();
         lineP.setSize(TOTALWIDTH, 10);
 
@@ -82,6 +92,7 @@ public class ChatroomClient extends JFrame {
 
         inputMessage.setText("input message");
         inputMessage.setForeground(Color.lightGray);
+        inputMessage.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
 
         buttonP.add(moreContentsBtn);
         buttonP.add(inputMessage);
@@ -96,6 +107,8 @@ public class ChatroomClient extends JFrame {
         bottomP.add(lineP, BorderLayout.NORTH);
         bottomP.add(buttonP, BorderLayout.CENTER);
         add(bottomP, BorderLayout.SOUTH);
+
+        // event -------------------------------------------------------------
 
         inputMessage.addMouseListener(new MouseAdapter() {
             @Override
@@ -146,13 +159,19 @@ public class ChatroomClient extends JFrame {
     }
 
     public void makeMessageView(String c, String id, String name) {
+        if (messageP.getComponentCount() > 0)
+            messageP.remove(messageP.getComponentCount() - 1);
+
+        gbc.gridy = gy++;
+        gbc.weighty = 0.0;
+
         JButton bb = new JButton(" ");
         JPanel pp = new JPanel();
         JPanel p = new JPanel();
         JPanel wp = new JPanel();
         JPanel rp = new JPanel();
         JLabel n = new JLabel(name);
-        ColorRoundTextView m = new ColorRoundTextView(c, BGC, Color.BLACK);
+        ColorRoundTextView m = new ColorRoundTextView(reformText(c), BGC, Color.BLACK);
 
         p.setBackground(null);
         wp.setBackground(null);
@@ -169,15 +188,14 @@ public class ChatroomClient extends JFrame {
         } else {
             pp.setLayout(new FlowLayout(FlowLayout.RIGHT));
         }
-        m.setMaximumSize(m.getPreferredSize());
 
         rp.add(m, BorderLayout.CENTER);
         wp.add(rp, BorderLayout.CENTER);
-        rp.setMaximumSize(m.getPreferredSize());
-        wp.setMaximumSize(wp.getPreferredSize());
 
         Dimension wpd = wp.getPreferredSize();
         Dimension rpd = rp.getPreferredSize();
+        Dimension ppd = new Dimension(TOTALWIDTH,
+                (int) p.getPreferredSize().getHeight());
         double tw = wpd.getWidth() + rpd.getWidth();
         double th = wpd.getWidth() + rpd.getWidth();
         Dimension td = new Dimension((int) tw, (int) th);
@@ -186,9 +204,24 @@ public class ChatroomClient extends JFrame {
         p.add(rp);
         p.setMaximumSize(td);
         pp.add(p);
-        pp.setMaximumSize(new Dimension(TOTALWIDTH, (int) p.getPreferredSize()
-                .getHeight()));
-        messageP.add(pp);
+        pp.setMaximumSize(ppd);
+        pp.setMinimumSize(ppd);
+        messageP.add(pp, gbc);
+
+        gbc.gridy = gy;
+        gbc.weighty = 1.0;
+        messageP.add(Box.createVerticalGlue(), gbc);
+    }
+
+    private String reformText(String str) {
+        StringBuilder sb = new StringBuilder();
+        sb.append(str);
+
+        for (int i = 15; i < str.length(); i += 15) {
+            sb.insert(i, '\n');
+        }
+
+        return sb.toString();
     }
 
     public static void main(String[] args) {
