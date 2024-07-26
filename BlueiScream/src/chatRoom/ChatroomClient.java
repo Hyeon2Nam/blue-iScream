@@ -13,6 +13,7 @@ import java.awt.event.MouseEvent;
 import java.io.*;
 import java.net.Socket;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 public class ChatroomClient extends JFrame {
     // UI
@@ -50,6 +51,8 @@ public class ChatroomClient extends JFrame {
 
         initializeComponents();
         makeReadyMadeMessages();
+        JScrollBar vertical = scroll.getVerticalScrollBar();
+        vertical.setValue(vertical.getMaximum());
         setupNetwirking();
         setVisible(true);
     }
@@ -65,6 +68,7 @@ public class ChatroomClient extends JFrame {
         gbc.anchor = GridBagConstraints.NORTH;
 
         dao = new ChatRoomDao();
+
         isFirst = true;
         userListModel = new DefaultListModel<>();
         userList = new JList<>(userListModel);
@@ -80,8 +84,10 @@ public class ChatroomClient extends JFrame {
 
         // header----------------------------------------------------
 
+
         PinkPanel headerP = new PinkPanel();
         chatroomName = dao.getChatRoomName(roomId);
+//        dao = null;
         JLabel titleLb = new JLabel(chatroomName);
         titleLb.setFont(new Font(titleLb.getFont().getFontName(), titleLb.getFont().getStyle(), 20));
         headerP.setSize(TOTALWIDTH, 70);
@@ -158,13 +164,12 @@ public class ChatroomClient extends JFrame {
                     dp.setChat(data);
                     oos.writeObject(dp);
                     oos.flush();
-                } catch (IOException e1) {
+
+                    Thread.sleep(100);
+                    dao.insertMessage(roomId, clientId, c, "text");
+                } catch (Exception e1) {
                     System.out.println(e1.getMessage());
                 }
-
-//                makeMessageView(c, clientId, clientId);
-                // dao.insertMessage(roomId, clientId, c, "text");
-
 
                 inputMessage.setText("");
                 JScrollBar vertical = scroll.getVerticalScrollBar();
@@ -172,12 +177,19 @@ public class ChatroomClient extends JFrame {
 
                 validate();
                 repaint();
-
             }
         });
+
+        inputMessage.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                sendBtn.doClick();
+            }
+        });
+
     }
 
-     private void setupNetwirking() {
+    private void setupNetwirking() {
         try {
             socket = new Socket("192.168.40.33", 5000);
             oos = new ObjectOutputStream(socket.getOutputStream());
@@ -197,16 +209,10 @@ public class ChatroomClient extends JFrame {
             DataPost receivedDataPost;
 
             while ((receivedDataPost = (DataPost) ois.readObject()) != null) {
-//                if (receivedDataPost.getChat()[0].) {
                 String[] chat = receivedDataPost.getChat();
                 SwingUtilities.invokeLater(() -> userListModel.addElement(chat[0]));
                 SwingUtilities.invokeLater(() -> chatListModel.addElement(chat[1]));
-//                }
-                System.out.println(receivedDataPost.getChat()[0] + " : " + receivedDataPost.getChat()[1]);
-//                else if (receivedDataPost.getChat()[0].startsWith("chat:")) {
-//                    String msg = receivedDataPost.getChat().substring(5);
-//                    SwingUtilities.invokeLater(() -> chatListModel.addElement(msg));
-//                }
+
                 makeMessageView(chat[1], chat[0], dao.getUserName(chat[0]));
                 validate();
                 repaint();
@@ -218,23 +224,15 @@ public class ChatroomClient extends JFrame {
             e.printStackTrace();
         } catch (ClassNotFoundException e) {
             System.out.println("Close not found: " + e.getMessage());
-
         }
     }
 
     private void makeReadyMadeMessages() {
         List<Messages> msgs = dao.loadMessages(roomId);
-
         for (Messages msg : msgs) {
             String name = dao.getUserName(msg.getUserId());
             makeMessageView(msg.getContent(), msg.getUserId(), name);
         }
-
-
-        validate();
-        repaint();
-        JScrollBar vertical = scroll.getVerticalScrollBar();
-        vertical.setValue(vertical.getMaximum());
     }
 
     public void makeMessageView(String c, String id, String name) {
@@ -290,9 +288,6 @@ public class ChatroomClient extends JFrame {
         gbc.gridy = gy;
         gbc.weighty = 1.0;
         messageP.add(Box.createVerticalGlue(), gbc);
-
-        JScrollBar vertical = scroll.getVerticalScrollBar();
-        vertical.setValue(vertical.getMaximum());
     }
 
     private String reformText(String str) {
@@ -307,7 +302,7 @@ public class ChatroomClient extends JFrame {
     }
 
     public static void main(String[] args) {
-        ChatroomClient c = new ChatroomClient("aaa", 1);
+        ChatroomClient c = new ChatroomClient("qqq", 1);
 //        ChatroomClient c = new ChatroomClient("aaa", 1);
     }
 }

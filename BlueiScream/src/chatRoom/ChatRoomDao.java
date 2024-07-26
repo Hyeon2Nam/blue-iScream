@@ -79,7 +79,6 @@ public class ChatRoomDao {
         Timestamp ts = new Timestamp(System.currentTimeMillis());
         Calendar cal = Calendar.getInstance(TimeZone.getTimeZone("Asia/Seoul"));
 
-
         joinAcces();
         try {
             String sql = "insert into messages " +
@@ -89,7 +88,7 @@ public class ChatRoomDao {
             pstmt.setInt(1, roomId);
             pstmt.setString(2, id);
             pstmt.setString(3, content);
-            pstmt.setTimestamp(4, ts,cal);
+            pstmt.setTimestamp(4, ts, cal);
             pstmt.setString(5, type);
             pstmt.setInt(6, readCnt);
             pstmt.setBoolean(7, false);
@@ -148,8 +147,9 @@ public class ChatRoomDao {
             pstmt.setInt(1, roomId);
             rs = pstmt.executeQuery();
 
-            if (rs.next())
+            if (rs.next()) {
                 res = rs.getInt(1);
+            }
         } catch (SQLException e) {
             e.printStackTrace();
             res = -1;
