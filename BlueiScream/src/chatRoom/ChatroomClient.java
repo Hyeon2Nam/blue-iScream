@@ -162,7 +162,7 @@ public class ChatroomClient extends JFrame {
                     System.out.println(e1.getMessage());
                 }
 
-                makeMessageView(c, clientId, clientId);
+//                makeMessageView(c, clientId, clientId);
                 dao.insertMessage(roomId, clientId, c, "text");
 
 
