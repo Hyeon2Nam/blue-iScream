@@ -10,32 +10,50 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.net.MulticastSocket;
+import java.io.*;
+import java.net.Socket;
 import java.util.List;
 
 public class ChatroomClient extends JFrame {
+    // UI
     private JTextField inputMessage;
     private ColorRoundButton sendBtn;
     private JButton emoticonBtn;
     private JButton moreContentsBtn;
-    private MulticastSocket socket;
     private ChatRoomDao dao;
-    private static final int PORT = 5000;
-    private static final String HOST = "192.168.40.33";
     private String clientId;
     private String chatroomName;
     private JPanel messageP;
     private int roomId;
     private boolean isFirst;
-    private final Color BGC = Color.white;
+    private final Color BGC = new Color(219, 219, 219);
     private JScrollPane scroll;
     private final int TOTALWIDTH = 400;
     private GridBagConstraints gbc;
     private int gy;
 
+    // socket
+    private JList<String> userList;
+    private JList<String> chatList;
+    private DefaultListModel<String> userListModel;
+    private DefaultListModel<String> chatListModel;
+    private Socket socket;
+    private BufferedReader reader;
+    private PrintWriter writer;
+    private ObjectOutputStream oos;
+    private ObjectInputStream ois;
+
     public ChatroomClient(String clientId, int roomId) {
         super(clientId + "'s room");
+        this.clientId = clientId;
+        this.roomId = roomId;
 
+        initializeComponents();
+        setupNetwirking();
+        setVisible(true);
+    }
+
+    public void initializeComponents() {
         gy = 0;
         gbc = new GridBagConstraints();
         gbc.gridx = 0;
@@ -44,9 +62,6 @@ public class ChatroomClient extends JFrame {
         gbc.weighty = 0.0;
         gbc.fill = GridBagConstraints.HORIZONTAL;
         gbc.anchor = GridBagConstraints.NORTH;
-
-        this.clientId = clientId;
-        this.roomId = roomId;
 
         dao = new ChatRoomDao();
         isFirst = true;
@@ -69,7 +84,7 @@ public class ChatroomClient extends JFrame {
         // message view --------------------------------------------------------
 
         messageP = new JPanel();
-        messageP.setBackground(null);
+        messageP.setBackground(Color.white);
         messageP.setLayout(new GridBagLayout());
         scroll = new JScrollPane(messageP);
         add(scroll, BorderLayout.CENTER);
@@ -129,8 +144,19 @@ public class ChatroomClient extends JFrame {
                 if (c.isEmpty() || isFirst)
                     return;
 
+                try {
+                    DataPost dp = new DataPost();
+                    dp.setChat(reformText(c));
+                    oos.writeObject(dp);
+                    oos.flush();
+                } catch (IOException e1) {
+                    System.out.println(e1.getMessage());
+                }
+
                 makeMessageView(c, clientId, clientId);
                 dao.insertMessage(roomId, clientId, c, "text");
+
+
                 inputMessage.setText("");
 
                 validate();
@@ -140,11 +166,46 @@ public class ChatroomClient extends JFrame {
                 vertical.setValue(vertical.getMaximum());
             }
         });
-
-        setVisible(true);
     }
 
-    public void makeReadyMadeMessages() {
+    private void setupNetwirking() {
+        try {
+            socket = new Socket("192.168.40.33", 5000);
+            oos = new ObjectOutputStream(socket.getOutputStream());
+            oos.flush();
+
+            Thread listenerThread = new Thread(this::listenForMessages);
+            listenerThread.start();
+        } catch (IOException e) {
+            System.out.println("서버와 연결할 수 없습니다.");
+            e.printStackTrace();
+        }
+    }
+
+    private void listenForMessages() {
+        try {
+            ois = new ObjectInputStream(socket.getInputStream());
+            DataPost receivedDataPost;
+
+            while ((receivedDataPost = (DataPost) ois.readObject()) != null) {
+                if (receivedDataPost.getChat().startsWith("user:")) {
+                    String userName = receivedDataPost.getChat().substring(5);
+                    SwingUtilities.invokeLater(() -> userListModel.addElement(userName));
+                } else if (receivedDataPost.getChat().startsWith("chat:")) {
+                    String msg = receivedDataPost.getChat().substring(5);
+                    SwingUtilities.invokeLater(() -> chatListModel.addElement(msg));
+                }
+            }
+        }catch (IOException e) {
+            System.err.println("Error reading from the server: " + e.getMessage());
+            e.printStackTrace();
+        } catch (ClassNotFoundException e) {
+            System.out.println("Close not found: "+e.getMessage());
+
+        }
+    }
+
+    private void makeReadyMadeMessages() {
         List<Messages> msgs = dao.loadMessages(roomId);
 
         for (Messages msg : msgs) {
@@ -225,7 +286,8 @@ public class ChatroomClient extends JFrame {
     }
 
     public static void main(String[] args) {
-        ChatroomClient c = new ChatroomClient("aaa", 1);
+        ChatroomClient c = new ChatroomClient("qqq", 1);
+//        ChatroomClient c = new ChatroomClient("aaa", 1);
         c.makeReadyMadeMessages();
     }
 }

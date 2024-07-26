@@ -1,17 +1,10 @@
 package chatRoom;
 
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.net.InetAddress;
-import java.net.MulticastSocket;
-import java.net.ServerSocket;
-import java.net.Socket;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+import java.io.*;
+import java.net.*;
+import java.util.concurrent.*;
 
-public class ChatroomServer {
+public class DrawingServer {
     private static ConcurrentHashMap<Socket, ObjectOutputStream> clients = new ConcurrentHashMap<>();
     private static ExecutorService pool = Executors.newFixedThreadPool(20);
 
@@ -25,7 +18,7 @@ public class ChatroomServer {
                 ObjectOutputStream oos = new ObjectOutputStream(clientSocket.getOutputStream());
                 oos.flush();
                 clients.put(clientSocket, oos);
-                pool.execute(new ChatroomServer.ClientHandler(clientSocket, oos));
+                pool.execute(new ClientHandler(clientSocket, oos));
             } catch (IOException e) {
                 System.out.println("Error accepting connection: " + e.getMessage());
             }
@@ -52,7 +45,7 @@ public class ChatroomServer {
             try {
                 Object inputObject;
                 while ((inputObject = ois.readObject()) != null) {
-                    DataPost dp = (DataPost) inputObject;
+                	DataPost dp = (DataPost) inputObject;
                     if (inputObject instanceof DataPost) {
                         DataPost receivedData = (DataPost) inputObject;
                         broadcast(receivedData);
