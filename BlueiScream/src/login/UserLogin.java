@@ -3,6 +3,7 @@ package login;
 import components.*;
 
 import javax.swing.*;
+import javax.swing.border.Border;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -80,25 +81,32 @@ public class UserLogin extends JFrame {
 
         centerP.add(lb3, gbc);
         gbc.insets = new Insets(0, 0, 0, 0);
-        p3.add(passwordField,BorderLayout.CENTER);
+        p3.add(passwordField, BorderLayout.CENTER);
 
-        JPanel jbp = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+        JPanel jbp = new JPanel(new BorderLayout());
         JButton joinBtn = new JButton("Sign up");
-        Font jbf = joinBtn.getFont();
+        JButton searchBtn = new JButton("forgot Id / password");
+//        Font jbf = joinBtn.getFont();
+        Border empty = BorderFactory.createEmptyBorder(0, 0, 0, 0);
 
         joinBtn.setBackground(null);
-        jbp.setBackground(null);
-        joinBtn.setOpaque(true);
-        joinBtn.setBorder(BorderFactory.createEmptyBorder(0,0,0,0));
-        jbp.setBorder(BorderFactory.createEmptyBorder(0,0,0,0));
-        joinBtn.setFont(new Font(jbf.getFontName(), jbf.getStyle(), 20));
         joinBtn.setForeground(Color.white);
+        joinBtn.setBorder(empty);
+        joinBtn.setOpaque(true);
 
-        jbp.add(joinBtn);
+        searchBtn.setBackground(null);
+        searchBtn.setForeground(Color.white);
+        searchBtn.setBorder(empty);
+        searchBtn.setOpaque(true);
+//        joinBtn.setFont(new Font(jbf.getFontName(), jbf.getStyle(), 20));
+
+        jbp.setBackground(null);
+        jbp.setBorder(empty);
+        jbp.add(joinBtn, BorderLayout.EAST);
+        jbp.add(searchBtn, BorderLayout.WEST);
         p3.add(jbp, BorderLayout.SOUTH);
 
         centerP.add(p3, gbc);
-
         add(centerP, BorderLayout.CENTER);
 
         // button
@@ -125,6 +133,12 @@ public class UserLogin extends JFrame {
             public void actionPerformed(ActionEvent e) {
                 new UserJoin();
                 dispose();
+            }
+        });
+        searchBtn.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                new SearchUserInfo();
             }
         });
 
