@@ -163,7 +163,7 @@ public class ChatroomClient extends JFrame {
                 }
 
 //                makeMessageView(c, clientId, clientId);
-                dao.insertMessage(roomId, clientId, c, "text");
+                // dao.insertMessage(roomId, clientId, c, "text");
 
 
                 inputMessage.setText("");
@@ -299,7 +299,7 @@ public class ChatroomClient extends JFrame {
     }
 
     public static void main(String[] args) {
-        ChatroomClient c = new ChatroomClient("aaa", 1);
+        ChatroomClient c = new ChatroomClient("qqq", 1);
 //        ChatroomClient c = new ChatroomClient("aaa", 1);
     }
 }
