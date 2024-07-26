@@ -53,8 +53,6 @@ public class UserDao {
             pstmt.setString(4, email);
 
             result = pstmt.executeUpdate();
-            System.out.println("실행결과: " + result);
-
         } catch (SQLException e) {
             e.printStackTrace();
             result = -1;
@@ -65,16 +63,16 @@ public class UserDao {
         return result;
     }
 
-    public int userNameCheck(String id) {
+    public int isAlreadyUser(String id, String email) {
         joinAcces();
 
         int resultCnt = 0;
 
         try {
-            String sql = "select COUNT(*) from users where user_id = ?";
+            String sql = "select COUNT(*) from users where user_id = ? or email = ?";
             pstmt = conn.prepareStatement(sql);
-
             pstmt.setString(1, id);
+            pstmt.setString(2, email);
             rs = pstmt.executeQuery();
 
             if (rs.next()) {
@@ -88,6 +86,52 @@ public class UserDao {
         }
 
         return resultCnt;
+    }
+
+    public String searchUserId(String email) {
+        String res = "";
+        joinAcces();
+
+        try {
+            String sql = "select user_id from users where email = ?";
+            pstmt = conn.prepareStatement(sql);
+            pstmt.setString(1, email);
+            rs = pstmt.executeQuery();
+
+            if (rs.next()) {
+                res = rs.getString(1);
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            closeAcces();
+        }
+
+        return res;
+    }
+
+    public String searchUserPw(String email) {
+        String res = "";
+        joinAcces();
+
+        try {
+            String sql = "select password from users where email = ?";
+            pstmt = conn.prepareStatement(sql);
+            pstmt.setString(1, email);
+            rs = pstmt.executeQuery();
+
+            if (rs.next()) {
+                res = rs.getString(1);
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            closeAcces();
+        }
+
+        return res;
     }
 
     public int userLoginCheck(String id, String pw) {

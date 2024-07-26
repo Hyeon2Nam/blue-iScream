@@ -142,12 +142,12 @@ public class UserJoin extends JFrame {
             if (id.isEmpty() || name.isEmpty() || email.isEmpty() || pw.isEmpty())
                 return;
 
-            if (dao.userNameCheck(id) > 0) {
+            if (dao.isAlreadyUser(id, email) > 0) {
                 JOptionPane.showMessageDialog(UserJoin.this, "이미 존재하는 ID입니다.");
                 return;
             }
 
-            dao.userInsert(id, name, email, pw);
+            dao.userInsert(id, name, pw, email);
             JOptionPane.showMessageDialog(UserJoin.this, "회원가입에 성공하셨습니다.");
 
             new UserLogin();
