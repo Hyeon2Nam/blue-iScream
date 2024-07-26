@@ -66,6 +66,13 @@ public class ChatroomClient extends JFrame {
 
         dao = new ChatRoomDao();
         isFirst = true;
+        userListModel = new DefaultListModel<>();
+        userList = new JList<>(userListModel);
+
+        // Chat list with a model
+        chatListModel = new DefaultListModel<>();
+        chatList = new JList<>(chatListModel);
+
 
         setSize(TOTALWIDTH, 800);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
@@ -191,17 +198,16 @@ public class ChatroomClient extends JFrame {
 
             while ((receivedDataPost = (DataPost) ois.readObject()) != null) {
 //                if (receivedDataPost.getChat()[0].) {
-                String userName = receivedDataPost.getChat()[0];
-                String msg = receivedDataPost.getChat()[1];
-                SwingUtilities.invokeLater(() -> userListModel.addElement(userName));
-                SwingUtilities.invokeLater(() -> chatListModel.addElement(msg));
+                String[] chat = receivedDataPost.getChat();
+                SwingUtilities.invokeLater(() -> userListModel.addElement(chat[0]));
+                SwingUtilities.invokeLater(() -> chatListModel.addElement(chat[1]));
 //                }
                 System.out.println(receivedDataPost.getChat()[0] + " : " + receivedDataPost.getChat()[1]);
 //                else if (receivedDataPost.getChat()[0].startsWith("chat:")) {
 //                    String msg = receivedDataPost.getChat().substring(5);
 //                    SwingUtilities.invokeLater(() -> chatListModel.addElement(msg));
 //                }
-                makeMessageView(msg, userName, dao.getUserName(userName));
+                makeMessageView(chat[1], chat[0], dao.getUserName(chat[0]));
             }
         } catch (IOException e) {
             System.err.println("Error reading from the server: " + e.getMessage());
@@ -293,7 +299,7 @@ public class ChatroomClient extends JFrame {
     }
 
     public static void main(String[] args) {
-        ChatroomClient c = new ChatroomClient("qqq", 1);
+        ChatroomClient c = new ChatroomClient("aaa", 1);
 //        ChatroomClient c = new ChatroomClient("aaa", 1);
     }
 }
