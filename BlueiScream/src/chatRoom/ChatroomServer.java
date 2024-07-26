@@ -17,7 +17,7 @@ public class ChatroomServer {
 
     public static void main(String[] args) throws Exception {
         ServerSocket serverSocket = new ServerSocket(5000);
-        System.out.println("Drawing server is running...");
+        System.out.println("server is running...");
 
         while (true) {
             try {

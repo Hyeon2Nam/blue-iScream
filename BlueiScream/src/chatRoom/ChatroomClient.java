@@ -49,6 +49,7 @@ public class ChatroomClient extends JFrame {
         this.roomId = roomId;
 
         initializeComponents();
+        makeReadyMadeMessages();
         setupNetwirking();
         setVisible(true);
     }
@@ -146,7 +147,11 @@ public class ChatroomClient extends JFrame {
 
                 try {
                     DataPost dp = new DataPost();
-                    dp.setChat(reformText(c));
+                    dp.setChat("user:"+clientId);
+                    oos.writeObject(dp);
+                    oos.flush();
+
+                    dp.setChat("chat:"+reformText(c));
                     oos.writeObject(dp);
                     oos.flush();
                 } catch (IOException e1) {
@@ -191,9 +196,11 @@ public class ChatroomClient extends JFrame {
                 if (receivedDataPost.getChat().startsWith("user:")) {
                     String userName = receivedDataPost.getChat().substring(5);
                     SwingUtilities.invokeLater(() -> userListModel.addElement(userName));
+                    System.out.println("userName:" + userName);
                 } else if (receivedDataPost.getChat().startsWith("chat:")) {
                     String msg = receivedDataPost.getChat().substring(5);
                     SwingUtilities.invokeLater(() -> chatListModel.addElement(msg));
+                    System.out.println("msg:" + msg);
                 }
             }
         }catch (IOException e) {
@@ -288,6 +295,5 @@ public class ChatroomClient extends JFrame {
     public static void main(String[] args) {
         ChatroomClient c = new ChatroomClient("qqq", 1);
 //        ChatroomClient c = new ChatroomClient("aaa", 1);
-        c.makeReadyMadeMessages();
     }
 }
