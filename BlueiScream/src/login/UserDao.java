@@ -45,8 +45,6 @@ public class UserDao {
         int result = 0;
 
         try {
-
-
             String sql = "insert into users (user_id, user_name, password, email) values (?,?,?,?);";
             pstmt = conn.prepareStatement(sql);
             pstmt.setString(1, id);
