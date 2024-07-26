@@ -147,11 +147,8 @@ public class ChatroomClient extends JFrame {
 
                 try {
                     DataPost dp = new DataPost();
-                    dp.setChat("user:"+clientId);
-                    oos.writeObject(dp);
-                    oos.flush();
-
-                    dp.setChat("chat:"+reformText(c));
+                    String[] data = {clientId, c};
+                    dp.setChat(data);
                     oos.writeObject(dp);
                     oos.flush();
                 } catch (IOException e1) {
@@ -193,21 +190,24 @@ public class ChatroomClient extends JFrame {
             DataPost receivedDataPost;
 
             while ((receivedDataPost = (DataPost) ois.readObject()) != null) {
-                if (receivedDataPost.getChat().startsWith("user:")) {
-                    String userName = receivedDataPost.getChat().substring(5);
-                    SwingUtilities.invokeLater(() -> userListModel.addElement(userName));
-                    System.out.println("userName:" + userName);
-                } else if (receivedDataPost.getChat().startsWith("chat:")) {
-                    String msg = receivedDataPost.getChat().substring(5);
-                    SwingUtilities.invokeLater(() -> chatListModel.addElement(msg));
-                    System.out.println("msg:" + msg);
-                }
+//                if (receivedDataPost.getChat()[0].) {
+                String userName = receivedDataPost.getChat()[0];
+                String msg = receivedDataPost.getChat()[1];
+                SwingUtilities.invokeLater(() -> userListModel.addElement(userName));
+                SwingUtilities.invokeLater(() -> chatListModel.addElement(msg));
+//                }
+                System.out.println(receivedDataPost.getChat()[0] + " : " + receivedDataPost.getChat()[1]);
+//                else if (receivedDataPost.getChat()[0].startsWith("chat:")) {
+//                    String msg = receivedDataPost.getChat().substring(5);
+//                    SwingUtilities.invokeLater(() -> chatListModel.addElement(msg));
+//                }
+                makeMessageView(msg, userName, dao.getUserName(userName));
             }
-        }catch (IOException e) {
+        } catch (IOException e) {
             System.err.println("Error reading from the server: " + e.getMessage());
             e.printStackTrace();
         } catch (ClassNotFoundException e) {
-            System.out.println("Close not found: "+e.getMessage());
+            System.out.println("Close not found: " + e.getMessage());
 
         }
     }
