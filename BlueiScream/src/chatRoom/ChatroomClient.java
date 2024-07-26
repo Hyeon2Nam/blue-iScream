@@ -167,17 +167,17 @@ public class ChatroomClient extends JFrame {
 
 
                 inputMessage.setText("");
+                JScrollBar vertical = scroll.getVerticalScrollBar();
+                vertical.setValue(vertical.getMaximum());
 
                 validate();
                 repaint();
 
-                JScrollBar vertical = scroll.getVerticalScrollBar();
-                vertical.setValue(vertical.getMaximum());
             }
         });
     }
 
-    private void setupNetwirking() {
+     private void setupNetwirking() {
         try {
             socket = new Socket("192.168.40.33", 5000);
             oos = new ObjectOutputStream(socket.getOutputStream());
@@ -208,6 +208,10 @@ public class ChatroomClient extends JFrame {
 //                    SwingUtilities.invokeLater(() -> chatListModel.addElement(msg));
 //                }
                 makeMessageView(chat[1], chat[0], dao.getUserName(chat[0]));
+                validate();
+                repaint();
+                JScrollBar vertical = scroll.getVerticalScrollBar();
+                vertical.setValue(vertical.getMaximum());
             }
         } catch (IOException e) {
             System.err.println("Error reading from the server: " + e.getMessage());
@@ -225,9 +229,10 @@ public class ChatroomClient extends JFrame {
             String name = dao.getUserName(msg.getUserId());
             makeMessageView(msg.getContent(), msg.getUserId(), name);
         }
+
+
         validate();
         repaint();
-
         JScrollBar vertical = scroll.getVerticalScrollBar();
         vertical.setValue(vertical.getMaximum());
     }
@@ -285,6 +290,9 @@ public class ChatroomClient extends JFrame {
         gbc.gridy = gy;
         gbc.weighty = 1.0;
         messageP.add(Box.createVerticalGlue(), gbc);
+
+        JScrollBar vertical = scroll.getVerticalScrollBar();
+        vertical.setValue(vertical.getMaximum());
     }
 
     private String reformText(String str) {
@@ -299,7 +307,7 @@ public class ChatroomClient extends JFrame {
     }
 
     public static void main(String[] args) {
-        ChatroomClient c = new ChatroomClient("qqq", 1);
+        ChatroomClient c = new ChatroomClient("aaa", 1);
 //        ChatroomClient c = new ChatroomClient("aaa", 1);
     }
 }
