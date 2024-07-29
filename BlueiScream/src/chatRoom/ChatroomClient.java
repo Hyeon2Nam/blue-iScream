@@ -5,6 +5,7 @@ import components.ColorRoundTextView;
 import components.PinkPanel;
 
 import javax.swing.*;
+import javax.swing.border.Border;
 import java.awt.*;
 import java.awt.event.*;
 import java.io.*;
@@ -54,6 +55,9 @@ public class ChatroomClient extends JFrame {
     }
 
     public void initializeComponents() {
+        Border noneBorder = BorderFactory.createEmptyBorder(0,0,0,0);
+        Border sideBorder = BorderFactory.createEmptyBorder(0,15,0,15);
+
         gy = 0;
         gbc = new GridBagConstraints();
         gbc.gridx = 0;
@@ -73,17 +77,14 @@ public class ChatroomClient extends JFrame {
         chatListModel = new DefaultListModel<>();
         chatList = new JList<>(chatListModel);
 
-
         setSize(TOTALWIDTH, 800);
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         setBackground(Color.white);
 
         // header----------------------------------------------------
 
-
         PinkPanel headerP = new PinkPanel();
         chatroomName = dao.getChatRoomName(roomId);
-//        dao = null;
         JLabel titleLb = new JLabel(chatroomName);
         titleLb.setFont(new Font(titleLb.getFont().getFontName(), titleLb.getFont().getStyle(), 20));
         headerP.setSize(TOTALWIDTH, 70);
@@ -102,6 +103,9 @@ public class ChatroomClient extends JFrame {
 
         // bottom (input field, emoji etc...)------------------------------
 
+        ImageIcon moreIcon = resizeIcon("images/plusIcon.png");
+        ImageIcon emojiIcon = resizeIcon("images/emojiIcon.png");
+
         PinkPanel lineP = new PinkPanel();
         lineP.setSize(TOTALWIDTH, 10);
 
@@ -110,14 +114,21 @@ public class ChatroomClient extends JFrame {
         buttonP.setSize(TOTALWIDTH, 100);
         buttonP.setLayout(new FlowLayout(FlowLayout.CENTER));
 
-        moreContentsBtn = new JButton("+");
+        moreContentsBtn = new JButton();
         inputMessage = new JTextField(18);
-        emoticonBtn = new JButton("^^");
+        emoticonBtn = new JButton();
         sendBtn = new ColorRoundButton("send", new Color(255, 214, 214), Color.white, 10);
+
+        moreContentsBtn.setBorder(sideBorder);
+        moreContentsBtn.setIcon(moreIcon);
+        moreContentsBtn.setBackground(null);
+        emoticonBtn.setBorder(sideBorder);
+        emoticonBtn.setIcon(emojiIcon);
+        emoticonBtn.setBackground(null);
 
         inputMessage.setText("input message");
         inputMessage.setForeground(Color.lightGray);
-        inputMessage.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
+        inputMessage.setBorder(noneBorder);
 
         buttonP.add(moreContentsBtn);
         buttonP.add(inputMessage);
@@ -128,7 +139,7 @@ public class ChatroomClient extends JFrame {
         bottomP.setSize(TOTALWIDTH, 110);
         bottomP.setBackground(Color.white);
         bottomP.setLayout(new BorderLayout());
-        bottomP.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
+        bottomP.setBorder(noneBorder);
         bottomP.add(lineP, BorderLayout.NORTH);
         bottomP.add(buttonP, BorderLayout.CENTER);
         add(bottomP, BorderLayout.SOUTH);
@@ -190,6 +201,17 @@ public class ChatroomClient extends JFrame {
                 dao.setLastReadTime(clientId, roomId);
             }
         });
+    }
+
+    private ImageIcon resizeIcon(String src) {
+        int iconSize = 20;
+
+        ImageIcon icon = new ImageIcon(src);
+        Image image = icon.getImage();
+        Image newimg = image.getScaledInstance(iconSize, iconSize, java.awt.Image.SCALE_SMOOTH); // scale it the smooth way
+        icon = new ImageIcon(newimg);
+
+        return icon;
     }
 
     private void setupNetwirking() {

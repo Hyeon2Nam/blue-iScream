@@ -19,18 +19,11 @@ import java.util.List;
 
 public class ChatRoomList extends JFrame {
     // UI
-    private JTextField inputMessage;
-    private ColorRoundButton sendBtn;
-    private JButton emoticonBtn;
-    private JButton moreContentsBtn;
     private ChatRoomDao dao;
     private String clientId;
     private JPanel chatList;
-    private final Color BGC = new Color(219, 219, 219);
     private JScrollPane scroll;
     private final int TOTALWIDTH = 400;
-    private GridBagConstraints gbc;
-    private int gy;
 
     public ChatRoomList(String clientId) {
         super("Room list");
@@ -44,14 +37,6 @@ public class ChatRoomList extends JFrame {
     }
 
     public void initializeComponents() {
-        gy = 0;
-        gbc = new GridBagConstraints();
-        gbc.gridx = 0;
-        gbc.gridy = gy;
-        gbc.weightx = 1.0;
-        gbc.weighty = 0.0;
-        gbc.fill = GridBagConstraints.HORIZONTAL;
-        gbc.anchor = GridBagConstraints.NORTH;
         Border noneBorder = BorderFactory.createEmptyBorder(0, 0, 0, 0);
 
         dao = new ChatRoomDao();
@@ -75,7 +60,6 @@ public class ChatRoomList extends JFrame {
         chatList = new JPanel();
         chatList.setBackground(Color.white);
         chatList.setLayout(new BoxLayout(chatList, BoxLayout.Y_AXIS));
-//        chatList.setLayout(new GridBagLayout());
         scroll = new JScrollPane(chatList);
         add(scroll, BorderLayout.CENTER);
         scroll.setBorder(noneBorder);
@@ -87,23 +71,11 @@ public class ChatRoomList extends JFrame {
 
         JPanel btnP = new JPanel();
         JPanel BtnWrapper = new JPanel();
-        JButton profileBtn = new JButton();
-        JButton chatBtn = new JButton();
-        JButton settingBtn = new JButton();
-        ImageIcon pfIcon = new ImageIcon("./images/profileBtnIcon.png");
-        ImageIcon chatIcon = new ImageIcon("./images/chatBtnIcon.png");
-        ImageIcon setIcon = new ImageIcon("./images/settingBtnIcon.png");
+        JButton profileBtn = setBottomButton("./images/profileBtnIcon.png");
+        JButton chatBtn = setBottomButton("./images/chatBtnIcon.png");
+        JButton settingBtn = setBottomButton("./images/settingBtnIcon.png");
 
-        profileBtn.setIcon(pfIcon);
-        chatBtn.setIcon(chatIcon);
-        settingBtn.setIcon(setIcon);
-        profileBtn.setBackground(null);
-        chatBtn.setBackground(null);
-        settingBtn.setBackground(null);
-        profileBtn.setBorder(noneBorder);
         chatBtn.setBorder(BorderFactory.createEmptyBorder(0, 20, 0, 20));
-        settingBtn.setBorder(noneBorder);
-
         BtnWrapper.setLayout(new FlowLayout(FlowLayout.CENTER));
         btnP.setLayout(new BorderLayout());
         BtnWrapper.setBackground(Color.white);
@@ -116,6 +88,17 @@ public class ChatRoomList extends JFrame {
         add(btnP, BorderLayout.SOUTH);
         // event -------------------------------------------------------------
 
+    }
+
+    private JButton setBottomButton(String imgSrc) {
+        JButton b = new JButton();
+        ImageIcon icon = new ImageIcon(imgSrc);
+
+        b.setIcon(icon);
+        b.setBackground(null);
+        b.setBorder(BorderFactory.createEmptyBorder(0,0,0,0));
+
+        return b;
     }
 
     private void loadChatRooms() {
@@ -183,6 +166,6 @@ public class ChatRoomList extends JFrame {
     }
 
     public static void main(String[] args) {
-        ChatRoomList c = new ChatRoomList("111");
+        ChatRoomList c = new ChatRoomList("qqq");
     }
 }
