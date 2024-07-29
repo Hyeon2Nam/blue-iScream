@@ -6,14 +6,10 @@ import components.PinkPanel;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
+import java.awt.event.*;
 import java.io.*;
 import java.net.Socket;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 public class ChatroomClient extends JFrame {
     // UI
@@ -79,7 +75,7 @@ public class ChatroomClient extends JFrame {
 
 
         setSize(TOTALWIDTH, 800);
-        setDefaultCloseOperation(EXIT_ON_CLOSE);
+        setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         setBackground(Color.white);
 
         // header----------------------------------------------------
@@ -160,7 +156,7 @@ public class ChatroomClient extends JFrame {
 
                 try {
                     DataPost dp = new DataPost();
-                    String[] data = {clientId, c};
+                    String[] data = {clientId, c, String.valueOf(roomId)};
                     dp.setChat(data);
                     oos.writeObject(dp);
                     oos.flush();
@@ -187,6 +183,13 @@ public class ChatroomClient extends JFrame {
             }
         });
 
+        this.addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosed(WindowEvent e) {
+                super.windowClosed(e);
+                dao.setLastReadTime(clientId, roomId);
+            }
+        });
     }
 
     private void setupNetwirking() {
@@ -210,6 +213,10 @@ public class ChatroomClient extends JFrame {
 
             while ((receivedDataPost = (DataPost) ois.readObject()) != null) {
                 String[] chat = receivedDataPost.getChat();
+                System.out.println(chat[2]);
+                if (!chat[2].equals(String.valueOf(roomId)))
+                    continue;
+
                 SwingUtilities.invokeLater(() -> userListModel.addElement(chat[0]));
                 SwingUtilities.invokeLater(() -> chatListModel.addElement(chat[1]));
 
