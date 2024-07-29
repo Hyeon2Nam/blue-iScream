@@ -1,5 +1,6 @@
 package login;
 
+import chatRoom.ChatRoomList;
 import components.*;
 
 import javax.swing.*;
@@ -123,7 +124,7 @@ public class UserLogin extends JFrame {
             int res = dao.userLoginCheck(userTextField.getText(), passwordField.getText());
 
             if (res > 0) {
-                JOptionPane.showMessageDialog(UserLogin.this, "로그인 성공");
+                new ChatRoomList(userTextField.getText());
             } else {
                 JOptionPane.showMessageDialog(UserLogin.this, "로그인 실패");
             }

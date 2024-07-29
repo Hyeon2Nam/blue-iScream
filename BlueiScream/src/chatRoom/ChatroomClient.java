@@ -213,7 +213,7 @@ public class ChatroomClient extends JFrame {
 
             while ((receivedDataPost = (DataPost) ois.readObject()) != null) {
                 String[] chat = receivedDataPost.getChat();
-                System.out.println(chat[2]);
+
                 if (!chat[2].equals(String.valueOf(roomId)))
                     continue;
 

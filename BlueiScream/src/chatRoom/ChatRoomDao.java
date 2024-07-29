@@ -1,6 +1,7 @@
 package chatRoom;
 
 import java.sql.*;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
@@ -253,5 +254,54 @@ public class ChatRoomDao {
         } finally {
             closeAcces();
         }
+    }
+
+    public String getSendMessageTime(int roomId) {
+        joinAcces();
+        String res = "";
+
+        try {
+            String sql = "select created_at from messages m where chatroom_id = ? order by created_at desc limit 1";
+            pstmt = conn.prepareCall(sql);
+            pstmt.setInt(1, roomId);
+            rs = pstmt.executeQuery();
+
+            if (rs.next())
+                res = new SimpleDateFormat("yyyy-MM-dd HH:mm").format(rs.getTimestamp(1));
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            closeAcces();
+        }
+
+        return res;
+    }
+
+    public int getNotReadMessageCnt(String id, int roomId) {
+        joinAcces();
+        int res = 0;
+
+        try {
+            String sql = "select (select count(*) from messages m where m.chatroom_id = ? " +
+                    "                                             and uc.last_read_at <= m.created_at " +
+                    "                                             and m.user_id != uc.user_id) as not_read_cnt " +
+                    "from user_chat_rooms uc " +
+                    "where chatroom_id = ? and uc.user_id = ?";
+            pstmt = conn.prepareCall(sql);
+            pstmt.setInt(1, roomId);
+            pstmt.setInt(2, roomId);
+            pstmt.setString(3, id);
+            rs = pstmt.executeQuery();
+
+            if (rs.next())
+                res = rs.getInt(1);
+        } catch (SQLException e) {
+            e.printStackTrace();
+            res = -1;
+        } finally {
+            closeAcces();
+        }
+
+        return res;
     }
 }
