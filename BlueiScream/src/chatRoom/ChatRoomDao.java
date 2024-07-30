@@ -1,6 +1,7 @@
 package chatRoom;
 
 import java.sql.*;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
@@ -202,5 +203,147 @@ public class ChatRoomDao {
         }
 
         return res;
+    }
+
+    public List<ChatRoom> getChatRoomList(String id) {
+        List<ChatRoom> crlist = new ArrayList<>();
+        joinAcces();
+
+        try {
+            String sql = "select c.chatroom_id, chatroom_name, created_at, category, background_img, c.isAlarm " +
+                    "from chat_rooms c " +
+                    "inner join user_chat_rooms uc on c.chatroom_id = uc.chatroom_id " +
+                    "where user_id = ?";
+            pstmt = conn.prepareCall(sql);
+            pstmt.setString(1, id);
+            rs = pstmt.executeQuery();
+
+            while (rs.next()) {
+                ChatRoom cr = new ChatRoom();
+                cr.setChatroomId(rs.getInt(1));
+                cr.setChatroomName(rs.getString(2));
+                cr.setCreatedAt(rs.getTimestamp(3));
+                cr.setCategory(rs.getString(4));
+                cr.setBackgroundImg(rs.getInt(5));
+                cr.setAlarm(rs.getBoolean(6));
+                crlist.add(cr);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            closeAcces();
+        }
+
+        return crlist;
+    }
+
+    public void setLastReadTime(String id, int roomId) {
+        joinAcces();
+        int res;
+
+        try {
+            String sql = "update user_chat_rooms set last_read_at = CURRENT_TIMESTAMP() where user_id = ? and chatroom_id = ?";
+            pstmt = conn.prepareCall(sql);
+            pstmt.setString(1, id);
+            pstmt.setString(1, id);
+            pstmt.setInt(2, roomId);
+            res = pstmt.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+            res = -1;
+        } finally {
+            closeAcces();
+        }
+    }
+
+    public String getSendMessageTime(int roomId) {
+        joinAcces();
+        String res = "";
+
+        try {
+            String sql = "select created_at from messages m where chatroom_id = ? order by created_at desc limit 1";
+            pstmt = conn.prepareCall(sql);
+            pstmt.setInt(1, roomId);
+            rs = pstmt.executeQuery();
+
+            if (rs.next())
+                res = new SimpleDateFormat("yyyy-MM-dd HH:mm").format(rs.getTimestamp(1));
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            closeAcces();
+        }
+
+        return res;
+    }
+
+    public int getNotReadMessageCnt(String id, int roomId) {
+        joinAcces();
+        int res = 0;
+
+        try {
+            String sql = "select (select count(*) from messages m where m.chatroom_id = ? " +
+                    "                                             and uc.last_read_at <= m.created_at " +
+                    "                                             and m.user_id != uc.user_id) as not_read_cnt " +
+                    "from user_chat_rooms uc " +
+                    "where chatroom_id = ? and uc.user_id = ?";
+            pstmt = conn.prepareCall(sql);
+            pstmt.setInt(1, roomId);
+            pstmt.setInt(2, roomId);
+            pstmt.setString(3, id);
+            rs = pstmt.executeQuery();
+
+            if (rs.next())
+                res = rs.getInt(1);
+        } catch (SQLException e) {
+            e.printStackTrace();
+            res = -1;
+        } finally {
+            closeAcces();
+        }
+
+        return res;
+    }
+
+    public boolean getisAlram(String id, int roomId) {
+        joinAcces();
+        boolean res = false;
+
+        try {
+            String sql = "select is_alram from user_chat_rooms where user_id = ? and chatroom_id = ?";
+            pstmt = conn.prepareCall(sql);
+            pstmt.setString(1, id);
+            pstmt.setInt(2, roomId);
+            rs = pstmt.executeQuery();
+
+            if (rs.next())
+                res = rs.getBoolean(1);
+        } catch (SQLException e) {
+            e.printStackTrace();
+            res = false;
+        } finally {
+            closeAcces();
+        }
+
+        return res;
+    }
+
+    public void setIsAlram(String id, int roomId, boolean isAlram) {
+        joinAcces();
+        int res;
+
+        try {
+            String sql = "update user_chat_rooms set is_alram = ? where user_id = ? and chatroom_id = ?";
+            pstmt = conn.prepareCall(sql);
+            pstmt.setBoolean(1, isAlram);
+            pstmt.setString(2, id);
+            pstmt.setInt(3, roomId);
+            res = pstmt.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+            res = -1;
+        } finally {
+            closeAcces();
+        }
     }
 }

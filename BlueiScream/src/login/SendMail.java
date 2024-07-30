@@ -1,5 +1,8 @@
 package login;
 
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.Properties;
 
 import javax.mail.Authenticator;
@@ -18,6 +21,7 @@ public class SendMail {
 
     /**
      * Session값 셋팅
+     *
      * @param props
      * @return
      */
@@ -57,16 +61,27 @@ public class SendMail {
 
     /**
      * 메시지 세팅 후 메일 전송
+     *
      * @param session
      * @param title
      * @param content
      */
-    public void goMail(Session session, String title, String content, String to) {
+    public void goMail(Session session, String title, String content, String to) throws FileNotFoundException {
+        String propfile = "config/config.properties";
+        Properties p = new Properties();
+
+        try {
+
+            FileInputStream fis = new FileInputStream(propfile);
+            p.load(new java.io.BufferedInputStream(fis));
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
 
         Message msg = new MimeMessage(session);
 
         try {
-            msg.setFrom(new InternetAddress("gusdlnam@gmail.com", "관리자", ENCODING));
+            msg.setFrom(new InternetAddress(p.getProperty("admin_email"), "관리자", ENCODING));
             msg.addRecipient(Message.RecipientType.TO, new InternetAddress(to));
             msg.setSubject(title);
             msg.setContent(content, "text/html; charset=utf-8");

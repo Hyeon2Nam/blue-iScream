@@ -4,6 +4,9 @@ import components.ColorRoundButton;
 import components.PinkPanel;
 import components.UnderLineTextField;
 
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.Properties;
 
 import javax.swing.*;
@@ -17,7 +20,6 @@ public class SearchUserInfo extends JFrame {
 
     public SearchUserInfo() {
         int totalSize = 400;
-//        int tfWidth = totalSize - sidePaddingSize * 3 - 100;
         dao = new UserDao();
 
         setTitle("Search id/pw");
@@ -55,23 +57,35 @@ public class SearchUserInfo extends JFrame {
                     JOptionPane.showMessageDialog(SearchUserInfo.this, "가입되지 않은 이메일입니다.");
             }
         });
-        pwBtn.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                String pw = dao.searchUserPw(pwEmail.getText());
+        pwBtn.addActionListener(e -> {
+            String pw = dao.searchUserPw(pwEmail.getText());
+            String propfile = "config/config.properties";
+            Properties p = new Properties();
 
-                if (pw != null && !pw.isEmpty()) {
-                    String title = "Blue iScream 채팅 서비스입니다.";
-                    String content = "당신의 비밀번호는 [" + pw + "] 입니다.";
-                    String user_name = "gusdlnam";
-                    String password = "yuqy achx novg pflr";
-
-                    SendMail sendMail = new SendMail();
-                    sendMail.goMail(sendMail.setting(new Properties(), user_name, password), title, content, pwEmail.getText());
-                    JOptionPane.showMessageDialog(SearchUserInfo.this, "가입하신 이메일을 확인해주세요");
-                } else
-                    JOptionPane.showMessageDialog(SearchUserInfo.this, "가입되지 않은 이메일입니다.");
+            try {
+                FileInputStream fis = new FileInputStream(propfile);
+                p.load(new java.io.BufferedInputStream(fis));
+            } catch (IOException ex) {
+                throw new RuntimeException(ex);
             }
+
+            if (pw != null && !pw.isEmpty()) {
+                String title = "Blue iScream 채팅 서비스입니다.";
+                String content = "당신의 비밀번호는 [" + pw + "] 입니다.";
+                String user_name = p.getProperty("admin_name");
+                String password = p.getProperty("app_pw");
+
+                System.out.println(p.getProperty("admin_name"));
+
+                SendMail sendMail = new SendMail();
+                try {
+                    sendMail.goMail(sendMail.setting(new Properties(), user_name, password), title, content, pwEmail.getText());
+                } catch (FileNotFoundException ex) {
+                    throw new RuntimeException(ex);
+                }
+                JOptionPane.showMessageDialog(SearchUserInfo.this, "가입하신 이메일을 확인해주세요");
+            } else
+                JOptionPane.showMessageDialog(SearchUserInfo.this, "가입되지 않은 이메일입니다.");
         });
 
         setVisible(true);
