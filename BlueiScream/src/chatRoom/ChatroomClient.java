@@ -5,25 +5,19 @@ import components.ColorRoundTextView;
 import components.PinkPanel;
 
 import javax.swing.*;
+import javax.swing.border.Border;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
+import java.awt.event.*;
 import java.io.*;
 import java.net.Socket;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 public class ChatroomClient extends JFrame {
     // UI
     private JTextField inputMessage;
     private ColorRoundButton sendBtn;
-    private JButton emoticonBtn;
-    private JButton moreContentsBtn;
     private ChatRoomDao dao;
     private String clientId;
-    private String chatroomName;
     private JPanel messageP;
     private int roomId;
     private boolean isFirst;
@@ -32,6 +26,7 @@ public class ChatroomClient extends JFrame {
     private final int TOTALWIDTH = 400;
     private GridBagConstraints gbc;
     private int gy;
+    private boolean isAlram;
 
     // socket
     private JList<String> userList;
@@ -77,23 +72,13 @@ public class ChatroomClient extends JFrame {
         chatListModel = new DefaultListModel<>();
         chatList = new JList<>(chatListModel);
 
-
         setSize(TOTALWIDTH, 800);
-        setDefaultCloseOperation(EXIT_ON_CLOSE);
+        setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         setBackground(Color.white);
 
         // header----------------------------------------------------
 
-
-        PinkPanel headerP = new PinkPanel();
-        chatroomName = dao.getChatRoomName(roomId);
-//        dao = null;
-        JLabel titleLb = new JLabel(chatroomName);
-        titleLb.setFont(new Font(titleLb.getFont().getFontName(), titleLb.getFont().getStyle(), 20));
-        headerP.setSize(TOTALWIDTH, 70);
-        headerP.setBorder(BorderFactory.createEmptyBorder(10, 0, 10, 0));
-        headerP.add(titleLb);
-        add(headerP, BorderLayout.NORTH);
+        createHeader();
 
         // message view --------------------------------------------------------
 
@@ -106,36 +91,7 @@ public class ChatroomClient extends JFrame {
 
         // bottom (input field, emoji etc...)------------------------------
 
-        PinkPanel lineP = new PinkPanel();
-        lineP.setSize(TOTALWIDTH, 10);
-
-        JPanel buttonP = new JPanel();
-        buttonP.setBackground(Color.white);
-        buttonP.setSize(TOTALWIDTH, 100);
-        buttonP.setLayout(new FlowLayout(FlowLayout.CENTER));
-
-        moreContentsBtn = new JButton("+");
-        inputMessage = new JTextField(18);
-        emoticonBtn = new JButton("^^");
-        sendBtn = new ColorRoundButton("send", new Color(255, 214, 214), Color.white, 10);
-
-        inputMessage.setText("input message");
-        inputMessage.setForeground(Color.lightGray);
-        inputMessage.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
-
-        buttonP.add(moreContentsBtn);
-        buttonP.add(inputMessage);
-        buttonP.add(emoticonBtn);
-        buttonP.add(sendBtn);
-
-        JPanel bottomP = new JPanel();
-        bottomP.setSize(TOTALWIDTH, 110);
-        bottomP.setBackground(Color.white);
-        bottomP.setLayout(new BorderLayout());
-        bottomP.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
-        bottomP.add(lineP, BorderLayout.NORTH);
-        bottomP.add(buttonP, BorderLayout.CENTER);
-        add(bottomP, BorderLayout.SOUTH);
+        createBottomButton();
 
         // event -------------------------------------------------------------
 
@@ -150,43 +106,146 @@ public class ChatroomClient extends JFrame {
             }
         });
 
-        sendBtn.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                String c = inputMessage.getText();
+        sendBtn.addActionListener(e -> {
+            String c = inputMessage.getText();
 
-                if (c.isEmpty() || isFirst)
-                    return;
+            if (c.isEmpty() || isFirst)
+                return;
 
-                try {
-                    DataPost dp = new DataPost();
-                    String[] data = {clientId, c};
-                    dp.setChat(data);
-                    oos.writeObject(dp);
-                    oos.flush();
+            try {
+                DataPost dp = new DataPost();
+                String[] data = {clientId, c, String.valueOf(roomId)};
+                dp.setChat(data);
+                oos.writeObject(dp);
+                oos.flush();
 
-                    Thread.sleep(100);
-                    dao.insertMessage(roomId, clientId, c, "text");
-                } catch (Exception e1) {
-                    System.out.println(e1.getMessage());
-                }
-
-                inputMessage.setText("");
-                JScrollBar vertical = scroll.getVerticalScrollBar();
-                vertical.setValue(vertical.getMaximum());
-
-                validate();
-                repaint();
+                Thread.sleep(100);
+                dao.insertMessage(roomId, clientId, c, "text");
+            } catch (Exception e1) {
+                System.out.println(e1.getMessage());
             }
+
+            inputMessage.setText("");
+            JScrollBar vertical = scroll.getVerticalScrollBar();
+            vertical.setValue(vertical.getMaximum());
+
+            validate();
+            repaint();
         });
 
-        inputMessage.addActionListener(new ActionListener() {
+        inputMessage.addActionListener(e -> sendBtn.doClick());
+
+        this.addWindowListener(new WindowAdapter() {
             @Override
-            public void actionPerformed(ActionEvent e) {
-                sendBtn.doClick();
+            public void windowClosed(WindowEvent e) {
+                super.windowClosed(e);
+                dao.setLastReadTime(clientId, roomId);
             }
         });
+    }
 
+    private void createHeader() {
+        PinkPanel headerP = new PinkPanel();
+        PinkPanel leftP = new PinkPanel(30, "left");
+        String chatroomName = dao.getChatRoomName(roomId);
+        JLabel titleLb = new JLabel(chatroomName);
+        JButton alramBtn;
+        isAlram = dao.getisAlram(clientId, roomId);
+        int iconSize = 26;
+
+        if (isAlram)
+            alramBtn = makeBottomIconButton("images/alramOnIcon.png", iconSize);
+        else
+            alramBtn = makeBottomIconButton("images/alramOffIcon.png", iconSize);
+        alramBtn.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 15));
+        alramBtn.setFocusPainted( false );
+
+        titleLb.setFont(new Font(titleLb.getFont().getFontName(), titleLb.getFont().getStyle(), 20));
+        titleLb.setHorizontalAlignment(JLabel.CENTER);
+        headerP.setLayout(new BorderLayout());
+        headerP.setSize(TOTALWIDTH, 70);
+        headerP.setBorder(BorderFactory.createEmptyBorder(10, 0, 10, 0));
+
+        headerP.add(leftP, BorderLayout.WEST);
+        headerP.add(titleLb, BorderLayout.CENTER);
+        headerP.add(alramBtn, BorderLayout.EAST);
+        add(headerP, BorderLayout.NORTH);
+
+        alramBtn.addActionListener(e -> {
+            isAlram = !isAlram;
+
+            if (isAlram)
+                alramBtn.setIcon(resizeIcon("images/alramOnIcon.png", iconSize));
+            else
+                alramBtn.setIcon(resizeIcon("images/alramOffIcon.png", iconSize));
+
+            try {
+                dao.setIsAlram(clientId, roomId, isAlram);
+                Thread.sleep(100);
+            } catch (InterruptedException ex) {
+                ex.printStackTrace();
+            }
+        });
+    }
+
+    private void createBottomButton() {
+        Border noneBorder = BorderFactory.createEmptyBorder();
+
+        PinkPanel lineP = new PinkPanel();
+        lineP.setSize(TOTALWIDTH, 10);
+
+        JPanel buttonP = new JPanel();
+        buttonP.setBackground(Color.white);
+        buttonP.setSize(TOTALWIDTH, 100);
+        buttonP.setLayout(new FlowLayout(FlowLayout.CENTER));
+
+        inputMessage = new JTextField(18);
+        sendBtn = new ColorRoundButton("send", new Color(255, 214, 214), Color.white, 10);
+
+        JButton moreContentsBtn = makeBottomIconButton("images/plusIcon.png", 20);
+        JButton emoticonBtn = makeBottomIconButton("images/emojiIcon.png", 20);
+
+        inputMessage.setText("input message");
+        inputMessage.setForeground(Color.lightGray);
+        inputMessage.setBorder(noneBorder);
+
+        buttonP.add(moreContentsBtn);
+        buttonP.add(inputMessage);
+        buttonP.add(emoticonBtn);
+        buttonP.add(sendBtn);
+
+        JPanel bottomP = new JPanel();
+        bottomP.setSize(TOTALWIDTH, 110);
+        bottomP.setBackground(Color.white);
+        bottomP.setLayout(new BorderLayout());
+        bottomP.setBorder(noneBorder);
+        bottomP.add(lineP, BorderLayout.NORTH);
+        bottomP.add(buttonP, BorderLayout.CENTER);
+        add(bottomP, BorderLayout.SOUTH);
+
+        moreContentsBtn.addActionListener(e -> {
+            new MoreMenu(clientId, roomId);
+        });
+    }
+
+    private JButton makeBottomIconButton(String src, int iconSize) {
+        JButton btn = new JButton();
+        ImageIcon icon = resizeIcon(src, iconSize);
+
+        btn.setBorder(BorderFactory.createEmptyBorder(0, 15, 0, 15));
+        btn.setIcon(icon);
+        btn.setBackground(null);
+
+        return btn;
+    }
+
+    private ImageIcon resizeIcon(String src, int iconSize) {
+        ImageIcon icon = new ImageIcon(src);
+        Image image = icon.getImage();
+        Image newimg = image.getScaledInstance(iconSize, iconSize, java.awt.Image.SCALE_SMOOTH); // scale it the smooth way
+        icon = new ImageIcon(newimg);
+
+        return icon;
     }
 
     private void setupNetwirking() {
@@ -210,6 +269,10 @@ public class ChatroomClient extends JFrame {
 
             while ((receivedDataPost = (DataPost) ois.readObject()) != null) {
                 String[] chat = receivedDataPost.getChat();
+
+                if (!chat[2].equals(String.valueOf(roomId)))
+                    continue;
+
                 SwingUtilities.invokeLater(() -> userListModel.addElement(chat[0]));
                 SwingUtilities.invokeLater(() -> chatListModel.addElement(chat[1]));
 
