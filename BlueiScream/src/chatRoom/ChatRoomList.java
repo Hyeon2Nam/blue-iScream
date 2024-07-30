@@ -115,22 +115,22 @@ public class ChatRoomList extends JFrame {
         JLabel roomNameLb = new JLabel(roomName);
         JLabel timeLb = new JLabel(dao.getSendMessageTime(roomId));
         JPanel btmP = new JPanel();
-        ColorRoundLabel notiCntLb = new ColorRoundLabel(Color.pink);
-        int notiCnt = dao.getNotReadMessageCnt(clientId, roomId);
+        ColorRoundLabel alramCntLb = new ColorRoundLabel(Color.pink);
+        int alramCnt = dao.getNotReadMessageCnt(clientId, roomId);
 
-        notiCntLb.setText(notiCnt <= 0 ? " " : String.valueOf(notiCnt));
+        alramCntLb.setText(alramCnt <= 0 ? " " : String.valueOf(alramCnt));
 
         roomP.setLayout(new BorderLayout());
         roomP.setBackground(Color.white);
         rightP.setLayout(new BorderLayout());
         rightP.setBackground(Color.white);
         btmP.setBackground(Color.lightGray);
-        notiCntLb.setForeground(Color.red);
+        alramCntLb.setForeground(Color.red);
         btmP.setMaximumSize(new Dimension(TOTALWIDTH, 2));
         roomNameLb.setBorder(BorderFactory.createEmptyBorder(0, 20, 0, 0));
 
         rightP.add(timeLb, BorderLayout.NORTH);
-        rightP.add(notiCntLb, BorderLayout.EAST);
+        rightP.add(alramCntLb, BorderLayout.EAST);
         roomP.add(leftB, BorderLayout.WEST);
         roomP.add(roomNameLb, BorderLayout.CENTER);
         roomP.add(rightP, BorderLayout.EAST);
@@ -156,7 +156,7 @@ public class ChatRoomList extends JFrame {
             public void mouseClicked(MouseEvent e) {
                 super.mouseClicked(e);
                 new ChatroomClient(clientId, roomId);
-                notiCntLb.setText("");
+                alramCntLb.setText("");
                 repaint();
             }
         });

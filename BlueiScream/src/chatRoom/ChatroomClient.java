@@ -16,11 +16,8 @@ public class ChatroomClient extends JFrame {
     // UI
     private JTextField inputMessage;
     private ColorRoundButton sendBtn;
-    private JButton emoticonBtn;
-    private JButton moreContentsBtn;
     private ChatRoomDao dao;
     private String clientId;
-    private String chatroomName;
     private JPanel messageP;
     private int roomId;
     private boolean isFirst;
@@ -29,6 +26,7 @@ public class ChatroomClient extends JFrame {
     private final int TOTALWIDTH = 400;
     private GridBagConstraints gbc;
     private int gy;
+    private boolean isAlram;
 
     // socket
     private JList<String> userList;
@@ -55,9 +53,6 @@ public class ChatroomClient extends JFrame {
     }
 
     public void initializeComponents() {
-        Border noneBorder = BorderFactory.createEmptyBorder(0,0,0,0);
-        Border sideBorder = BorderFactory.createEmptyBorder(0,15,0,15);
-
         gy = 0;
         gbc = new GridBagConstraints();
         gbc.gridx = 0;
@@ -83,14 +78,7 @@ public class ChatroomClient extends JFrame {
 
         // header----------------------------------------------------
 
-        PinkPanel headerP = new PinkPanel();
-        chatroomName = dao.getChatRoomName(roomId);
-        JLabel titleLb = new JLabel(chatroomName);
-        titleLb.setFont(new Font(titleLb.getFont().getFontName(), titleLb.getFont().getStyle(), 20));
-        headerP.setSize(TOTALWIDTH, 70);
-        headerP.setBorder(BorderFactory.createEmptyBorder(10, 0, 10, 0));
-        headerP.add(titleLb);
-        add(headerP, BorderLayout.NORTH);
+        createHeader();
 
         // message view --------------------------------------------------------
 
@@ -103,8 +91,105 @@ public class ChatroomClient extends JFrame {
 
         // bottom (input field, emoji etc...)------------------------------
 
-        ImageIcon moreIcon = resizeIcon("images/plusIcon.png");
-        ImageIcon emojiIcon = resizeIcon("images/emojiIcon.png");
+        createBottomButton();
+
+        // event -------------------------------------------------------------
+
+        inputMessage.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                if (isFirst) {
+                    inputMessage.setText("");
+                    isFirst = false;
+                }
+                inputMessage.setForeground(Color.BLACK);
+            }
+        });
+
+        sendBtn.addActionListener(e -> {
+            String c = inputMessage.getText();
+
+            if (c.isEmpty() || isFirst)
+                return;
+
+            try {
+                DataPost dp = new DataPost();
+                String[] data = {clientId, c, String.valueOf(roomId)};
+                dp.setChat(data);
+                oos.writeObject(dp);
+                oos.flush();
+
+                Thread.sleep(100);
+                dao.insertMessage(roomId, clientId, c, "text");
+            } catch (Exception e1) {
+                System.out.println(e1.getMessage());
+            }
+
+            inputMessage.setText("");
+            JScrollBar vertical = scroll.getVerticalScrollBar();
+            vertical.setValue(vertical.getMaximum());
+
+            validate();
+            repaint();
+        });
+
+        inputMessage.addActionListener(e -> sendBtn.doClick());
+
+        this.addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosed(WindowEvent e) {
+                super.windowClosed(e);
+                dao.setLastReadTime(clientId, roomId);
+            }
+        });
+    }
+
+    private void createHeader() {
+        PinkPanel headerP = new PinkPanel();
+        PinkPanel leftP = new PinkPanel(30, "left");
+        String chatroomName = dao.getChatRoomName(roomId);
+        JLabel titleLb = new JLabel(chatroomName);
+        JButton alramBtn;
+        isAlram = dao.getisAlram(clientId, roomId);
+        int iconSize = 26;
+
+        if (isAlram)
+            alramBtn = makeBottomIconButton("images/alramOnIcon.png", iconSize);
+        else
+            alramBtn = makeBottomIconButton("images/alramOffIcon.png", iconSize);
+        alramBtn.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 15));
+        alramBtn.setFocusPainted( false );
+
+        titleLb.setFont(new Font(titleLb.getFont().getFontName(), titleLb.getFont().getStyle(), 20));
+        titleLb.setHorizontalAlignment(JLabel.CENTER);
+        headerP.setLayout(new BorderLayout());
+        headerP.setSize(TOTALWIDTH, 70);
+        headerP.setBorder(BorderFactory.createEmptyBorder(10, 0, 10, 0));
+
+        headerP.add(leftP, BorderLayout.WEST);
+        headerP.add(titleLb, BorderLayout.CENTER);
+        headerP.add(alramBtn, BorderLayout.EAST);
+        add(headerP, BorderLayout.NORTH);
+
+        alramBtn.addActionListener(e -> {
+            isAlram = !isAlram;
+
+            if (isAlram)
+                alramBtn.setIcon(resizeIcon("images/alramOnIcon.png", iconSize));
+            else
+                alramBtn.setIcon(resizeIcon("images/alramOffIcon.png", iconSize));
+
+            try {
+                dao.setIsAlram(clientId, roomId, isAlram);
+                Thread.sleep(100);
+            } catch (InterruptedException ex) {
+                ex.printStackTrace();
+            }
+        });
+    }
+
+    private void createBottomButton() {
+        Border noneBorder = BorderFactory.createEmptyBorder();
 
         PinkPanel lineP = new PinkPanel();
         lineP.setSize(TOTALWIDTH, 10);
@@ -114,17 +199,11 @@ public class ChatroomClient extends JFrame {
         buttonP.setSize(TOTALWIDTH, 100);
         buttonP.setLayout(new FlowLayout(FlowLayout.CENTER));
 
-        moreContentsBtn = new JButton();
         inputMessage = new JTextField(18);
-        emoticonBtn = new JButton();
         sendBtn = new ColorRoundButton("send", new Color(255, 214, 214), Color.white, 10);
 
-        moreContentsBtn.setBorder(sideBorder);
-        moreContentsBtn.setIcon(moreIcon);
-        moreContentsBtn.setBackground(null);
-        emoticonBtn.setBorder(sideBorder);
-        emoticonBtn.setIcon(emojiIcon);
-        emoticonBtn.setBackground(null);
+        JButton moreContentsBtn = makeBottomIconButton("images/plusIcon.png", 20);
+        JButton emoticonBtn = makeBottomIconButton("images/emojiIcon.png", 20);
 
         inputMessage.setText("input message");
         inputMessage.setForeground(Color.lightGray);
@@ -143,69 +222,20 @@ public class ChatroomClient extends JFrame {
         bottomP.add(lineP, BorderLayout.NORTH);
         bottomP.add(buttonP, BorderLayout.CENTER);
         add(bottomP, BorderLayout.SOUTH);
-
-        // event -------------------------------------------------------------
-
-        inputMessage.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseClicked(MouseEvent e) {
-                if (isFirst) {
-                    inputMessage.setText("");
-                    isFirst = false;
-                }
-                inputMessage.setForeground(Color.BLACK);
-            }
-        });
-
-        sendBtn.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                String c = inputMessage.getText();
-
-                if (c.isEmpty() || isFirst)
-                    return;
-
-                try {
-                    DataPost dp = new DataPost();
-                    String[] data = {clientId, c, String.valueOf(roomId)};
-                    dp.setChat(data);
-                    oos.writeObject(dp);
-                    oos.flush();
-
-                    Thread.sleep(100);
-                    dao.insertMessage(roomId, clientId, c, "text");
-                } catch (Exception e1) {
-                    System.out.println(e1.getMessage());
-                }
-
-                inputMessage.setText("");
-                JScrollBar vertical = scroll.getVerticalScrollBar();
-                vertical.setValue(vertical.getMaximum());
-
-                validate();
-                repaint();
-            }
-        });
-
-        inputMessage.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                sendBtn.doClick();
-            }
-        });
-
-        this.addWindowListener(new WindowAdapter() {
-            @Override
-            public void windowClosed(WindowEvent e) {
-                super.windowClosed(e);
-                dao.setLastReadTime(clientId, roomId);
-            }
-        });
     }
 
-    private ImageIcon resizeIcon(String src) {
-        int iconSize = 20;
+    private JButton makeBottomIconButton(String src, int iconSize) {
+        JButton btn = new JButton();
+        ImageIcon icon = resizeIcon(src, iconSize);
 
+        btn.setBorder(BorderFactory.createEmptyBorder(0, 15, 0, 15));
+        btn.setIcon(icon);
+        btn.setBackground(null);
+
+        return btn;
+    }
+
+    private ImageIcon resizeIcon(String src, int iconSize) {
         ImageIcon icon = new ImageIcon(src);
         Image image = icon.getImage();
         Image newimg = image.getScaledInstance(iconSize, iconSize, java.awt.Image.SCALE_SMOOTH); // scale it the smooth way

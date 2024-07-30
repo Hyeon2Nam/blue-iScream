@@ -304,4 +304,46 @@ public class ChatRoomDao {
 
         return res;
     }
+
+    public boolean getisAlram(String id, int roomId) {
+        joinAcces();
+        boolean res = false;
+
+        try {
+            String sql = "select is_alram from user_chat_rooms where user_id = ? and chatroom_id = ?";
+            pstmt = conn.prepareCall(sql);
+            pstmt.setString(1, id);
+            pstmt.setInt(2, roomId);
+            rs = pstmt.executeQuery();
+
+            if (rs.next())
+                res = rs.getBoolean(1);
+        } catch (SQLException e) {
+            e.printStackTrace();
+            res = false;
+        } finally {
+            closeAcces();
+        }
+
+        return res;
+    }
+
+    public void setIsAlram(String id, int roomId, boolean isAlram) {
+        joinAcces();
+        int res;
+
+        try {
+            String sql = "update user_chat_rooms set is_alram = ? where user_id = ? and chatroom_id = ?";
+            pstmt = conn.prepareCall(sql);
+            pstmt.setBoolean(1, isAlram);
+            pstmt.setString(2, id);
+            pstmt.setInt(3, roomId);
+            res = pstmt.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+            res = -1;
+        } finally {
+            closeAcces();
+        }
+    }
 }
