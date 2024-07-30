@@ -222,6 +222,10 @@ public class ChatroomClient extends JFrame {
         bottomP.add(lineP, BorderLayout.NORTH);
         bottomP.add(buttonP, BorderLayout.CENTER);
         add(bottomP, BorderLayout.SOUTH);
+
+        moreContentsBtn.addActionListener(e -> {
+            new MoreMenu(clientId, roomId);
+        });
     }
 
     private JButton makeBottomIconButton(String src, int iconSize) {
