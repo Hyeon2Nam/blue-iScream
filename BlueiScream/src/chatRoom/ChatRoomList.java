@@ -3,18 +3,12 @@ package chatRoom;
 import javax.swing.*;
 import javax.swing.border.Border;
 
-import components.ColorRoundButton;
 import components.ColorRoundLabel;
-import components.ColorRoundTextView;
-import components.PinkPanel;
+import components.DarkPanel;
 
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.io.*;
-import java.net.Socket;
 import java.util.List;
 
 public class ChatRoomList extends JFrame {
@@ -37,7 +31,7 @@ public class ChatRoomList extends JFrame {
     }
 
     public void initializeComponents() {
-        Border noneBorder = BorderFactory.createEmptyBorder(0, 0, 0, 0);
+        Border noneBorder = BorderFactory.createEmptyBorder();
 
         dao = new ChatRoomDao();
 
@@ -47,13 +41,7 @@ public class ChatRoomList extends JFrame {
 
         // header----------------------------------------------------
 
-        PinkPanel headerP = new PinkPanel();
-        JLabel titleLb = new JLabel("Chat");
-        titleLb.setFont(new Font(titleLb.getFont().getFontName(), titleLb.getFont().getStyle(), 20));
-        headerP.setSize(TOTALWIDTH, 70);
-        headerP.setBorder(BorderFactory.createEmptyBorder(10, 0, 10, 0));
-        headerP.add(titleLb);
-        add(headerP, BorderLayout.NORTH);
+        createHeader();
 
         // chat list view --------------------------------------------------------
 
@@ -66,7 +54,7 @@ public class ChatRoomList extends JFrame {
 
         // bottom (input field, emoji etc...)------------------------------
 
-        PinkPanel lineP = new PinkPanel();
+        DarkPanel lineP = new DarkPanel();
         lineP.setSize(TOTALWIDTH, 10);
 
         JPanel btnP = new JPanel();
@@ -86,8 +74,23 @@ public class ChatRoomList extends JFrame {
         btnP.add(lineP, BorderLayout.NORTH);
         btnP.add(BtnWrapper, BorderLayout.CENTER);
         add(btnP, BorderLayout.SOUTH);
+
         // event -------------------------------------------------------------
 
+    }
+
+    private void createHeader() {
+        DarkPanel headerP = new DarkPanel();
+        DarkPanel leftP = new DarkPanel(30, "left");
+        JLabel titleLb = new JLabel("Chat");
+        JButton OptionBtn;
+
+        titleLb.setForeground(Color.white);
+        titleLb.setFont(new Font(titleLb.getFont().getFontName(), titleLb.getFont().getStyle(), 20));
+        headerP.setSize(TOTALWIDTH, 70);
+        headerP.setBorder(BorderFactory.createEmptyBorder(10, 0, 10, 0));
+        headerP.add(titleLb);
+        add(headerP, BorderLayout.NORTH);
     }
 
     private JButton setBottomButton(String imgSrc) {
@@ -96,7 +99,7 @@ public class ChatRoomList extends JFrame {
 
         b.setIcon(icon);
         b.setBackground(null);
-        b.setBorder(BorderFactory.createEmptyBorder(0,0,0,0));
+        b.setBorder(BorderFactory.createEmptyBorder());
 
         return b;
     }
@@ -115,17 +118,25 @@ public class ChatRoomList extends JFrame {
         JLabel roomNameLb = new JLabel(roomName);
         JLabel timeLb = new JLabel(dao.getSendMessageTime(roomId));
         JPanel btmP = new JPanel();
-        ColorRoundLabel alramCntLb = new ColorRoundLabel(Color.pink);
+        JLabel alramCntLb;
         int alramCnt = dao.getNotReadMessageCnt(clientId, roomId);
 
-        alramCntLb.setText(alramCnt <= 0 ? " " : String.valueOf(alramCnt));
+        if (alramCnt <= 0) {
+            alramCntLb = new JLabel();
+            alramCntLb.setBackground(null);
+            alramCntLb.setText(" ");
+            alramCntLb.setForeground(null);
+        } else {
+            alramCntLb = new ColorRoundLabel(Color.pink);
+            alramCntLb.setText(String.valueOf(alramCnt));
+            alramCntLb.setForeground(Color.red);
+        }
 
         roomP.setLayout(new BorderLayout());
-        roomP.setBackground(Color.white);
+        roomP.setBackground(null);
         rightP.setLayout(new BorderLayout());
-        rightP.setBackground(Color.white);
+        rightP.setBackground(null);
         btmP.setBackground(Color.lightGray);
-        alramCntLb.setForeground(Color.red);
         btmP.setMaximumSize(new Dimension(TOTALWIDTH, 2));
         roomNameLb.setBorder(BorderFactory.createEmptyBorder(0, 20, 0, 0));
 
@@ -134,6 +145,7 @@ public class ChatRoomList extends JFrame {
         roomP.add(leftB, BorderLayout.WEST);
         roomP.add(roomNameLb, BorderLayout.CENTER);
         roomP.add(rightP, BorderLayout.EAST);
+
         roomP.setBorder(BorderFactory.createEmptyBorder(10, 15, 10, 15));
         roomP.setMaximumSize(new Dimension(TOTALWIDTH, (int) roomP.getPreferredSize().getHeight()));
 
@@ -142,14 +154,12 @@ public class ChatRoomList extends JFrame {
             public void mouseEntered(MouseEvent e) {
                 super.mouseEntered(e);
                 roomP.setBackground(getBackground().darker());
-                rightP.setBackground(getBackground().darker());
             }
 
             @Override
             public void mouseExited(MouseEvent e) {
                 super.mouseExited(e);
                 roomP.setBackground(Color.white);
-                rightP.setBackground(Color.white);
             }
 
             @Override
@@ -157,7 +167,8 @@ public class ChatRoomList extends JFrame {
                 super.mouseClicked(e);
                 new ChatroomClient(clientId, roomId);
                 alramCntLb.setText("");
-                repaint();
+                alramCntLb.setBackground(null);
+                alramCntLb.repaint();
             }
         });
 
