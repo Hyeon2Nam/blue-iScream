@@ -15,7 +15,7 @@ public class UserJoin extends JFrame {
         dao = new UserDao();
         Insets in = new Insets(30, 0, 0, 0);
         Color textColor = Color.white;
-        Color pink = new Color(255, 214, 214);
+        Color pink = new Color(0, 38, 66);
 
         float fontSize = 24f;
         int sidePaddingSize = 30;
@@ -32,7 +32,7 @@ public class UserJoin extends JFrame {
         JLabel icon = new JLabel("Sign UP");
         iconP.setBackground(pink);
         icon.setForeground(Color.white);
-        icon.setFont(icon.getFont().deriveFont(50f));
+        icon.setFont(icon.getFont().deriveFont(40f));
         icon.setBackground(null);
         icon.setOpaque(true);
         icon.setBorder(BorderFactory.createEmptyBorder(30, 0, 20, 0));
@@ -40,13 +40,13 @@ public class UserJoin extends JFrame {
         add(iconP, BorderLayout.NORTH);
 
         // left, right padding
-        PinkPanel leftPadding = new PinkPanel(sidePaddingSize, "left");
+        DarkPanel leftPadding = new DarkPanel(sidePaddingSize, "left");
         add(leftPadding, BorderLayout.WEST);
-        PinkPanel rightPadding = new PinkPanel(sidePaddingSize, "right");
+        DarkPanel rightPadding = new DarkPanel(sidePaddingSize, "right");
         add(rightPadding, BorderLayout.EAST);
 
         // input field
-        PinkPanel centerP = new PinkPanel();
+        DarkPanel centerP = new DarkPanel();
         centerP.setSize(tfWidth + 100, 400);
         centerP.setLayout(new GridBagLayout());
         GridBagConstraints gbc = new GridBagConstraints();
@@ -55,7 +55,7 @@ public class UserJoin extends JFrame {
 
         // --
 
-        PinkPanel p2 = new PinkPanel();
+        DarkPanel p2 = new DarkPanel();
         JLabel lb2 = new JLabel("UserId");
 
         p2.setLayout(new FlowLayout());
@@ -72,7 +72,7 @@ public class UserJoin extends JFrame {
 
         // --
 
-        PinkPanel p3 = new PinkPanel();
+        DarkPanel p3 = new DarkPanel();
         JLabel lb3 = new JLabel("Password");
 
         p3.setLayout(new FlowLayout());
@@ -92,7 +92,7 @@ public class UserJoin extends JFrame {
         // --
 
         JLabel lb = new JLabel("UserName");
-        PinkPanel p1 = new PinkPanel();
+        DarkPanel p1 = new DarkPanel();
 
         p1.setLayout(new FlowLayout());
         lb.setFont(lb.getFont().deriveFont(fontSize));
@@ -108,7 +108,7 @@ public class UserJoin extends JFrame {
 
         // --
 
-        PinkPanel p4 = new PinkPanel();
+        DarkPanel p4 = new DarkPanel();
         JLabel lb1 = new JLabel("Email");
 
         p4.setLayout(new FlowLayout());
@@ -126,8 +126,8 @@ public class UserJoin extends JFrame {
 
         // button
 
-        PinkPanel buttonP = new PinkPanel();
-        ColorRoundButton joinButton = new ColorRoundButton("Sign Up", Color.white, pink, 25);
+        DarkPanel buttonP = new DarkPanel();
+        ColorRoundButton joinButton = new ColorRoundButton("Sign Up", new Color(229, 149, 0), pink, 25);
         buttonP.setLayout(new FlowLayout(FlowLayout.CENTER));
         buttonP.setBorder(BorderFactory.createEmptyBorder(0, 0, 30, 0));
         buttonP.add(joinButton);

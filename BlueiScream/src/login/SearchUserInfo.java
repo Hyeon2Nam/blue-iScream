@@ -1,7 +1,7 @@
 package login;
 
 import components.ColorRoundButton;
-import components.PinkPanel;
+import components.DarkPanel;
 import components.UnderLineTextField;
 
 import java.io.FileInputStream;
@@ -27,9 +27,9 @@ public class SearchUserInfo extends JFrame {
         setLocationRelativeTo(null);
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
 
-        PinkPanel p1 = new PinkPanel();
+        DarkPanel p1 = new DarkPanel();
         p1.setLayout(new FlowLayout(FlowLayout.LEFT));
-        PinkPanel p2 = new PinkPanel();
+        DarkPanel p2 = new DarkPanel();
         p2.setLayout(new FlowLayout(FlowLayout.LEFT));
         ColorRoundButton idBtn = new ColorRoundButton("Id찾기", Color.white, Color.BLACK, 15);
         ColorRoundButton pwBtn = new ColorRoundButton("PW찾기", Color.white, Color.BLACK, 15);

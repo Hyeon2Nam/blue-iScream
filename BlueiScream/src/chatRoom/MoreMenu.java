@@ -42,8 +42,9 @@ public class MoreMenu extends JFrame {
         JButton btn = new JButton(s);
         int size = 90;
 
-        btn.setBackground(new Color(255, 214, 214));
+        btn.setBackground(new Color(0, 38, 66));
         btn.setPreferredSize(new Dimension(size,size));
+        btn.setForeground(Color.white);
         btn.setBorderPainted(false);
 
         return btn;

@@ -1,8 +1,9 @@
 package chatRoom;
 
+import CustomAdapter.MouseCustomAdapter;
 import components.ColorRoundButton;
 import components.ColorRoundTextView;
-import components.PinkPanel;
+import components.DarkPanel;
 
 import javax.swing.*;
 import javax.swing.border.Border;
@@ -151,21 +152,23 @@ public class ChatroomClient extends JFrame {
     }
 
     private void createHeader() {
-        PinkPanel headerP = new PinkPanel();
-        PinkPanel leftP = new PinkPanel(30, "left");
+        DarkPanel headerP = new DarkPanel();
+        DarkPanel leftP = new DarkPanel(30, "left");
         String chatroomName = dao.getChatRoomName(roomId);
         JLabel titleLb = new JLabel(chatroomName);
         JButton alramBtn;
-        isAlram = dao.getisAlram(clientId, roomId);
         int iconSize = 26;
 
+        isAlram = dao.getisAlram(clientId, roomId);
         if (isAlram)
             alramBtn = makeBottomIconButton("images/alramOnIcon.png", iconSize);
         else
             alramBtn = makeBottomIconButton("images/alramOffIcon.png", iconSize);
         alramBtn.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 15));
         alramBtn.setFocusPainted(false);
+        alramBtn.setContentAreaFilled(false);
 
+        titleLb.setForeground(Color.white);
         titleLb.setFont(new Font(titleLb.getFont().getFontName(), titleLb.getFont().getStyle(), 20));
         titleLb.setHorizontalAlignment(JLabel.CENTER);
         headerP.setLayout(new BorderLayout());
@@ -197,8 +200,8 @@ public class ChatroomClient extends JFrame {
     private void createBottomButton() {
         Border noneBorder = BorderFactory.createEmptyBorder();
 
-        PinkPanel lineP = new PinkPanel();
-        lineP.setSize(TOTALWIDTH, 10);
+        DarkPanel lineP = new DarkPanel();
+        lineP.setSize(TOTALWIDTH, 1);
 
         JPanel buttonP = new JPanel();
         buttonP.setBackground(Color.white);
@@ -206,7 +209,7 @@ public class ChatroomClient extends JFrame {
         buttonP.setLayout(new FlowLayout(FlowLayout.CENTER));
 
         inputMessage = new JTextField(18);
-        sendBtn = new ColorRoundButton("send", new Color(255, 214, 214), Color.white, 10);
+        sendBtn = new ColorRoundButton("send", new Color(0, 38, 66), Color.white, 10);
 
         JButton moreContentsBtn = makeBottomIconButton("images/plusIcon.png", 20);
         JButton emoticonBtn = makeBottomIconButton("images/emojiIcon.png", 20);
@@ -313,7 +316,7 @@ public class ChatroomClient extends JFrame {
         ImageIcon img = null;
 
         if (reaction == 0)
-            img = resizeIcon("images/plusIcon.png", 20);
+            img = null;
         else if (reaction == 1)
             img = resizeIcon("images/alramOffIcon.png", 20);
         else if (reaction == 2)
@@ -338,7 +341,14 @@ public class ChatroomClient extends JFrame {
         JPanel wp = new JPanel();
         JPanel rp = new JPanel();
         JLabel n = new JLabel(name);
-        ColorRoundTextView m = new ColorRoundTextView(reformText(c), BGC, Color.BLACK);
+        ColorRoundTextView m;
+        Color backColor = new Color(229, 218, 218);
+
+        if (id.equals(clientId))
+            backColor = new Color(229, 149, 0);
+
+        m = new ColorRoundTextView(reformText(c), backColor, Color.BLACK);
+        reactionBtn.setEnabled(false);
 
         p.setBackground(null);
         wp.setBackground(null);
@@ -383,8 +393,16 @@ public class ChatroomClient extends JFrame {
         gbc.weighty = 1.0;
         messageP.add(Box.createVerticalGlue(), gbc);
 
-        reactionBtn.addActionListener(e -> {
-            new ReactionMenu(chatroomClient, reactionBtn, msgId);
+
+        m.addMouseListener(new MouseCustomAdapter() {
+            @Override
+            public void shortActionPerformed(MouseEvent e) {
+                return;
+            }
+
+            public void longActionPerformed(MouseEvent e) {
+                new ReactionMenu(chatroomClient, reactionBtn, msgId);
+            }
         });
     }
 

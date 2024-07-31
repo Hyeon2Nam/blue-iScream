@@ -12,6 +12,7 @@ public class ChatRoomDao {
     PreparedStatement pstmt;
     ResultSet rs;
 
+
     public void joinAcces() {
         try {
             String url = "jdbc:mysql://192.168.40.33:3306/blue_iscream?serverTimezone=UTC";
@@ -211,7 +212,7 @@ public class ChatRoomDao {
         joinAcces();
 
         try {
-            String sql = "select c.chatroom_id, chatroom_name, created_at, category, background_img, c.isAlarm " +
+            String sql = "select c.chatroom_id, chatroom_name, created_at, category, background_img, uc.is_alram " +
                     "from chat_rooms c " +
                     "inner join user_chat_rooms uc on c.chatroom_id = uc.chatroom_id " +
                     "where user_id = ?";
@@ -260,6 +261,7 @@ public class ChatRoomDao {
     public String getSendMessageTime(int roomId) {
         joinAcces();
         String res = "";
+        Calendar cal = Calendar.getInstance(TimeZone.getTimeZone("Asia/Seoul"));
 
         try {
             String sql = "select created_at from messages m where chatroom_id = ? order by created_at desc limit 1";
@@ -267,8 +269,10 @@ public class ChatRoomDao {
             pstmt.setInt(1, roomId);
             rs = pstmt.executeQuery();
 
-            if (rs.next())
-                res = new SimpleDateFormat("yyyy-MM-dd HH:mm").format(rs.getTimestamp(1));
+            if (rs.next()) {
+                Timestamp ts = rs.getTimestamp(1, cal);
+                res = new SimpleDateFormat("yyyy-MM-dd HH:mm").format(ts);
+            }
         } catch (SQLException e) {
             e.printStackTrace();
         } finally {
