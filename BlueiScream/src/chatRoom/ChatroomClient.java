@@ -315,14 +315,14 @@ public class ChatroomClient extends JFrame {
     private ImageIcon setReactionImage(int reaction) {
         ImageIcon img = null;
 
-        if (reaction == 0)
-            img = null;
-        else if (reaction == 1)
-            img = resizeIcon("images/alramOffIcon.png", 20);
+        if (reaction == 1)
+            img = resizeIcon("images/heartIcon.png", 20);
         else if (reaction == 2)
-            img = resizeIcon("images/chat_icon.png", 20);
+            img = resizeIcon("images/exciteIcon.png", 20);
         else if (reaction == 3)
-            img = resizeIcon("images/emojiicon.png", 20);
+            img = resizeIcon("images/umIcon.png", 20);
+        else if (reaction == 4)
+            img = resizeIcon("images/angryIcon.png", 20);
 
         return img;
     }
@@ -335,7 +335,7 @@ public class ChatroomClient extends JFrame {
         gbc.weighty = 0.0;
 
         JButton bb = new JButton(" ");
-        JButton reactionBtn = makeBottomIconButton("", 0);
+        JLabel reactionLb = new JLabel(setReactionImage(reaction));
         JPanel p = new JPanel();
         JPanel wp = new JPanel();
         JPanel rp = new JPanel();
@@ -347,20 +347,19 @@ public class ChatroomClient extends JFrame {
             backColor = new Color(229, 149, 0);
 
         m = new ColorRoundTextView(reformText(c), backColor, Color.BLACK);
-        reactionBtn.setEnabled(false);
 
         p.setBackground(null);
         wp.setBackground(null);
         rp.setBackground(null);
 
-        reactionBtn.setIcon(setReactionImage(reaction));
+        reactionLb.setBorder(BorderFactory.createEmptyBorder(0, 5, 0, 0));
         rp.setLayout(new BorderLayout());
 
         if (!id.equals(clientId)) {
             p.setLayout(new FlowLayout(FlowLayout.LEFT));
             wp.add(bb, BorderLayout.WEST);
             rp.add(n, BorderLayout.NORTH);
-            rp.add(reactionBtn, BorderLayout.EAST);
+            rp.add(reactionLb, BorderLayout.EAST);
         } else {
             p.setLayout(new FlowLayout(FlowLayout.RIGHT));
         }
@@ -388,12 +387,12 @@ public class ChatroomClient extends JFrame {
             }
 
             public void longActionPerformed(MouseEvent e) {
-                new ReactionMenu(chatroomClient, reactionBtn, msgId);
+                new ReactionMenu(chatroomClient, reactionLb, msgId);
             }
         });
     }
 
-    public void setNewReaction(int newReact, JButton c, int msgId) {
+    public void setNewReaction(int newReact, JLabel c, int msgId) {
         c.setIcon(setReactionImage(newReact));
         dao.setReaction(newReact, msgId);
         revalidate();

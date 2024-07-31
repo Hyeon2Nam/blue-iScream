@@ -2,31 +2,61 @@ package chatRoom;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class ReactionMenu extends JFrame {
 
     private static ReactionMenu reactionMenu;
 
-    public ReactionMenu(ChatroomClient chatroomClient, JButton c, int msgId) {
-        setSize(300, 100);
-        setLayout(new FlowLayout(FlowLayout.CENTER));
-        AtomicInteger res = new AtomicInteger();
+    public ReactionMenu(ChatroomClient chatroomClient, JLabel c, int msgId) {
+        setSize(250, 100);
+        setIconImage(null);
 
-        JButton b1 = makeIconButton("images/alramOffIcon.png", 20);
-        JButton b2 = makeIconButton("images/chat_icon.png", 20);
-        JButton b3 = makeIconButton("images/emojiicon.png", 20);
-        JButton b4 = new JButton("취소");
+        JPanel p = new JPanel();
+        p.setBackground(Color.white);
+        p.setLayout(new FlowLayout(FlowLayout.CENTER));
 
-        b1.addActionListener(e -> chatroomClient.setNewReaction(1, c, msgId));
-        b2.addActionListener(e -> chatroomClient.setNewReaction(2, c, msgId));
-        b3.addActionListener(e -> chatroomClient.setNewReaction(3, c, msgId));
-        b4.addActionListener(e -> chatroomClient.setNewReaction(0, c, msgId));
+        JButton b1 = makeIconButton("images/heartIcon.png", 20);
+        JButton b2 = makeIconButton("images/exciteIcon.png", 20);
+        JButton b3 = makeIconButton("images/umIcon.png", 20);
+        JButton b4 = makeIconButton("images/angryIcon.png", 20);
+        JButton b5 = new JButton("취소");
 
-        add(b1);
-        add(b2);
-        add(b3);
-        add(b4);
+        b1.addActionListener(e -> {
+            chatroomClient.setNewReaction(1, c, msgId);
+            dispose();
+        });
+        b2.addActionListener(e -> {
+            chatroomClient.setNewReaction(2, c, msgId);
+            dispose();
+        });
+        b3.addActionListener(e -> {
+            chatroomClient.setNewReaction(3, c, msgId);
+            dispose();
+        });
+        b4.addActionListener(e -> {
+            chatroomClient.setNewReaction(4, c, msgId);
+            dispose();
+        });
+        b5.addActionListener(e -> {
+            chatroomClient.setNewReaction(5, c, msgId);
+            dispose();
+        });
+
+        p.add(b1);
+        p.add(b2);
+        p.add(b3);
+        p.add(b4);
+        p.add(b5);
+        add(p);
+
+        this.addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowDeactivated(WindowEvent e) {
+                dispose();
+            }
+        });
 
         setVisible(true);
     }
@@ -49,6 +79,7 @@ public class ReactionMenu extends JFrame {
 
         btn.setBorder(BorderFactory.createEmptyBorder(0, 15, 0, 15));
         btn.setBackground(null);
+        btn.setOpaque(false);
 
         return btn;
     }
