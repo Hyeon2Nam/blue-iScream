@@ -4,15 +4,19 @@ import java.awt.*;
 import java.sql.Timestamp;
 
 public class Messages {
+    private int msgId;
     private String userId;
     private String content;
     private Timestamp createdAt;
     private String messageType;
     private String mesTo;
     private String mesFrom;
-    // file_id ... foriegn key.....
     private int reaction;
     private int isRead;
+
+    public void setMsgId(int msgId) {
+        this.msgId = msgId;
+    }
 
     public void setUserId(String userId) {
         this.userId = userId;
@@ -76,5 +80,9 @@ public class Messages {
 
     public int getIsRead() {
         return isRead;
+    }
+
+    public int getMsgId() {
+        return msgId;
     }
 }

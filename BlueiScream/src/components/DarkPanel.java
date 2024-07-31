@@ -3,13 +3,13 @@ package components;
 import javax.swing.*;
 import java.awt.*;
 
-public class PinkPanel extends JPanel {
-    public PinkPanel() {
-        setBackground(new Color(255, 214, 214));
+public class DarkPanel extends JPanel {
+    public DarkPanel() {
+        setBackground(new Color(0, 38, 66));
     }
 
-    public PinkPanel(int n, String op) {
-        setBackground(new Color(255, 214, 214));
+    public DarkPanel(int n, String op) {
+        setBackground(new Color(0, 38, 66));
 
         switch (op) {
             case "top":
