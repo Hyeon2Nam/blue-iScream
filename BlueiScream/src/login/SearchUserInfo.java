@@ -17,39 +17,88 @@ import java.awt.event.ActionListener;
 
 public class SearchUserInfo extends JFrame {
     private UserDao dao;
+    private final Color DARK = new Color(0, 38, 66);
+    private final Color ORANGE = new Color(229, 149, 0);
+    private final int TOTALSIZE = 400;
 
     public SearchUserInfo() {
-        int totalSize = 400;
         dao = new UserDao();
 
-        setTitle("Search id/pw");
-        setSize(totalSize, 800);
+        setTitle("Forgot Id/Password");
+        setSize(TOTALSIZE, 800);
         setLocationRelativeTo(null);
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
 
+        createHeader();
+        createCenterContents();
+        setVisible(true);
+    }
+
+    private void createHeader() {
+        DarkPanel iconP = new DarkPanel();
+        JLabel icon = new JLabel("Sign UP");
+        String lbStr = "<html><body><center>원하는 항목에<br>이메일을 입력해주세요</center></body></html>";
+        JLabel lb = new JLabel(lbStr);
+
+        iconP.setLayout(new BorderLayout());
+
+        icon.setForeground(Color.white);
+        icon.setFont(icon.getFont().deriveFont(40f));
+        icon.setHorizontalAlignment(JLabel.CENTER);
+        icon.setBorder(BorderFactory.createEmptyBorder(30, 0, 20, 0));
+
+        lb.setFont(lb.getFont().deriveFont(20f));
+        lb.setForeground(Color.white);
+        lb.setBackground(null);
+        lb.setHorizontalAlignment(JLabel.CENTER);
+
+        iconP.add(icon, BorderLayout.NORTH);
+        iconP.add(lb, BorderLayout.CENTER);
+
+        add(iconP, BorderLayout.NORTH);
+    }
+
+    private void createCenterContents() {
+        DarkPanel fieldP = new DarkPanel();
         DarkPanel p1 = new DarkPanel();
-        p1.setLayout(new FlowLayout(FlowLayout.LEFT));
         DarkPanel p2 = new DarkPanel();
-        p2.setLayout(new FlowLayout(FlowLayout.LEFT));
-        ColorRoundButton idBtn = new ColorRoundButton("Id찾기", Color.white, Color.BLACK, 15);
-        ColorRoundButton pwBtn = new ColorRoundButton("PW찾기", Color.white, Color.BLACK, 15);
         UnderLineTextField idEmail = new UnderLineTextField();
         UnderLineTextField pwEmail = new UnderLineTextField();
+        ColorRoundButton idBtn = new ColorRoundButton("ID찾기", ORANGE, DARK, 15);
+        ColorRoundButton pwBtn = new ColorRoundButton("PW찾기", ORANGE, DARK, 15);
 
-        idEmail.setPreferredSize(new Dimension(totalSize - 200, 50));
-        pwEmail.setPreferredSize(new Dimension(totalSize - 200, 50));
-        p1.add(idEmail);
-        p1.add(idBtn);
-        p2.add(pwEmail);
-        p2.add(pwBtn);
+        p1.setLayout(new FlowLayout());
+        p2.setLayout(new FlowLayout());
+        fieldP.setLayout(new GridBagLayout());
+        p1.setMinimumSize(new Dimension(TOTALSIZE, 100));
+        fieldP.setMinimumSize(new Dimension(TOTALSIZE, 500));
 
-        add(p1, BorderLayout.NORTH);
-        add(p2, BorderLayout.CENTER);
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.anchor = GridBagConstraints.CENTER;
+        gbc.weightx = 1;
+        gbc.gridwidth = GridBagConstraints.REMAINDER;
+        gbc.fill = GridBagConstraints.BOTH;
+
+        idEmail.setColumns(15);
+        pwEmail.setColumns(15);
+
+        p1.add(idEmail, BorderLayout.CENTER);
+        p1.add(idBtn, BorderLayout.EAST);
+        p2.add(pwEmail, BorderLayout.CENTER);
+        p2.add(pwBtn, BorderLayout.EAST);
+
+        fieldP.add(p1, gbc);
+        fieldP.add(p2, gbc);
+
+        add(fieldP, BorderLayout.CENTER);
 
         idBtn.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 String id = dao.searchUserId(idEmail.getText());
+
+                if (idEmail.getText().isEmpty())
+                    return;
 
                 if (id != null && !id.isEmpty())
                     JOptionPane.showMessageDialog(SearchUserInfo.this, "ID는 " + id + "입니다.");
@@ -87,8 +136,6 @@ public class SearchUserInfo extends JFrame {
             } else
                 JOptionPane.showMessageDialog(SearchUserInfo.this, "가입되지 않은 이메일입니다.");
         });
-
-        setVisible(true);
     }
 
     public static void main(String[] args) {

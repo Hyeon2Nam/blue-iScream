@@ -336,7 +336,6 @@ public class ChatroomClient extends JFrame {
 
         JButton bb = new JButton(" ");
         JButton reactionBtn = makeBottomIconButton("", 0);
-//        JPanel pp = new JPanel();
         JPanel p = new JPanel();
         JPanel wp = new JPanel();
         JPanel rp = new JPanel();
@@ -353,40 +352,28 @@ public class ChatroomClient extends JFrame {
         p.setBackground(null);
         wp.setBackground(null);
         rp.setBackground(null);
-//        pp.setBackground(null);
 
         reactionBtn.setIcon(setReactionImage(reaction));
         rp.setLayout(new BorderLayout());
-//        p.setLayout(new FlowLayout(FlowLayout.LEFT));
 
         if (!id.equals(clientId)) {
             p.setLayout(new FlowLayout(FlowLayout.LEFT));
-//            pp.setLayout(new FlowLayout(FlowLayout.LEFT));
             wp.add(bb, BorderLayout.WEST);
             rp.add(n, BorderLayout.NORTH);
             rp.add(reactionBtn, BorderLayout.EAST);
         } else {
             p.setLayout(new FlowLayout(FlowLayout.RIGHT));
-//            pp.setLayout(new FlowLayout(FlowLayout.RIGHT));
         }
 
         rp.add(m, BorderLayout.CENTER);
         wp.add(rp, BorderLayout.CENTER);
 
-//        Dimension wpd = wp.getPreferredSize();
-//        Dimension rpd = rp.getPreferredSize();
         Dimension ppd = new Dimension(TOTALWIDTH,
                 (int) p.getPreferredSize().getHeight());
-//        double tw = wpd.getWidth() + rpd.getWidth();
-//        double th = wpd.getWidth() + rpd.getWidth();
-//        Dimension td = new Dimension((int) tw, (int) th);
 
         p.add(wp);
         p.add(rp);
         p.setMaximumSize(ppd);
-//        pp.add(p);
-//        pp.setMaximumSize(ppd);
-//        pp.setMinimumSize(ppd);
         messageP.add(p, gbc);
 
         gbc.gridy = gy;

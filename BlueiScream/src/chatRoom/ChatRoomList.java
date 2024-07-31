@@ -74,6 +74,7 @@ public class ChatRoomList extends JFrame {
         btnP.add(lineP, BorderLayout.NORTH);
         btnP.add(BtnWrapper, BorderLayout.CENTER);
         add(btnP, BorderLayout.SOUTH);
+
         // event -------------------------------------------------------------
 
     }
@@ -166,6 +167,7 @@ public class ChatRoomList extends JFrame {
                 super.mouseClicked(e);
                 new ChatroomClient(clientId, roomId);
                 alramCntLb.setText("");
+                alramCntLb.setBackground(null);
                 alramCntLb.repaint();
             }
         });

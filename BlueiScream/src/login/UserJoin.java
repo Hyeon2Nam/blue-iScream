@@ -15,7 +15,7 @@ public class UserJoin extends JFrame {
         dao = new UserDao();
         Insets in = new Insets(30, 0, 0, 0);
         Color textColor = Color.white;
-        Color pink = new Color(0, 38, 66);
+        Color dark = new Color(0, 38, 66);
 
         float fontSize = 24f;
         int sidePaddingSize = 30;
@@ -30,7 +30,7 @@ public class UserJoin extends JFrame {
         // chat icon
         JPanel iconP = new JPanel(new FlowLayout(FlowLayout.CENTER));
         JLabel icon = new JLabel("Sign UP");
-        iconP.setBackground(pink);
+        iconP.setBackground(dark);
         icon.setForeground(Color.white);
         icon.setFont(icon.getFont().deriveFont(40f));
         icon.setBackground(null);
@@ -87,7 +87,6 @@ public class UserJoin extends JFrame {
         centerP.add(p3, gbc);
         gbc.insets = in;
 
-        add(centerP, BorderLayout.CENTER);
 
         // --
 
@@ -124,10 +123,12 @@ public class UserJoin extends JFrame {
         centerP.add(p4, gbc);
         gbc.insets = in;
 
+        add(centerP, BorderLayout.CENTER);
+
         // button
 
         DarkPanel buttonP = new DarkPanel();
-        ColorRoundButton joinButton = new ColorRoundButton("Sign Up", new Color(229, 149, 0), pink, 25);
+        ColorRoundButton joinButton = new ColorRoundButton("Sign Up", new Color(229, 149, 0), dark, 25);
         buttonP.setLayout(new FlowLayout(FlowLayout.CENTER));
         buttonP.setBorder(BorderFactory.createEmptyBorder(0, 0, 30, 0));
         buttonP.add(joinButton);
