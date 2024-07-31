@@ -32,19 +32,19 @@ public class UserLogin extends JFrame {
         // chat icon
         ImageIcon chatIcon = new ImageIcon("images/chat_icon.png");
         JLabel icon = new JLabel(chatIcon);
-        icon.setBackground(new Color(255, 214, 214));
+        icon.setBackground(new Color(0, 38, 66));
         icon.setOpaque(true);
         icon.setBorder(BorderFactory.createEmptyBorder(150, 0, 0, 0));
         add(icon, BorderLayout.NORTH);
 
         // left, right padding
-        PinkPanel leftPadding = new PinkPanel(sidePaddingSize, "left");
+        DarkPanel leftPadding = new DarkPanel(sidePaddingSize, "left");
         add(leftPadding, BorderLayout.WEST);
-        PinkPanel rightPadding = new PinkPanel(sidePaddingSize, "right");
+        DarkPanel rightPadding = new DarkPanel(sidePaddingSize, "right");
         add(rightPadding, BorderLayout.EAST);
 
         // input field
-        PinkPanel centerP = new PinkPanel();
+        DarkPanel centerP = new DarkPanel();
         centerP.setSize(tfWidth + 100, 400);
         centerP.setLayout(new GridBagLayout());
         GridBagConstraints gbc = new GridBagConstraints();
@@ -53,7 +53,7 @@ public class UserLogin extends JFrame {
 
         // --
 
-        PinkPanel p2 = new PinkPanel();
+        DarkPanel p2 = new DarkPanel();
         JLabel lb2 = new JLabel("UserId");
 
         p2.setLayout(new FlowLayout());
@@ -71,7 +71,7 @@ public class UserLogin extends JFrame {
 
         // --
 
-        PinkPanel p3 = new PinkPanel();
+        DarkPanel p3 = new DarkPanel();
         JLabel lb3 = new JLabel("Password");
 
         p3.setLayout(new BorderLayout());
@@ -112,8 +112,8 @@ public class UserLogin extends JFrame {
 
         // button
 
-        PinkPanel buttonP = new PinkPanel();
-        ColorRoundButton loginButton = new ColorRoundButton("Login", Color.white, new Color(255, 214, 214), 30);
+        DarkPanel buttonP = new DarkPanel();
+        ColorRoundButton loginButton = new ColorRoundButton("Login", new Color(229, 149, 0), new Color(0, 38, 66), 30);
         buttonP.setBorder(BorderFactory.createEmptyBorder(0, 0, 100, 0));
         buttonP.setLayout(new FlowLayout(FlowLayout.CENTER));
         buttonP.add(loginButton);

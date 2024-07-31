@@ -12,6 +12,7 @@ public class ChatRoomDao {
     PreparedStatement pstmt;
     ResultSet rs;
 
+
     public void joinAcces() {
         try {
             String url = "jdbc:mysql://192.168.40.33:3306/blue_iscream?serverTimezone=UTC";
@@ -44,7 +45,7 @@ public class ChatRoomDao {
 
         try {
             String sql = "select content, created_at, message_type, " +
-                    "mes_to, mes_from, reaction, is_read, user_id " +
+                    "mes_to, mes_from, reaction, is_read, user_id, message_id " +
                     "from messages " +
                     "where chatroom_id = ? and is_delete = ? " +
                     "order by created_at";
@@ -63,6 +64,7 @@ public class ChatRoomDao {
                 msg.setReaction(rs.getInt(6));
                 msg.setIsRead(rs.getInt(7));
                 msg.setUserId(rs.getString(8));
+                msg.setMsgId(rs.getInt(9));
                 msgs.add(msg);
             }
         } catch (SQLException e) {
@@ -210,7 +212,7 @@ public class ChatRoomDao {
         joinAcces();
 
         try {
-            String sql = "select c.chatroom_id, chatroom_name, created_at, category, background_img, c.isAlarm " +
+            String sql = "select c.chatroom_id, chatroom_name, created_at, category, background_img, uc.is_alram " +
                     "from chat_rooms c " +
                     "inner join user_chat_rooms uc on c.chatroom_id = uc.chatroom_id " +
                     "where user_id = ?";
@@ -259,6 +261,7 @@ public class ChatRoomDao {
     public String getSendMessageTime(int roomId) {
         joinAcces();
         String res = "";
+        Calendar cal = Calendar.getInstance(TimeZone.getTimeZone("Asia/Seoul"));
 
         try {
             String sql = "select created_at from messages m where chatroom_id = ? order by created_at desc limit 1";
@@ -266,8 +269,10 @@ public class ChatRoomDao {
             pstmt.setInt(1, roomId);
             rs = pstmt.executeQuery();
 
-            if (rs.next())
-                res = new SimpleDateFormat("yyyy-MM-dd HH:mm").format(rs.getTimestamp(1));
+            if (rs.next()) {
+                Timestamp ts = rs.getTimestamp(1, cal);
+                res = new SimpleDateFormat("yyyy-MM-dd HH:mm").format(ts);
+            }
         } catch (SQLException e) {
             e.printStackTrace();
         } finally {
@@ -345,5 +350,46 @@ public class ChatRoomDao {
         } finally {
             closeAcces();
         }
+    }
+
+    public void setReaction(int reaction, int id) {
+        joinAcces();
+        int res;
+
+        try {
+            String sql = "update messages set reaction = ? where message_id = ?";
+            pstmt = conn.prepareCall(sql);
+            pstmt.setInt(1, reaction);
+            pstmt.setInt(2, id);
+            res = pstmt.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+            res = -1;
+        } finally {
+            closeAcces();
+        }
+    }
+
+    public int getMsgId(String id, int roomId) {
+        joinAcces();
+        int res = 0;
+
+        try {
+            String sql = "select message_id from messages where user_id = ? and chatroom_id = ? order by created_at desc  limit 1";
+            pstmt = conn.prepareCall(sql);
+            pstmt.setString(1, id);
+            pstmt.setInt(2, roomId);
+            rs = pstmt.executeQuery();
+
+            if (rs.next())
+                res = rs.getInt(1);
+        } catch (SQLException e) {
+            e.printStackTrace();
+            res = -1;
+        } finally {
+            closeAcces();
+        }
+
+        return res;
     }
 }

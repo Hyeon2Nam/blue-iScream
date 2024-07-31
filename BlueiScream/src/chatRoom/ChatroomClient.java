@@ -1,8 +1,9 @@
 package chatRoom;
 
+import CustomAdapter.MouseCustomAdapter;
 import components.ColorRoundButton;
 import components.ColorRoundTextView;
-import components.PinkPanel;
+import components.DarkPanel;
 
 import javax.swing.*;
 import javax.swing.border.Border;
@@ -13,6 +14,7 @@ import java.net.Socket;
 import java.util.List;
 
 public class ChatroomClient extends JFrame {
+    private static ChatroomClient chatroomClient;
     // UI
     private JTextField inputMessage;
     private ColorRoundButton sendBtn;
@@ -27,6 +29,7 @@ public class ChatroomClient extends JFrame {
     private GridBagConstraints gbc;
     private int gy;
     private boolean isAlram;
+    private int newReact;
 
     // socket
     private JList<String> userList;
@@ -41,6 +44,9 @@ public class ChatroomClient extends JFrame {
 
     public ChatroomClient(String clientId, int roomId) {
         super(clientId + "'s room");
+        if (chatroomClient == null) {
+            chatroomClient = this;
+        }
         this.clientId = clientId;
         this.roomId = roomId;
 
@@ -113,6 +119,8 @@ public class ChatroomClient extends JFrame {
                 return;
 
             try {
+                dao.insertMessage(roomId, clientId, c, "text");
+
                 DataPost dp = new DataPost();
                 String[] data = {clientId, c, String.valueOf(roomId)};
                 dp.setChat(data);
@@ -120,7 +128,6 @@ public class ChatroomClient extends JFrame {
                 oos.flush();
 
                 Thread.sleep(100);
-                dao.insertMessage(roomId, clientId, c, "text");
             } catch (Exception e1) {
                 System.out.println(e1.getMessage());
             }
@@ -145,21 +152,23 @@ public class ChatroomClient extends JFrame {
     }
 
     private void createHeader() {
-        PinkPanel headerP = new PinkPanel();
-        PinkPanel leftP = new PinkPanel(30, "left");
+        DarkPanel headerP = new DarkPanel();
+        DarkPanel leftP = new DarkPanel(30, "left");
         String chatroomName = dao.getChatRoomName(roomId);
         JLabel titleLb = new JLabel(chatroomName);
         JButton alramBtn;
-        isAlram = dao.getisAlram(clientId, roomId);
         int iconSize = 26;
 
+        isAlram = dao.getisAlram(clientId, roomId);
         if (isAlram)
             alramBtn = makeBottomIconButton("images/alramOnIcon.png", iconSize);
         else
             alramBtn = makeBottomIconButton("images/alramOffIcon.png", iconSize);
         alramBtn.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 15));
-        alramBtn.setFocusPainted( false );
+        alramBtn.setFocusPainted(false);
+        alramBtn.setContentAreaFilled(false);
 
+        titleLb.setForeground(Color.white);
         titleLb.setFont(new Font(titleLb.getFont().getFontName(), titleLb.getFont().getStyle(), 20));
         titleLb.setHorizontalAlignment(JLabel.CENTER);
         headerP.setLayout(new BorderLayout());
@@ -191,8 +200,8 @@ public class ChatroomClient extends JFrame {
     private void createBottomButton() {
         Border noneBorder = BorderFactory.createEmptyBorder();
 
-        PinkPanel lineP = new PinkPanel();
-        lineP.setSize(TOTALWIDTH, 10);
+        DarkPanel lineP = new DarkPanel();
+        lineP.setSize(TOTALWIDTH, 1);
 
         JPanel buttonP = new JPanel();
         buttonP.setBackground(Color.white);
@@ -200,7 +209,7 @@ public class ChatroomClient extends JFrame {
         buttonP.setLayout(new FlowLayout(FlowLayout.CENTER));
 
         inputMessage = new JTextField(18);
-        sendBtn = new ColorRoundButton("send", new Color(255, 214, 214), Color.white, 10);
+        sendBtn = new ColorRoundButton("send", new Color(0, 38, 66), Color.white, 10);
 
         JButton moreContentsBtn = makeBottomIconButton("images/plusIcon.png", 20);
         JButton emoticonBtn = makeBottomIconButton("images/emojiIcon.png", 20);
@@ -230,10 +239,13 @@ public class ChatroomClient extends JFrame {
 
     private JButton makeBottomIconButton(String src, int iconSize) {
         JButton btn = new JButton();
-        ImageIcon icon = resizeIcon(src, iconSize);
+
+        if (src != null && !src.isEmpty()) {
+            ImageIcon icon = resizeIcon(src, iconSize);
+            btn.setIcon(icon);
+        }
 
         btn.setBorder(BorderFactory.createEmptyBorder(0, 15, 0, 15));
-        btn.setIcon(icon);
         btn.setBackground(null);
 
         return btn;
@@ -269,6 +281,7 @@ public class ChatroomClient extends JFrame {
 
             while ((receivedDataPost = (DataPost) ois.readObject()) != null) {
                 String[] chat = receivedDataPost.getChat();
+                int msgId;
 
                 if (!chat[2].equals(String.valueOf(roomId)))
                     continue;
@@ -276,7 +289,8 @@ public class ChatroomClient extends JFrame {
                 SwingUtilities.invokeLater(() -> userListModel.addElement(chat[0]));
                 SwingUtilities.invokeLater(() -> chatListModel.addElement(chat[1]));
 
-                makeMessageView(chat[1], chat[0], dao.getUserName(chat[0]));
+                msgId = dao.getMsgId(chat[0], roomId);
+                makeMessageView(chat[1], chat[0], dao.getUserName(chat[0]), 0, msgId);
                 validate();
                 repaint();
                 JScrollBar vertical = scroll.getVerticalScrollBar();
@@ -294,11 +308,26 @@ public class ChatroomClient extends JFrame {
         List<Messages> msgs = dao.loadMessages(roomId);
         for (Messages msg : msgs) {
             String name = dao.getUserName(msg.getUserId());
-            makeMessageView(msg.getContent(), msg.getUserId(), name);
+            makeMessageView(msg.getContent(), msg.getUserId(), name, msg.getReaction(), msg.getMsgId());
         }
     }
 
-    public void makeMessageView(String c, String id, String name) {
+    private ImageIcon setReactionImage(int reaction) {
+        ImageIcon img = null;
+
+        if (reaction == 1)
+            img = resizeIcon("images/heartIcon.png", 20);
+        else if (reaction == 2)
+            img = resizeIcon("images/exciteIcon.png", 20);
+        else if (reaction == 3)
+            img = resizeIcon("images/umIcon.png", 20);
+        else if (reaction == 4)
+            img = resizeIcon("images/angryIcon.png", 20);
+
+        return img;
+    }
+
+    public void makeMessageView(String c, String id, String name, int reaction, int msgId) {
         if (messageP.getComponentCount() > 0)
             messageP.remove(messageP.getComponentCount() - 1);
 
@@ -306,51 +335,68 @@ public class ChatroomClient extends JFrame {
         gbc.weighty = 0.0;
 
         JButton bb = new JButton(" ");
-        JPanel pp = new JPanel();
+        JLabel reactionLb = new JLabel(setReactionImage(reaction));
         JPanel p = new JPanel();
         JPanel wp = new JPanel();
         JPanel rp = new JPanel();
         JLabel n = new JLabel(name);
-        ColorRoundTextView m = new ColorRoundTextView(reformText(c), BGC, Color.BLACK);
+        ColorRoundTextView m;
+        Color backColor = new Color(229, 218, 218);
+
+        if (id.equals(clientId))
+            backColor = new Color(229, 149, 0);
+
+        m = new ColorRoundTextView(reformText(c), backColor, Color.BLACK);
 
         p.setBackground(null);
         wp.setBackground(null);
         rp.setBackground(null);
-        pp.setBackground(null);
 
+        reactionLb.setBorder(BorderFactory.createEmptyBorder(0, 5, 0, 0));
         rp.setLayout(new BorderLayout());
-        p.setLayout(new FlowLayout(FlowLayout.LEFT));
 
         if (!id.equals(clientId)) {
-            pp.setLayout(new FlowLayout(FlowLayout.LEFT));
+            p.setLayout(new FlowLayout(FlowLayout.LEFT));
             wp.add(bb, BorderLayout.WEST);
             rp.add(n, BorderLayout.NORTH);
+            rp.add(reactionLb, BorderLayout.EAST);
         } else {
-            pp.setLayout(new FlowLayout(FlowLayout.RIGHT));
+            p.setLayout(new FlowLayout(FlowLayout.RIGHT));
         }
 
         rp.add(m, BorderLayout.CENTER);
         wp.add(rp, BorderLayout.CENTER);
 
-        Dimension wpd = wp.getPreferredSize();
-        Dimension rpd = rp.getPreferredSize();
         Dimension ppd = new Dimension(TOTALWIDTH,
                 (int) p.getPreferredSize().getHeight());
-        double tw = wpd.getWidth() + rpd.getWidth();
-        double th = wpd.getWidth() + rpd.getWidth();
-        Dimension td = new Dimension((int) tw, (int) th);
 
         p.add(wp);
         p.add(rp);
-        p.setMaximumSize(td);
-        pp.add(p);
-        pp.setMaximumSize(ppd);
-        pp.setMinimumSize(ppd);
-        messageP.add(pp, gbc);
+        p.setMaximumSize(ppd);
+        messageP.add(p, gbc);
 
         gbc.gridy = gy;
         gbc.weighty = 1.0;
         messageP.add(Box.createVerticalGlue(), gbc);
+
+
+        m.addMouseListener(new MouseCustomAdapter() {
+            @Override
+            public void shortActionPerformed(MouseEvent e) {
+                return;
+            }
+
+            public void longActionPerformed(MouseEvent e) {
+                new ReactionMenu(chatroomClient, reactionLb, msgId);
+            }
+        });
+    }
+
+    public void setNewReaction(int newReact, JLabel c, int msgId) {
+        c.setIcon(setReactionImage(newReact));
+        dao.setReaction(newReact, msgId);
+        revalidate();
+        repaint();
     }
 
     private String reformText(String str) {
@@ -364,8 +410,9 @@ public class ChatroomClient extends JFrame {
         return sb.toString();
     }
 
+
     public static void main(String[] args) {
-        ChatroomClient c = new ChatroomClient("aaa", 1);
+        ChatroomClient c = new ChatroomClient("qqq", 2);
 //        ChatroomClient c = new ChatroomClient("aaa", 1);
     }
 }
