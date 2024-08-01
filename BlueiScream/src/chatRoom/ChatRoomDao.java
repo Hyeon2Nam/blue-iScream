@@ -2,10 +2,7 @@ package chatRoom;
 
 import java.sql.*;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.List;
-import java.util.TimeZone;
+import java.util.*;
 
 public class ChatRoomDao {
     Connection conn;
@@ -207,6 +204,27 @@ public class ChatRoomDao {
         return res;
     }
 
+    public int getChatRoomId() {
+        joinAcces();
+        int res = 0;
+
+        try {
+            String sql = "select chatroom_id from chat_rooms order by chatroom_id desc limit 1";
+            pstmt = conn.prepareCall(sql);
+            rs = pstmt.executeQuery();
+
+            if (rs.next())
+                res = rs.getInt(1);
+        } catch (SQLException e) {
+            e.printStackTrace();
+            res = -1;
+        } finally {
+            closeAcces();
+        }
+
+        return res;
+    }
+
     public List<ChatRoom> getChatRoomList(String id) {
         List<ChatRoom> crlist = new ArrayList<>();
         joinAcces();
@@ -391,5 +409,49 @@ public class ChatRoomDao {
         }
 
         return res;
+    }
+
+    public void createNewChatRoom(String name, int category, Timestamp time) {
+        joinAcces();
+        Calendar cal = Calendar.getInstance(TimeZone.getTimeZone("Asia/Seoul"));
+        System.out.println(time);
+        int res;
+
+        try {
+            String sql = "insert into chat_rooms (chatroom_name, created_at, category) values (?,?,?)";
+            pstmt = conn.prepareCall(sql);
+            pstmt.setString(1, name);
+            pstmt.setTimestamp(2, time, cal);
+            pstmt.setInt(3, category);
+            res = pstmt.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+            res = -1;
+        } finally {
+            closeAcces();
+        }
+    }
+
+    public void insertRoomAndUserInfo(int roomId, Set<String> usres, Timestamp ts) {
+        joinAcces();
+        Calendar cal = Calendar.getInstance(TimeZone.getTimeZone("Asia/Seoul"));
+
+        int res;
+
+        try {
+            for (String u : usres) {
+                String sql = "insert into user_chat_rooms (user_id, chatroom_id, last_read_at) values (?,?,?)";
+                pstmt = conn.prepareCall(sql);
+                pstmt.setString(1, u);
+                pstmt.setInt(2, roomId);
+                pstmt.setTimestamp(3, ts, cal);
+                res = pstmt.executeUpdate();
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            res = -1;
+        } finally {
+            closeAcces();
+        }
     }
 }

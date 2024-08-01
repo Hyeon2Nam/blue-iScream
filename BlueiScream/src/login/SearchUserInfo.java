@@ -25,7 +25,7 @@ public class SearchUserInfo extends JFrame {
         dao = new UserDao();
 
         setTitle("Forgot Id/Password");
-        setSize(TOTALSIZE, 800);
+        setSize(TOTALSIZE, 500);
         setLocationRelativeTo(null);
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
 
@@ -62,8 +62,8 @@ public class SearchUserInfo extends JFrame {
         DarkPanel fieldP = new DarkPanel();
         DarkPanel p1 = new DarkPanel();
         DarkPanel p2 = new DarkPanel();
-        UnderLineTextField idEmail = new UnderLineTextField();
-        UnderLineTextField pwEmail = new UnderLineTextField();
+        UnderLineTextField idEmail = new UnderLineTextField(Color.white, Color.white);
+        UnderLineTextField pwEmail = new UnderLineTextField(Color.white, Color.white);
         ColorRoundButton idBtn = new ColorRoundButton("ID찾기", ORANGE, DARK, 15);
         ColorRoundButton pwBtn = new ColorRoundButton("PW찾기", ORANGE, DARK, 15);
 

@@ -16,6 +16,7 @@ public class UserJoin extends JFrame {
         Insets in = new Insets(30, 0, 0, 0);
         Color textColor = Color.white;
         Color dark = new Color(0, 38, 66);
+        Color white =Color.white;
 
         float fontSize = 24f;
         int sidePaddingSize = 30;
@@ -31,7 +32,7 @@ public class UserJoin extends JFrame {
         JPanel iconP = new JPanel(new FlowLayout(FlowLayout.CENTER));
         JLabel icon = new JLabel("Sign UP");
         iconP.setBackground(dark);
-        icon.setForeground(Color.white);
+        icon.setForeground(white);
         icon.setFont(icon.getFont().deriveFont(40f));
         icon.setBackground(null);
         icon.setOpaque(true);
@@ -62,7 +63,7 @@ public class UserJoin extends JFrame {
         p2.setSize(totalSize - sidePaddingSize * 2, 100);
         lb2.setForeground(textColor);
         lb2.setFont(lb2.getFont().deriveFont(fontSize));
-        userTextField = new UnderLineTextField();
+        userTextField = new UnderLineTextField(white, white);
         userTextField.setPreferredSize(new Dimension(tfWidth, 50));
 
         centerP.add(lb2, gbc);
@@ -96,7 +97,7 @@ public class UserJoin extends JFrame {
         p1.setLayout(new FlowLayout());
         lb.setFont(lb.getFont().deriveFont(fontSize));
         lb.setForeground(textColor);
-        userNameField = new UnderLineTextField();
+        userNameField = new UnderLineTextField(white, white);
         userNameField.setPreferredSize(new Dimension(tfWidth, 50));
 
         centerP.add(lb, gbc);
@@ -114,7 +115,7 @@ public class UserJoin extends JFrame {
         p4.setSize(totalSize - sidePaddingSize * 2, 100);
         lb1.setForeground(textColor);
         lb1.setFont(lb1.getFont().deriveFont(fontSize));
-        emailField = new UnderLineTextField();
+        emailField = new UnderLineTextField(white, white);
         emailField.setPreferredSize(new Dimension(tfWidth, 50));
 
         centerP.add(lb1, gbc);

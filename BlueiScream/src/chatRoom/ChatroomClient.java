@@ -4,6 +4,7 @@ import CustomAdapter.MouseCustomAdapter;
 import components.ColorRoundButton;
 import components.ColorRoundTextView;
 import components.DarkPanel;
+import components.Header;
 
 import javax.swing.*;
 import javax.swing.border.Border;
@@ -152,10 +153,7 @@ public class ChatroomClient extends JFrame {
     }
 
     private void createHeader() {
-        DarkPanel headerP = new DarkPanel();
-        DarkPanel leftP = new DarkPanel(30, "left");
         String chatroomName = dao.getChatRoomName(roomId);
-        JLabel titleLb = new JLabel(chatroomName);
         JButton alramBtn;
         int iconSize = 26;
 
@@ -168,16 +166,8 @@ public class ChatroomClient extends JFrame {
         alramBtn.setFocusPainted(false);
         alramBtn.setContentAreaFilled(false);
 
-        titleLb.setForeground(Color.white);
-        titleLb.setFont(new Font(titleLb.getFont().getFontName(), titleLb.getFont().getStyle(), 20));
-        titleLb.setHorizontalAlignment(JLabel.CENTER);
-        headerP.setLayout(new BorderLayout());
-        headerP.setSize(TOTALWIDTH, 70);
-        headerP.setBorder(BorderFactory.createEmptyBorder(10, 0, 10, 0));
+        Header headerP = new Header(chatroomName, alramBtn);
 
-        headerP.add(leftP, BorderLayout.WEST);
-        headerP.add(titleLb, BorderLayout.CENTER);
-        headerP.add(alramBtn, BorderLayout.EAST);
         add(headerP, BorderLayout.NORTH);
 
         alramBtn.addActionListener(e -> {
@@ -387,6 +377,8 @@ public class ChatroomClient extends JFrame {
             }
 
             public void longActionPerformed(MouseEvent e) {
+                if (id.equals(clientId))
+                    return;
                 new ReactionMenu(chatroomClient, reactionLb, msgId);
             }
         });
@@ -412,7 +404,7 @@ public class ChatroomClient extends JFrame {
 
 
     public static void main(String[] args) {
-        ChatroomClient c = new ChatroomClient("qqq", 2);
+        ChatroomClient c = new ChatroomClient("aaa", 2);
 //        ChatroomClient c = new ChatroomClient("aaa", 1);
     }
 }

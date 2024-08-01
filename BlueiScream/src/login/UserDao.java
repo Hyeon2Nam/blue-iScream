@@ -1,6 +1,8 @@
 package login;
 
 import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class UserDao {
     Connection conn;
@@ -155,6 +157,34 @@ public class UserDao {
 
         } catch (SQLException e) {
             res = -1;
+            e.printStackTrace();
+        } finally {
+            closeAcces();
+        }
+
+        return res;
+    }
+
+    public List<User> getAllUsers() {
+        joinAcces();
+        List<User> res = new ArrayList<>();
+
+        try {
+            String sql = "select user_id, user_name, email, profile_image from users where user_id != ? and user_id != ?";
+            pstmt = conn.prepareStatement(sql);
+            pstmt.setString(1, "1");
+            pstmt.setString(2, "admin");
+            rs = pstmt.executeQuery();
+
+            while (rs.next()) {
+                User u = new User();
+                u.setUserId(rs.getString(1));
+                u.setUserName(rs.getString(2));
+                u.setEmail(rs.getString(3));
+                u.setProfileImage(rs.getInt(4));
+                res.add(u);
+            }
+        } catch (SQLException e) {
             e.printStackTrace();
         } finally {
             closeAcces();
