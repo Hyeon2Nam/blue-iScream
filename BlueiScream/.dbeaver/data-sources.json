@@ -1,0 +1,54 @@
+{
+	"folders": {},
+	"connections": {
+		"mysql8-191107a4ac5-5dcabeb1dbc3cc5c": {
+			"provider": "mysql",
+			"driver": "mysql8",
+			"name": "mydb",
+			"save-password": true,
+			"configuration": {
+				"host": "localhost",
+				"port": "3306",
+				"database": "mydb",
+				"url": "jdbc:mysql://localhost:3306/mydb",
+				"configurationType": "MANUAL",
+				"home": "C:\\Program Files\\MySQL\\MySQL Server 8.0",
+				"type": "dev",
+				"closeIdleConnection": true,
+				"auth-model": "native"
+			}
+		},
+		"mysql8-191107aff6d-7637b8b420063a3f": {
+			"provider": "mysql",
+			"driver": "mysql8",
+			"name": "blue_iscream",
+			"save-password": true,
+			"configuration": {
+				"host": "blue_iscream",
+				"port": "3306",
+				"url": "jdbc:mysql://192.168.40.33:3306/blue_iscream?useSSL\u003dfalse\u0026allowPublicKeyRetrieval\u003dtrue",
+				"configurationType": "URL",
+				"home": "C:\\Program Files\\MySQL\\MySQL Server 8.0",
+				"type": "dev",
+				"closeIdleConnection": true,
+				"auth-model": "native"
+			}
+		}
+	},
+	"connection-types": {
+		"dev": {
+			"name": "Development",
+			"color": "255,255,255",
+			"description": "Regular development database",
+			"auto-commit": true,
+			"confirm-execute": false,
+			"confirm-data-change": false,
+			"smart-commit": false,
+			"smart-commit-recover": true,
+			"auto-close-transactions": true,
+			"close-transactions-period": 1800,
+			"auto-close-connections": true,
+			"close-connections-period": 14400
+		}
+	}
+}
