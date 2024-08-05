@@ -58,9 +58,9 @@ public class ChatRoomList extends JFrame {
         int size = 40;
         JPanel btnP = new JPanel();
         JPanel BtnWrapper = new JPanel();
-        JButton profileBtn = setIconButton("./images/profileBtnIcon.png", size);
-        JButton chatBtn = setIconButton("./images/chatBtnIcon.png", size);
-        JButton settingBtn = setIconButton("./images/settingBtnIcon.png", size);
+        JButton profileBtn = setIconButton("BlueiScream/images/profileBtnIcon.png", size);
+        JButton chatBtn = setIconButton("BlueiScream/images/chatBtnIcon.png", size);
+        JButton settingBtn = setIconButton("BlueiScream/images/settingBtnIcon.png", size);
 
         chatBtn.setBorder(BorderFactory.createEmptyBorder(0, 20, 0, 20));
         BtnWrapper.setLayout(new FlowLayout(FlowLayout.CENTER));
@@ -88,8 +88,8 @@ public class ChatRoomList extends JFrame {
     }
 
     private void createHeader() {
-        JButton optionBtn = setIconButton("images/kebabIcon.png", 20);
-        JButton refreshBtn = setIconButton("images/refreshIcon.png", 25);
+        JButton optionBtn = setIconButton("BlueiScream/images/kebabIcon.png", 20);
+        JButton refreshBtn = setIconButton("BlueiScream/images/refreshIcon.png", 25);
         Header headerP = new Header(refreshBtn, "Chat", optionBtn);
 
         optionBtn.setFocusPainted(false);

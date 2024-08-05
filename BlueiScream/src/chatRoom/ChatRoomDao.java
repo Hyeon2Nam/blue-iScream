@@ -1,5 +1,6 @@
 package chatRoom;
 
+import java.io.FileInputStream;
 import java.sql.*;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -11,10 +12,16 @@ public class ChatRoomDao {
 
 
     public void joinAcces() {
+        String propfile = "BlueiScream/config/config.properties";
+        Properties p = new Properties();
+
         try {
-            String url = "jdbc:mysql://192.168.40.33:3306/blue_iscream?serverTimezone=UTC";
-            String user = "nhy";
-            String pw = "1234";
+            FileInputStream fis = new FileInputStream(propfile);
+            p.load(new java.io.BufferedInputStream(fis));
+
+            String url = p.getProperty("db_url");
+            String user = p.getProperty("db_user");
+            String pw = p.getProperty("db_pw");
             conn = DriverManager.getConnection(url, user, pw);
         } catch (Exception e) {
             e.printStackTrace();
@@ -142,7 +149,7 @@ public class ChatRoomDao {
         try {
             String sql = "select count(*) " +
                     "from user_chat_rooms " +
-                    "where chatroom_id = ?";
+                    "where chatroom_id = ? and is_delete = false";
             pstmt = conn.prepareCall(sql);
             pstmt.setInt(1, roomId);
             rs = pstmt.executeQuery();
@@ -233,7 +240,7 @@ public class ChatRoomDao {
             String sql = "select c.chatroom_id, chatroom_name, created_at, category, background_img, uc.is_alram " +
                     "from chat_rooms c " +
                     "inner join user_chat_rooms uc on c.chatroom_id = uc.chatroom_id " +
-                    "where user_id = ?";
+                    "where user_id = ? and is_delete = false";
             pstmt = conn.prepareCall(sql);
             pstmt.setString(1, id);
             rs = pstmt.executeQuery();
@@ -262,7 +269,7 @@ public class ChatRoomDao {
         int res;
 
         try {
-            String sql = "update user_chat_rooms set last_read_at = CURRENT_TIMESTAMP() where user_id = ? and chatroom_id = ?";
+            String sql = "update user_chat_rooms set last_read_at = CURRENT_TIMESTAMP() where user_id = ? and chatroom_id = ?  and is_delete = false";
             pstmt = conn.prepareCall(sql);
             pstmt.setString(1, id);
             pstmt.setString(1, id);
@@ -309,7 +316,7 @@ public class ChatRoomDao {
                     "                                             and uc.last_read_at <= m.created_at " +
                     "                                             and m.user_id != uc.user_id) as not_read_cnt " +
                     "from user_chat_rooms uc " +
-                    "where chatroom_id = ? and uc.user_id = ?";
+                    "where chatroom_id = ? and uc.user_id = ? and is_delete = false";
             pstmt = conn.prepareCall(sql);
             pstmt.setInt(1, roomId);
             pstmt.setInt(2, roomId);
@@ -333,7 +340,7 @@ public class ChatRoomDao {
         boolean res = false;
 
         try {
-            String sql = "select is_alram from user_chat_rooms where user_id = ? and chatroom_id = ?";
+            String sql = "select is_alram from user_chat_rooms where user_id = ? and chatroom_id = ? and is_delete = false";
             pstmt = conn.prepareCall(sql);
             pstmt.setString(1, id);
             pstmt.setInt(2, roomId);
@@ -356,7 +363,7 @@ public class ChatRoomDao {
         int res;
 
         try {
-            String sql = "update user_chat_rooms set is_alram = ? where user_id = ? and chatroom_id = ?";
+            String sql = "update user_chat_rooms set is_alram = ? where user_id = ? and chatroom_id = ? and is_delete = false";
             pstmt = conn.prepareCall(sql);
             pstmt.setBoolean(1, isAlram);
             pstmt.setString(2, id);
@@ -435,7 +442,6 @@ public class ChatRoomDao {
     public void insertRoomAndUserInfo(int roomId, Set<String> usres, Timestamp ts) {
         joinAcces();
         Calendar cal = Calendar.getInstance(TimeZone.getTimeZone("Asia/Seoul"));
-
         int res;
 
         try {
@@ -445,6 +451,26 @@ public class ChatRoomDao {
                 pstmt.setString(1, u);
                 pstmt.setInt(2, roomId);
                 pstmt.setTimestamp(3, ts, cal);
+                res = pstmt.executeUpdate();
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            res = -1;
+        } finally {
+            closeAcces();
+        }
+    }
+
+    public void deleteRoom(Set<String> roomId, String id) {
+        joinAcces();
+        int res;
+
+        try {
+            for (String u : roomId) {
+                String sql = "update user_chat_rooms set is_delete = true where user_id = ? and chatroom_id = ?";
+                pstmt = conn.prepareCall(sql);
+                pstmt.setString(1, id);
+                pstmt.setInt(2, Integer.parseInt(u));
                 res = pstmt.executeUpdate();
             }
         } catch (SQLException e) {

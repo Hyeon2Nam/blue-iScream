@@ -32,7 +32,7 @@ public class UserLogin extends JFrame {
         setDefaultCloseOperation(EXIT_ON_CLOSE);
 
         // chat icon
-        ImageIcon chatIcon = new ImageIcon("images/chat_icon.png");
+        ImageIcon chatIcon = new ImageIcon("BlueiScream/images/chat_icon.png");
         JLabel icon = new JLabel(chatIcon);
         icon.setBackground(new Color(0, 38, 66));
         icon.setOpaque(true);

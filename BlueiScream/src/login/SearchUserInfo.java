@@ -108,7 +108,7 @@ public class SearchUserInfo extends JFrame {
         });
         pwBtn.addActionListener(e -> {
             String pw = dao.searchUserPw(pwEmail.getText());
-            String propfile = "config/config.properties";
+            String propfile = "BlueiScream/config/config.properties";
             Properties p = new Properties();
 
             try {

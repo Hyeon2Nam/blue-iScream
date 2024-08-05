@@ -67,7 +67,7 @@ public class SendMail {
      * @param content
      */
     public void goMail(Session session, String title, String content, String to) throws FileNotFoundException {
-        String propfile = "config/config.properties";
+        String propfile = "BlueiScream/config/config.properties";
         Properties p = new Properties();
 
         try {

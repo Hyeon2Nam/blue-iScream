@@ -1,8 +1,10 @@
 package login;
 
+import java.io.FileInputStream;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Properties;
 
 public class UserDao {
     Connection conn;
@@ -10,17 +12,17 @@ public class UserDao {
     ResultSet rs;
 
     public void joinAcces() {
-        try {
-            String url = "jdbc:mysql://192.168.40.33:3306/blue_iscream?serverTimezone=UTC";
-            String user = "nhy";
-            String pw = "1234";
-            conn = DriverManager.getConnection(url, user, pw);
+        String propfile = "BlueiScream/config/config.properties";
+        Properties p = new Properties();
 
-            if (conn != null) {
-                System.out.println("연결 성공");
-            } else {
-                System.out.println("연결 실패");
-            }
+        try {
+            FileInputStream fis = new FileInputStream(propfile);
+            p.load(new java.io.BufferedInputStream(fis));
+
+            String url = p.getProperty("db_url");
+            String user = p.getProperty("db_user");
+            String pw = p.getProperty("db_pw");
+            conn = DriverManager.getConnection(url, user, pw);
         } catch (Exception e) {
             e.printStackTrace();
         }
