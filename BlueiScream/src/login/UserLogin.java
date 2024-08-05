@@ -16,9 +16,11 @@ public class UserLogin extends JFrame {
     private UnderLinePasswordField passwordField;
 
     public UserLogin() {
+        Color white = Color.white;
+        
         dao = new UserDao();
         Insets in = new Insets(50, 0, 0, 0);
-        Color textColor = Color.white;
+        Color textColor = white;
         float fontSize = 24f;
         int sidePaddingSize = 30;
         int totalSize = 400;
@@ -30,7 +32,7 @@ public class UserLogin extends JFrame {
         setDefaultCloseOperation(EXIT_ON_CLOSE);
 
         // chat icon
-        ImageIcon chatIcon = new ImageIcon("images/chat_icon.png");
+        ImageIcon chatIcon = new ImageIcon("BlueiScream/images/chat_icon.png");
         JLabel icon = new JLabel(chatIcon);
         icon.setBackground(new Color(0, 38, 66));
         icon.setOpaque(true);
@@ -60,7 +62,7 @@ public class UserLogin extends JFrame {
         p2.setSize(totalSize - sidePaddingSize * 2, 100);
         lb2.setForeground(textColor);
         lb2.setFont(lb2.getFont().deriveFont(fontSize));
-        userTextField = new UnderLineTextField();
+        userTextField = new UnderLineTextField(white, white);
         userTextField.setPreferredSize(new Dimension(tfWidth, 50));
 
         centerP.add(lb2, gbc);
@@ -87,19 +89,21 @@ public class UserLogin extends JFrame {
         JPanel jbp = new JPanel(new BorderLayout());
         JButton joinBtn = new JButton("Sign up");
         JButton searchBtn = new JButton("forgot Id / password");
-//        Font jbf = joinBtn.getFont();
         Border empty = BorderFactory.createEmptyBorder(0, 0, 0, 0);
 
         joinBtn.setBackground(null);
-        joinBtn.setForeground(Color.white);
+        joinBtn.setForeground(white);
         joinBtn.setBorder(empty);
         joinBtn.setOpaque(true);
 
         searchBtn.setBackground(null);
-        searchBtn.setForeground(Color.white);
+        searchBtn.setForeground(white);
         searchBtn.setBorder(empty);
         searchBtn.setOpaque(true);
-//        joinBtn.setFont(new Font(jbf.getFontName(), jbf.getStyle(), 20));
+
+        Font jbf = joinBtn.getFont();
+        joinBtn.setFont(new Font(jbf.getFontName(), jbf.getStyle(), 15));
+        searchBtn.setFont(new Font(jbf.getFontName(), jbf.getStyle(), 15));
 
         jbp.setBackground(null);
         jbp.setBorder(empty);

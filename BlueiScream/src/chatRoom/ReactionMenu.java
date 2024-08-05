@@ -17,10 +17,10 @@ public class ReactionMenu extends JFrame {
         p.setBackground(Color.white);
         p.setLayout(new FlowLayout(FlowLayout.CENTER));
 
-        JButton b1 = makeIconButton("images/heartIcon.png", 20);
-        JButton b2 = makeIconButton("images/exciteIcon.png", 20);
-        JButton b3 = makeIconButton("images/umIcon.png", 20);
-        JButton b4 = makeIconButton("images/angryIcon.png", 20);
+        JButton b1 = makeIconButton("BlueiScream/images/heartIcon.png", 20);
+        JButton b2 = makeIconButton("BlueiScream/images/exciteIcon.png", 20);
+        JButton b3 = makeIconButton("BlueiScream/images/umIcon.png", 20);
+        JButton b4 = makeIconButton("BlueiScream/images/angryIcon.png", 20);
         JButton b5 = new JButton("취소");
 
         b1.addActionListener(e -> {

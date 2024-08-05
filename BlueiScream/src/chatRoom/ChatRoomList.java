@@ -5,10 +5,15 @@ import javax.swing.border.Border;
 
 import components.ColorRoundLabel;
 import components.DarkPanel;
+import components.Header;
 
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 public class ChatRoomList extends JFrame {
@@ -31,8 +36,6 @@ public class ChatRoomList extends JFrame {
     }
 
     public void initializeComponents() {
-        Border noneBorder = BorderFactory.createEmptyBorder();
-
         dao = new ChatRoomDao();
 
         setSize(TOTALWIDTH, 800);
@@ -45,23 +48,19 @@ public class ChatRoomList extends JFrame {
 
         // chat list view --------------------------------------------------------
 
-        chatList = new JPanel();
-        chatList.setBackground(Color.white);
-        chatList.setLayout(new BoxLayout(chatList, BoxLayout.Y_AXIS));
-        scroll = new JScrollPane(chatList);
-        add(scroll, BorderLayout.CENTER);
-        scroll.setBorder(noneBorder);
+        initChatList();
 
         // bottom (input field, emoji etc...)------------------------------
 
         DarkPanel lineP = new DarkPanel();
         lineP.setSize(TOTALWIDTH, 10);
 
+        int size = 40;
         JPanel btnP = new JPanel();
         JPanel BtnWrapper = new JPanel();
-        JButton profileBtn = setBottomButton("./images/profileBtnIcon.png");
-        JButton chatBtn = setBottomButton("./images/chatBtnIcon.png");
-        JButton settingBtn = setBottomButton("./images/settingBtnIcon.png");
+        JButton profileBtn = setIconButton("BlueiScream/images/profileBtnIcon.png", size);
+        JButton chatBtn = setIconButton("BlueiScream/images/chatBtnIcon.png", size);
+        JButton settingBtn = setIconButton("BlueiScream/images/settingBtnIcon.png", size);
 
         chatBtn.setBorder(BorderFactory.createEmptyBorder(0, 20, 0, 20));
         BtnWrapper.setLayout(new FlowLayout(FlowLayout.CENTER));
@@ -69,7 +68,7 @@ public class ChatRoomList extends JFrame {
         BtnWrapper.setBackground(Color.white);
         BtnWrapper.add(profileBtn);
         BtnWrapper.add(chatBtn);
-        BtnWrapper.add(settingBtn);
+//        BtnWrapper.add(settingBtn);
 
         btnP.add(lineP, BorderLayout.NORTH);
         btnP.add(BtnWrapper, BorderLayout.CENTER);
@@ -79,29 +78,57 @@ public class ChatRoomList extends JFrame {
 
     }
 
-    private void createHeader() {
-        DarkPanel headerP = new DarkPanel();
-        DarkPanel leftP = new DarkPanel(30, "left");
-        JLabel titleLb = new JLabel("Chat");
-        JButton OptionBtn;
-
-        titleLb.setForeground(Color.white);
-        titleLb.setFont(new Font(titleLb.getFont().getFontName(), titleLb.getFont().getStyle(), 20));
-        headerP.setSize(TOTALWIDTH, 70);
-        headerP.setBorder(BorderFactory.createEmptyBorder(10, 0, 10, 0));
-        headerP.add(titleLb);
-        add(headerP, BorderLayout.NORTH);
+    private void initChatList() {
+        chatList = new JPanel();
+        chatList.setBackground(Color.white);
+        chatList.setLayout(new BoxLayout(chatList, BoxLayout.Y_AXIS));
+        scroll = new JScrollPane(chatList);
+        add(scroll, BorderLayout.CENTER);
+        scroll.setBorder(BorderFactory.createEmptyBorder());
     }
 
-    private JButton setBottomButton(String imgSrc) {
+    private void createHeader() {
+        JButton optionBtn = setIconButton("BlueiScream/images/kebabIcon.png", 20);
+        JButton refreshBtn = setIconButton("BlueiScream/images/refreshIcon.png", 25);
+        Header headerP = new Header(refreshBtn, "Chat", optionBtn);
+
+        optionBtn.setFocusPainted(false);
+        refreshBtn.setFocusPainted(false);
+
+        add(headerP, BorderLayout.NORTH);
+
+        // -----[events] -----------------------
+
+        refreshBtn.addActionListener(e -> {
+            chatList.removeAll();
+            loadChatRooms();
+            revalidate();
+            repaint();
+        });
+
+        optionBtn.addActionListener(e -> {
+            new ChatRoomListMenu(clientId);
+        });
+    }
+
+    private JButton setIconButton(String imgSrc, int size) {
         JButton b = new JButton();
-        ImageIcon icon = new ImageIcon(imgSrc);
+        ImageIcon icon = resizeIcon(imgSrc, size);
 
         b.setIcon(icon);
         b.setBackground(null);
         b.setBorder(BorderFactory.createEmptyBorder());
 
         return b;
+    }
+
+    private ImageIcon resizeIcon(String src, int iconSize) {
+        ImageIcon icon = new ImageIcon(src);
+        Image image = icon.getImage();
+        Image newimg = image.getScaledInstance(iconSize, iconSize, java.awt.Image.SCALE_SMOOTH); // scale it the smooth way
+        icon = new ImageIcon(newimg);
+
+        return icon;
     }
 
     private void loadChatRooms() {
@@ -116,8 +143,14 @@ public class ChatRoomList extends JFrame {
         JPanel rightP = new JPanel();
         JButton leftB = new JButton();
         JLabel roomNameLb = new JLabel(roomName);
-        JLabel timeLb = new JLabel(dao.getSendMessageTime(roomId));
         JPanel btmP = new JPanel();
+
+        String date = dao.getSendMessageTime(roomId);
+        if (date == null || date.isEmpty())
+            date = LocalDate.now().format(DateTimeFormatter.ofPattern("YYYY-MM-dd"));
+        JLabel timeLb = new JLabel(date);
+
+
         JLabel alramCntLb;
         int alramCnt = dao.getNotReadMessageCnt(clientId, roomId);
 
@@ -166,9 +199,7 @@ public class ChatRoomList extends JFrame {
             public void mouseClicked(MouseEvent e) {
                 super.mouseClicked(e);
                 new ChatroomClient(clientId, roomId);
-                alramCntLb.setText("");
-                alramCntLb.setBackground(null);
-                alramCntLb.repaint();
+                alramCntLb.setVisible(false);
             }
         });
 
@@ -177,6 +208,6 @@ public class ChatRoomList extends JFrame {
     }
 
     public static void main(String[] args) {
-        ChatRoomList c = new ChatRoomList("qqq");
+        ChatRoomList c = new ChatRoomList("aaa");
     }
 }
