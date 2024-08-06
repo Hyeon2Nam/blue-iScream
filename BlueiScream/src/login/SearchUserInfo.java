@@ -28,6 +28,7 @@ public class SearchUserInfo extends JFrame {
         setSize(TOTALSIZE, 500);
         setLocationRelativeTo(null);
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+        setResizable(false);
 
         createHeader();
         createCenterContents();

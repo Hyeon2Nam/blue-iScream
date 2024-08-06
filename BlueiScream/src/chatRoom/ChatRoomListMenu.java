@@ -14,6 +14,7 @@ public class ChatRoomListMenu extends JFrame {
         this.clientId = cliendId;
 
         setSize(250,150);
+        setResizable(false);
 
         JPanel p = new JPanel(new GridBagLayout());
         GridBagConstraints gbc = new GridBagConstraints();

@@ -8,6 +8,7 @@ import components.Header;
 import profile.MiniProfileView;
 import profile.Profile;
 import profile.ProfileDao;
+import utils.MakeComponent;
 
 import javax.swing.*;
 import javax.swing.border.Border;
@@ -17,7 +18,6 @@ import java.io.*;
 import java.net.Socket;
 import java.sql.Blob;
 import java.sql.SQLException;
-import java.util.Arrays;
 import java.util.List;
 
 public class ChatroomClient extends JFrame {
@@ -37,6 +37,7 @@ public class ChatroomClient extends JFrame {
     private int gy;
     private boolean isAlram;
     private int newReact;
+    private MakeComponent mc;
 
     // socket
     private JList<String> userList;
@@ -56,6 +57,7 @@ public class ChatroomClient extends JFrame {
         }
         this.clientId = clientId;
         this.roomId = roomId;
+        mc = new MakeComponent();
 
         initializeComponents();
         makeReadyMadeMessages();
@@ -85,9 +87,9 @@ public class ChatroomClient extends JFrame {
         chatListModel = new DefaultListModel<>();
         chatList = new JList<>(chatListModel);
 
-        setSize(TOTALWIDTH, 800);
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         setBackground(Color.white);
+        setBounds(800,100,TOTALWIDTH, 800);
 
         // header----------------------------------------------------
 
@@ -165,9 +167,9 @@ public class ChatroomClient extends JFrame {
 
         isAlram = dao.getisAlram(clientId, roomId);
         if (isAlram)
-            alramBtn = makeBottomIconButton("BlueiScream/images/alramOnIcon.png", iconSize);
+            alramBtn = mc.setNoneBorderIconButton("BlueiScream/images/alramOnIcon.png", iconSize);
         else
-            alramBtn = makeBottomIconButton("BlueiScream/images/alramOffIcon.png", iconSize);
+            alramBtn = mc.setNoneBorderIconButton("BlueiScream/images/alramOffIcon.png", iconSize);
         alramBtn.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 15));
         alramBtn.setFocusPainted(false);
         alramBtn.setContentAreaFilled(false);
@@ -180,9 +182,9 @@ public class ChatroomClient extends JFrame {
             isAlram = !isAlram;
 
             if (isAlram)
-                alramBtn.setIcon(resizeIcon("BlueiScream/images/alramOnIcon.png", iconSize));
+                alramBtn.setIcon(mc.resizeIcon("BlueiScream/images/alramOnIcon.png", iconSize));
             else
-                alramBtn.setIcon(resizeIcon("BlueiScream/images/alramOffIcon.png", iconSize));
+                alramBtn.setIcon(mc.resizeIcon("BlueiScream/images/alramOffIcon.png", iconSize));
 
             try {
                 dao.setIsAlram(clientId, roomId, isAlram);
@@ -207,8 +209,8 @@ public class ChatroomClient extends JFrame {
         inputMessage = new JTextField(18);
         sendBtn = new ColorRoundButton("send", new Color(0, 38, 66), Color.white, 10);
 
-        JButton moreContentsBtn = makeBottomIconButton("BlueiScream/images/plusIcon.png", 20);
-        JButton emoticonBtn = makeBottomIconButton("BlueiScream/images/emojiIcon.png", 20);
+        JButton moreContentsBtn = mc.setNoneBorderIconButton("BlueiScream/images/plusIcon.png", 20);
+        JButton emoticonBtn = mc.setNoneBorderIconButton("BlueiScream/images/emojiIcon.png", 20);
 
         inputMessage.setText("input message");
         inputMessage.setForeground(Color.lightGray);
@@ -231,37 +233,6 @@ public class ChatroomClient extends JFrame {
         moreContentsBtn.addActionListener(e -> {
             new MoreMenu(clientId, roomId);
         });
-    }
-
-    private JButton makeBottomIconButton(String src, int iconSize) {
-        JButton btn = new JButton();
-
-        if (src != null && !src.isEmpty()) {
-            ImageIcon icon = resizeIcon(src, iconSize);
-            btn.setIcon(icon);
-        }
-
-        btn.setBorder(BorderFactory.createEmptyBorder(0, 15, 0, 15));
-        btn.setBackground(null);
-
-        return btn;
-    }
-
-    private ImageIcon resizeIcon(String src, int iconSize) {
-        ImageIcon icon = new ImageIcon(src);
-        Image image = icon.getImage();
-        Image newimg = image.getScaledInstance(iconSize, iconSize, Image.SCALE_SMOOTH); // scale it the smooth way
-        icon = new ImageIcon(newimg);
-
-        return icon;
-    }
-
-    private ImageIcon resizeIcon(ImageIcon icon, int iconSize) {
-        Image image = icon.getImage();
-        Image newimg = image.getScaledInstance(iconSize, iconSize, Image.SCALE_SMOOTH); // scale it the smooth way
-        icon = new ImageIcon(newimg);
-
-        return icon;
     }
 
     private void setupNetwirking() {
@@ -320,13 +291,13 @@ public class ChatroomClient extends JFrame {
         ImageIcon img = null;
 
         if (reaction == 1)
-            img = resizeIcon("BlueiScream/images/heartIcon.png", 20);
+            img = mc.resizeIcon("BlueiScream/images/heartIcon.png", 20);
         else if (reaction == 2)
-            img = resizeIcon("BlueiScream/images/exciteIcon.png", 20);
+            img = mc.resizeIcon("BlueiScream/images/exciteIcon.png", 20);
         else if (reaction == 3)
-            img = resizeIcon("BlueiScream/images/umIcon.png", 20);
+            img = mc.resizeIcon("BlueiScream/images/umIcon.png", 20);
         else if (reaction == 4)
-            img = resizeIcon("BlueiScream/images/angryIcon.png", 20);
+            img = mc.resizeIcon("BlueiScream/images/angryIcon.png", 20);
 
         return img;
     }
@@ -360,7 +331,7 @@ public class ChatroomClient extends JFrame {
         rp.setLayout(new BorderLayout());
 
         if (!id.equals(clientId)) {
-            bb = setUserProfileImage(id);
+            bb = mc.setImageButton(id, 45);
             p.setLayout(new FlowLayout(FlowLayout.LEFT));
             wp.add(bb, BorderLayout.WEST);
             rp.add(n, BorderLayout.NORTH);
@@ -402,7 +373,7 @@ public class ChatroomClient extends JFrame {
         bb.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                new MiniProfileView(id);
+                new MiniProfileView(id, false);
             }
         });
     }
@@ -412,49 +383,6 @@ public class ChatroomClient extends JFrame {
         dao.setReaction(newReact, msgId);
         revalidate();
         repaint();
-    }
-
-    private JButton setUserProfileImage(String uId) {
-        ProfileDao pDao = new ProfileDao();
-        Profile p = pDao.getClientProfileImage(uId);
-        JButton imgBtn = new JButton();
-        int iconSize = 45;
-
-        imgBtn.setBackground(null);
-        imgBtn.setBorder(BorderFactory.createEmptyBorder());
-
-        if (p == null) {
-            ImageIcon icon = resizeIcon("BlueiScream/images/userDefaultImg.jpg", iconSize);
-            imgBtn.setIcon(icon);
-
-            return imgBtn;
-        }
-
-        try {
-            Blob blob = p.getFile();
-            InputStream inputStream = blob.getBinaryStream();
-            ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-            byte[] buffer = new byte[4096];
-            int bytesRead = -1;
-
-            while ((bytesRead = inputStream.read(buffer)) != -1) {
-                outputStream.write(buffer, 0, bytesRead);
-            }
-
-            byte[] imageBytes = outputStream.toByteArray();
-            inputStream.close();
-            outputStream.close();
-
-            ImageIcon imageIcon = new ImageIcon(imageBytes);
-            imageIcon = resizeIcon(imageIcon, iconSize);
-            imgBtn.setIcon(imageIcon);
-
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-        return imgBtn;
     }
 
     private String reformText(String str) {
@@ -469,7 +397,7 @@ public class ChatroomClient extends JFrame {
     }
 
     public static void main(String[] args) {
-        ChatroomClient c = new ChatroomClient("aaa", 2);
+        ChatroomClient c = new ChatroomClient("111", 2);
 //        ChatroomClient c = new ChatroomClient("aaa", 1);
     }
 }

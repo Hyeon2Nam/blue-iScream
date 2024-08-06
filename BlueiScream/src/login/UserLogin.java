@@ -1,7 +1,8 @@
 package login;
 
-import chatRoom.ChatRoomList;
+import menu.ChatRoomList;
 import components.*;
+import menu.MainMenuView;
 
 import javax.swing.*;
 import javax.swing.border.Border;
@@ -30,6 +31,7 @@ public class UserLogin extends JFrame {
         setSize(totalSize, 800);
         setLocationRelativeTo(null);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
+        setResizable(false);
 
         // chat icon
         ImageIcon chatIcon = new ImageIcon("BlueiScream/images/chat_icon.png");
@@ -128,7 +130,8 @@ public class UserLogin extends JFrame {
             int res = dao.userLoginCheck(userTextField.getText(), passwordField.getText());
 
             if (res > 0) {
-                new ChatRoomList(userTextField.getText());
+                dispose();
+                new MainMenuView(userTextField.getText());
             } else {
                 JOptionPane.showMessageDialog(UserLogin.this, "로그인 실패");
             }
