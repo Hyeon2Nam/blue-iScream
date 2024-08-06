@@ -5,6 +5,7 @@ import components.ColorRoundButton;
 import components.ColorRoundTextView;
 import components.DarkPanel;
 import components.Header;
+import profile.MiniProfileView;
 import profile.Profile;
 import profile.ProfileDao;
 
@@ -249,7 +250,7 @@ public class ChatroomClient extends JFrame {
     private ImageIcon resizeIcon(String src, int iconSize) {
         ImageIcon icon = new ImageIcon(src);
         Image image = icon.getImage();
-        Image newimg = image.getScaledInstance(iconSize, iconSize, java.awt.Image.SCALE_SMOOTH); // scale it the smooth way
+        Image newimg = image.getScaledInstance(iconSize, iconSize, Image.SCALE_SMOOTH); // scale it the smooth way
         icon = new ImageIcon(newimg);
 
         return icon;
@@ -257,7 +258,7 @@ public class ChatroomClient extends JFrame {
 
     private ImageIcon resizeIcon(ImageIcon icon, int iconSize) {
         Image image = icon.getImage();
-        Image newimg = image.getScaledInstance(iconSize, iconSize, java.awt.Image.SCALE_SMOOTH); // scale it the smooth way
+        Image newimg = image.getScaledInstance(iconSize, iconSize, Image.SCALE_SMOOTH); // scale it the smooth way
         icon = new ImageIcon(newimg);
 
         return icon;
@@ -337,7 +338,7 @@ public class ChatroomClient extends JFrame {
         gbc.gridy = gy++;
         gbc.weighty = 0.0;
 
-        JButton bb;
+        JButton bb = new JButton();
         JLabel reactionLb = new JLabel(setReactionImage(reaction));
         JPanel p = new JPanel();
         JPanel wp = new JPanel();
@@ -397,6 +398,13 @@ public class ChatroomClient extends JFrame {
                 new ReactionMenu(chatroomClient, reactionLb, msgId);
             }
         });
+
+        bb.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                new MiniProfileView(id);
+            }
+        });
     }
 
     public void setNewReaction(int newReact, JLabel c, int msgId) {
@@ -410,12 +418,13 @@ public class ChatroomClient extends JFrame {
         ProfileDao pDao = new ProfileDao();
         Profile p = pDao.getClientProfileImage(uId);
         JButton imgBtn = new JButton();
+        int iconSize = 45;
 
         imgBtn.setBackground(null);
         imgBtn.setBorder(BorderFactory.createEmptyBorder());
 
         if (p == null) {
-            ImageIcon icon = resizeIcon("BlueiScream/images/userDefaultImg.jpg", 45);
+            ImageIcon icon = resizeIcon("BlueiScream/images/userDefaultImg.jpg", iconSize);
             imgBtn.setIcon(icon);
 
             return imgBtn;
@@ -437,7 +446,7 @@ public class ChatroomClient extends JFrame {
             outputStream.close();
 
             ImageIcon imageIcon = new ImageIcon(imageBytes);
-            imageIcon = resizeIcon(imageIcon, 45);
+            imageIcon = resizeIcon(imageIcon, iconSize);
             imgBtn.setIcon(imageIcon);
 
         } catch (SQLException e) {

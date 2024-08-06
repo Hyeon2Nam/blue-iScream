@@ -12,7 +12,7 @@ import java.sql.Blob;
 import java.sql.SQLException;
 import java.util.List;
 
-public class ViewProfile extends JFrame {
+public class ImageTest extends JFrame {
     ProfileDao dao;
     File selectedFile;
     String clientId;
@@ -20,7 +20,7 @@ public class ViewProfile extends JFrame {
     String fileName;
     private JLabel imageLabel;
 
-    public ViewProfile(String clientId) {
+    public ImageTest(String clientId) {
         this.clientId = clientId;
         dao = new ProfileDao();
 
@@ -45,6 +45,7 @@ public class ViewProfile extends JFrame {
 
         showImage();
 
+        // image upload
         selectFileButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -74,6 +75,7 @@ public class ViewProfile extends JFrame {
         setVisible(true);
     }
 
+    // load image
     private void showImage() {
         List<Profile> pfs = dao.getClientProfileImage();
 
@@ -105,6 +107,6 @@ public class ViewProfile extends JFrame {
     }
 
     public static void main(String[] args) {
-        new ViewProfile("qqq");
+        new ImageTest("qqq");
     }
 }
