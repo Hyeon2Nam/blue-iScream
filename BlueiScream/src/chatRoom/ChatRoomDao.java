@@ -472,8 +472,7 @@ public class ChatRoomDao {
                 pstmt.setString(1, id);
                 pstmt.setInt(2, Integer.parseInt(u));
                 res = pstmt.executeUpdate();
-            }
-        } catch (SQLException e) {
+            }        } catch (SQLException e) {
             e.printStackTrace();
             res = -1;
         } finally {
