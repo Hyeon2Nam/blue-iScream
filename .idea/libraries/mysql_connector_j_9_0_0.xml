@@ -1,0 +1,11 @@
+<component name="libraryTable">
+  <library name="mysql-connector-j-9.0.0">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/../mysql-connector-j-9.0.0/mysql-connector-j-9.0.0/mysql-connector-j-9.0.0.jar!/" />
+      <root url="jar://$USER_HOME$/Downloads/activation-1.1.1.jar!/" />
+      <root url="jar://$USER_HOME$/Downloads/mail-1.4.7.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>
