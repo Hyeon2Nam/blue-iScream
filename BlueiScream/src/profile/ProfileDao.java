@@ -136,12 +136,37 @@ public class ProfileDao {
         return pfs;
     }
 
-    public Profile getClientProfileImage(String id) {
+    public Blob getClientProfileImage(String id) {
         joinAcces();
-        Profile pf = null;
+        Blob b = null;
 
         try {
-            String sql = "select file_id, user_id, chatroom_id, file, file_path, file_type, uploaded_at" +
+            String sql = "select f.file " +
+                    "from users u " +
+                    "left outer join files f on u.profile_image = f.file_id " +
+                    "where u.user_id = ?";
+            pstmt = conn.prepareStatement(sql);
+
+            pstmt.setString(1, id);
+            rs = pstmt.executeQuery();
+
+            if (rs.next())
+                b = rs.getBlob(1);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            closeAcces();
+        }
+
+        return b;
+    }
+
+    public int getLastUploadImageId(String id) {
+        joinAcces();
+        int res = 0;
+
+        try {
+            String sql = "select file_id " +
                     " from files " +
                     "where chatroom_id is null and user_id = ? and file_type like ? " +
                     "order by uploaded_at desc limit 1";
@@ -152,23 +177,37 @@ public class ProfileDao {
 
             rs = pstmt.executeQuery();
 
-            if (rs.next()) {
-                pf = new Profile();
-
-                pf.setFileId(rs.getInt(1));
-                pf.setUserId(rs.getString(2));
-                pf.setChatroomId(rs.getInt(3));
-                pf.setFile(rs.getBlob(4));
-                pf.setFilePath(rs.getString(5));
-                pf.setFileType(rs.getString(6));
-                pf.setUploadedAt(rs.getTimestamp(7));
-            }
+            if (rs.next())
+                res = rs.getInt(1);
         } catch (SQLException e) {
             e.printStackTrace();
+            res = 1;
         } finally {
             closeAcces();
         }
 
-        return pf;
+        return res;
+    }
+
+    public void updateProfileImage(String id) {
+        int iid = getLastUploadImageId(id);
+        joinAcces();
+
+        int result = 0;
+
+        try {
+            String sql = "update users set profile_image = ? where user_id = ?";
+            pstmt = conn.prepareStatement(sql);
+
+            pstmt.setInt(1, iid);
+            pstmt.setString(2, id);
+
+            result = pstmt.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+            result = -1;
+        } finally {
+            closeAcces();
+        }
     }
 }
