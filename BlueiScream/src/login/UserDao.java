@@ -194,4 +194,30 @@ public class UserDao {
 
         return res;
     }
+
+    public User getUser(String id) {
+        joinAcces();
+        User u = null;
+
+        try {
+            String sql = "select user_id, user_name, email, profile_image from users where user_id = ? ";
+            pstmt = conn.prepareStatement(sql);
+            pstmt.setString(1, id);
+            rs = pstmt.executeQuery();
+
+            while (rs.next()) {
+                u = new User();
+                u.setUserId(rs.getString(1));
+                u.setUserName(rs.getString(2));
+                u.setEmail(rs.getString(3));
+                u.setProfileImage(rs.getInt(4));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            closeAcces();
+        }
+
+        return u;
+    }
 }

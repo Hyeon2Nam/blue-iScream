@@ -1,5 +1,7 @@
 package chatRoom;
 
+import utils.MakeComponent;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
@@ -8,8 +10,10 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class ReactionMenu extends JFrame {
 
     private static ReactionMenu reactionMenu;
+    private MakeComponent mc;
 
     public ReactionMenu(ChatroomClient chatroomClient, JLabel c, int msgId) {
+        mc = new MakeComponent();
         setSize(250, 100);
         setIconImage(null);
         setResizable(false);
@@ -18,10 +22,10 @@ public class ReactionMenu extends JFrame {
         p.setBackground(Color.white);
         p.setLayout(new FlowLayout(FlowLayout.CENTER));
 
-        JButton b1 = makeIconButton("BlueiScream/images/heartIcon.png", 20);
-        JButton b2 = makeIconButton("BlueiScream/images/exciteIcon.png", 20);
-        JButton b3 = makeIconButton("BlueiScream/images/umIcon.png", 20);
-        JButton b4 = makeIconButton("BlueiScream/images/angryIcon.png", 20);
+        JButton b1 = mc.setNoneBorderIconButton("BlueiScream/images/heartIcon.png", 20);
+        JButton b2 = mc.setNoneBorderIconButton("BlueiScream/images/exciteIcon.png", 20);
+        JButton b3 = mc.setNoneBorderIconButton("BlueiScream/images/umIcon.png", 20);
+        JButton b4 = mc.setNoneBorderIconButton("BlueiScream/images/angryIcon.png", 20);
         JButton b5 = new JButton("취소");
 
         b1.addActionListener(e -> {
@@ -64,25 +68,6 @@ public class ReactionMenu extends JFrame {
 
     public static ReactionMenu getInstance() {
         return reactionMenu;
-    }
-
-    public String teest() {
-        return "슈퍼맨";
-    }
-
-    private JButton makeIconButton(String src, int iconSize) {
-        JButton btn = new JButton();
-
-        if (src != null && !src.isEmpty()) {
-            ImageIcon icon = resizeIcon(src, iconSize);
-            btn.setIcon(icon);
-        }
-
-        btn.setBorder(BorderFactory.createEmptyBorder(0, 15, 0, 15));
-        btn.setBackground(null);
-        btn.setOpaque(false);
-
-        return btn;
     }
 
     private ImageIcon resizeIcon(String src, int iconSize) {

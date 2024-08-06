@@ -1,15 +1,17 @@
-package chatRoom;
+package menu;
 
 import javax.swing.*;
-import javax.swing.border.Border;
 
+import chatRoom.ChatRoom;
+import chatRoom.ChatRoomDao;
+import chatRoom.ChatRoomListMenu;
+import chatRoom.ChatroomClient;
 import components.ColorRoundLabel;
 import components.DarkPanel;
 import components.Header;
+import utils.MakeComponent;
 
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.time.LocalDate;
@@ -23,60 +25,36 @@ public class ChatRoomList extends JFrame {
     private JPanel chatList;
     private JScrollPane scroll;
     private final int TOTALWIDTH = 400;
+    private MakeComponent mc;
+    private JPanel main;
 
     public ChatRoomList(String clientId) {
         super("Room list");
+
         this.clientId = clientId;
+
+        mc = new MakeComponent();
+        dao = new ChatRoomDao();
+    }
+
+    public JPanel makeNewChatRoomList() {
+        main = new JPanel(new BorderLayout());
 
         initializeComponents();
         loadChatRooms();
-        JScrollBar vertical = scroll.getVerticalScrollBar();
-        vertical.setValue(vertical.getMaximum());
-        setVisible(true);
+//        JScrollBar vertical = scroll.getVerticalScrollBar();
+//        vertical.setValue(vertical.getMaximum());
+
+        return main;
     }
 
     public void initializeComponents() {
-        dao = new ChatRoomDao();
 
-        setSize(TOTALWIDTH, 800);
-        setDefaultCloseOperation(EXIT_ON_CLOSE);
-        setBackground(Color.white);
-        setResizable(false);
-
-        // header----------------------------------------------------
+        main.setSize(TOTALWIDTH, 800);
+        main.setBackground(Color.white);
 
         createHeader();
-
-        // chat list view --------------------------------------------------------
-
         initChatList();
-
-        // bottom (input field, emoji etc...)------------------------------
-
-        DarkPanel lineP = new DarkPanel();
-        lineP.setSize(TOTALWIDTH, 10);
-
-        int size = 40;
-        JPanel btnP = new JPanel();
-        JPanel BtnWrapper = new JPanel();
-        JButton profileBtn = setIconButton("BlueiScream/images/profileBtnIcon.png", size);
-        JButton chatBtn = setIconButton("BlueiScream/images/chatBtnIcon.png", size);
-        JButton settingBtn = setIconButton("BlueiScream/images/settingBtnIcon.png", size);
-
-        chatBtn.setBorder(BorderFactory.createEmptyBorder(0, 20, 0, 20));
-        BtnWrapper.setLayout(new FlowLayout(FlowLayout.CENTER));
-        btnP.setLayout(new BorderLayout());
-        BtnWrapper.setBackground(Color.white);
-        BtnWrapper.add(profileBtn);
-        BtnWrapper.add(chatBtn);
-//        BtnWrapper.add(settingBtn);
-
-        btnP.add(lineP, BorderLayout.NORTH);
-        btnP.add(BtnWrapper, BorderLayout.CENTER);
-        add(btnP, BorderLayout.SOUTH);
-
-        // event -------------------------------------------------------------
-
     }
 
     private void initChatList() {
@@ -84,52 +62,32 @@ public class ChatRoomList extends JFrame {
         chatList.setBackground(Color.white);
         chatList.setLayout(new BoxLayout(chatList, BoxLayout.Y_AXIS));
         scroll = new JScrollPane(chatList);
-        add(scroll, BorderLayout.CENTER);
+        main.add(scroll, BorderLayout.CENTER);
         scroll.setBorder(BorderFactory.createEmptyBorder());
     }
 
     private void createHeader() {
-        JButton optionBtn = setIconButton("BlueiScream/images/kebabIcon.png", 20);
-        JButton refreshBtn = setIconButton("BlueiScream/images/refreshIcon.png", 25);
+        JButton optionBtn = mc.setIconButton("BlueiScream/images/kebabIcon.png", 20);
+        JButton refreshBtn = mc.setIconButton("BlueiScream/images/refreshIcon.png", 25);
         Header headerP = new Header(refreshBtn, "Chat", optionBtn);
 
         optionBtn.setFocusPainted(false);
         refreshBtn.setFocusPainted(false);
 
-        add(headerP, BorderLayout.NORTH);
+        main.add(headerP, BorderLayout.NORTH);
 
         // -----[events] -----------------------
 
         refreshBtn.addActionListener(e -> {
             chatList.removeAll();
             loadChatRooms();
-            revalidate();
-            repaint();
+            main.revalidate();
+            main.repaint();
         });
 
         optionBtn.addActionListener(e -> {
             new ChatRoomListMenu(clientId);
         });
-    }
-
-    private JButton setIconButton(String imgSrc, int size) {
-        JButton b = new JButton();
-        ImageIcon icon = resizeIcon(imgSrc, size);
-
-        b.setIcon(icon);
-        b.setBackground(null);
-        b.setBorder(BorderFactory.createEmptyBorder());
-
-        return b;
-    }
-
-    private ImageIcon resizeIcon(String src, int iconSize) {
-        ImageIcon icon = new ImageIcon(src);
-        Image image = icon.getImage();
-        Image newimg = image.getScaledInstance(iconSize, iconSize, java.awt.Image.SCALE_SMOOTH); // scale it the smooth way
-        icon = new ImageIcon(newimg);
-
-        return icon;
     }
 
     private void loadChatRooms() {
@@ -209,6 +167,6 @@ public class ChatRoomList extends JFrame {
     }
 
     public static void main(String[] args) {
-        ChatRoomList c = new ChatRoomList("aaa");
+        ChatRoomList c = new ChatRoomList("qqq");
     }
 }
