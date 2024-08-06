@@ -30,6 +30,7 @@ public class UserLogin extends JFrame {
         setSize(totalSize, 800);
         setLocationRelativeTo(null);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
+        setResizable(false);
 
         // chat icon
         ImageIcon chatIcon = new ImageIcon("BlueiScream/images/chat_icon.png");

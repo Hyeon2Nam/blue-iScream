@@ -33,6 +33,7 @@ public class CreateChatRoom extends JFrame {
 
         setSize(TOTALWIDTH, 700);
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+        setResizable(false);
         centerP = new JPanel(new BorderLayout());
 
         createHeader();

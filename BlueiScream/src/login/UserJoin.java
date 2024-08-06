@@ -27,6 +27,7 @@ public class UserJoin extends JFrame {
         setSize(totalSize, 800);
         setLocationRelativeTo(null);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
+        setResizable(false);
 
         // chat icon
         JPanel iconP = new JPanel(new FlowLayout(FlowLayout.CENTER));

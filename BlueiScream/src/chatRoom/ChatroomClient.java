@@ -85,9 +85,9 @@ public class ChatroomClient extends JFrame {
         chatListModel = new DefaultListModel<>();
         chatList = new JList<>(chatListModel);
 
-        setSize(TOTALWIDTH, 800);
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         setBackground(Color.white);
+        setBounds(800,100,TOTALWIDTH, 800);
 
         // header----------------------------------------------------
 
@@ -469,7 +469,7 @@ public class ChatroomClient extends JFrame {
     }
 
     public static void main(String[] args) {
-        ChatroomClient c = new ChatroomClient("aaa", 2);
+        ChatroomClient c = new ChatroomClient("111", 2);
 //        ChatroomClient c = new ChatroomClient("aaa", 1);
     }
 }

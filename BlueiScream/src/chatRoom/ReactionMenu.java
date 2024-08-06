@@ -12,6 +12,7 @@ public class ReactionMenu extends JFrame {
     public ReactionMenu(ChatroomClient chatroomClient, JLabel c, int msgId) {
         setSize(250, 100);
         setIconImage(null);
+        setResizable(false);
 
         JPanel p = new JPanel();
         p.setBackground(Color.white);

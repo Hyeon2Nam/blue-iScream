@@ -41,6 +41,7 @@ public class ChatRoomList extends JFrame {
         setSize(TOTALWIDTH, 800);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         setBackground(Color.white);
+        setResizable(false);
 
         // header----------------------------------------------------
 
