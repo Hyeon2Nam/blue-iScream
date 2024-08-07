@@ -12,7 +12,7 @@ public class ChatRoomDao {
 
 
     public void joinAcces() {
-        String propfile = "BlueiScream/config/config.properties";
+        String propfile = "jdbc:mysql://114.70.127.232:3306/blue_iscream?useSSL=false&allowPublicKeyRetrieval=true";
         Properties p = new Properties();
 
         try {
