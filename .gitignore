@@ -1,6 +1,9 @@
 <<<<<<< HEAD
+<<<<<<< HEAD
 /bin/
 =======
+=======
+>>>>>>> 7fa09b1d46f7127ddd7c0431640b4a02d74ff114
 # Created by https://www.toptal.com/developers/gitignore/api/java
 # Edit at https://www.toptal.com/developers/gitignore?templates=java
 
@@ -33,5 +36,9 @@ BlueiScream/config
 hs_err_pid*
 replay_pid*
 
+<<<<<<< HEAD
+# End of https://www.toptal.com/developers/gitignore/api/java
+>>>>>>> 7fa09b1d46f7127ddd7c0431640b4a02d74ff114
+=======
 # End of https://www.toptal.com/developers/gitignore/api/java
 >>>>>>> 7fa09b1d46f7127ddd7c0431640b4a02d74ff114
