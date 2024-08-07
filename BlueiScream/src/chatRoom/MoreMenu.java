@@ -16,6 +16,7 @@ public class MoreMenu extends JFrame {
         setSize(450, 200);
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         setBackground(Color.white);
+        setResizable(false);
 
         JPanel p = new JPanel();
         p.setLayout(new FlowLayout(FlowLayout.CENTER));

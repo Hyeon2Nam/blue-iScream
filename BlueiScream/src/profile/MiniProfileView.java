@@ -1,108 +1,100 @@
 package profile;
 
 import chatRoom.ChatRoomDao;
+import components.DarkPanel;
+import utils.MakeComponent;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.sql.Blob;
 import java.sql.SQLException;
-import java.util.List;
 
 public class MiniProfileView extends JFrame {
     private ProfileDao profileDao;
     private ChatRoomDao chatRoomDao;
     private String userId;
+    private MakeComponent mc;
 
-    public MiniProfileView(String userId) {
+    public MiniProfileView(String userId, boolean isClient) {
         this.userId = userId;
         profileDao = new ProfileDao();
         chatRoomDao = new ChatRoomDao();
+        mc = new MakeComponent();
+        int totalHeight = 300;
+        int imageSize = 120;
 
-        setSize(220, 300);
+        setSize(250, 400);
         setLayout(new FlowLayout(FlowLayout.CENTER));
+        getContentPane().setBackground(new Color(0, 38, 66));
+        setResizable(false);
 
-        JLabel img = showImage();
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.gridwidth = GridBagConstraints.REMAINDER;
+        gbc.fill = GridBagConstraints.BOTH;
+
+        JPanel cp = new JPanel(new GridBagLayout());
+        DarkPanel dp = new DarkPanel(totalHeight - imageSize - 50, "top");
+        cp.setBackground(new Color(0, 38, 66));
+
+
+        cp.add(dp, gbc);
+
+        JLabel img = new JLabel();
+        img.setIcon(mc.loadImage(userId, imageSize));
         JLabel name = new JLabel(chatRoomDao.getUserName(userId));
-        name.setFont(name.getFont().deriveFont(20));
+        name.setFont(name.getFont().deriveFont(20.0f));
+        name.setForeground(Color.white);
+        name.setHorizontalAlignment(JLabel.CENTER);
+        name.setBorder(BorderFactory.createEmptyBorder(10, 0, 10, 0));
 
-        add(img);
-        add(name);
+        cp.add(img, gbc);
+        cp.add(name, gbc);
 
-        this.addWindowListener(new WindowAdapter() {
-            @Override
-            public void windowDeactivated(WindowEvent e) {
-                dispose();
-            }
-        });
+        if (isClient) {
+            JButton btn = mc.setIconButton("BlueiScream/images/editProfileImageIcon.png", 30);
+
+            btn.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    JFileChooser fileChooser = new JFileChooser();
+                    File selectedFile = null;
+
+                    int result = fileChooser.showOpenDialog(null);
+                    if (result == JFileChooser.APPROVE_OPTION)
+                        selectedFile = fileChooser.getSelectedFile();
+
+                    if (selectedFile == null)
+                        return;
+
+                    profileDao.uploadFile(userId, selectedFile);
+                    profileDao.updateProfileImage(userId);
+
+                    img.setIcon(mc.loadImage(userId, imageSize));
+                }
+            });
+
+            btn.setFocusable(false);
+            cp.add(btn, gbc);
+        }
+
+        add(cp);
+
+        if (!isClient)
+            this.addWindowListener(new WindowAdapter() {
+                @Override
+                public void windowDeactivated(WindowEvent e) {
+                    dispose();
+                }
+            });
+
         setVisible(true);
-    }
-
-    private ImageIcon resizeIcon(ImageIcon icon, int iconSize) {
-        Image image = icon.getImage();
-        Image newimg = image.getScaledInstance(iconSize, iconSize, java.awt.Image.SCALE_SMOOTH); // scale it the smooth way
-        icon = new ImageIcon(newimg);
-
-        return icon;
-    }
-
-    private ImageIcon resizeIcon(String src, int iconSize) {
-        ImageIcon icon = new ImageIcon(src);
-        Image image = icon.getImage();
-        Image newimg = image.getScaledInstance(iconSize, iconSize, java.awt.Image.SCALE_SMOOTH); // scale it the smooth way
-        icon = new ImageIcon(newimg);
-
-        return icon;
-    }
-
-
-    private JLabel showImage() {
-        ProfileDao pDao = new ProfileDao();
-        Profile p = pDao.getClientProfileImage(userId);
-        JLabel imageLabel = new JLabel();
-        int iconSize = 200;
-
-
-        if (p == null) {
-            ImageIcon icon = resizeIcon("BlueiScream/images/userDefaultImg.jpg", iconSize);
-            imageLabel.setIcon(icon);
-
-            return imageLabel;
-        }
-
-        try {
-            Blob blob = p.getFile();
-            InputStream inputStream = blob.getBinaryStream();
-            ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-            byte[] buffer = new byte[4096];
-            int bytesRead = -1;
-
-            while ((bytesRead = inputStream.read(buffer)) != -1) {
-                outputStream.write(buffer, 0, bytesRead);
-            }
-
-            byte[] imageBytes = outputStream.toByteArray();
-            inputStream.close();
-            outputStream.close();
-
-            ImageIcon imageIcon = new ImageIcon(imageBytes);
-            imageIcon = resizeIcon(imageIcon, iconSize);
-            imageLabel.setIcon(imageIcon);
-
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-
-        return imageLabel;
-    }
-
-    public static void main(String[] args) {
-        new MiniProfileView("aaa");
     }
 }
