@@ -12,7 +12,7 @@ public class ChatRoomDao {
 
 
     public void joinAcces() {
-        String propfile = "BlueiScream/config/config.properties";
+        String propfile = "config/config.properties";
         Properties p = new Properties();
 
         try {
@@ -237,7 +237,7 @@ public class ChatRoomDao {
         joinAcces();
 
         try {
-            String sql = "select c.chatroom_id, chatroom_name, created_at, category, background_img, uc.is_alram " +
+            String sql = "select c.chatroom_id, chatroom_name, created_at, category, uc.is_alram, uc.background_img " +
                     "from chat_rooms c " +
                     "inner join user_chat_rooms uc on c.chatroom_id = uc.chatroom_id " +
                     "where user_id = ? and is_delete = false";
@@ -251,8 +251,8 @@ public class ChatRoomDao {
                 cr.setChatroomName(rs.getString(2));
                 cr.setCreatedAt(rs.getTimestamp(3));
                 cr.setCategory(rs.getString(4));
+                cr.setAlarm(rs.getBoolean(5));
                 cr.setBackgroundImg(rs.getInt(5));
-                cr.setAlarm(rs.getBoolean(6));
                 crlist.add(cr);
             }
         } catch (SQLException e) {
@@ -472,7 +472,8 @@ public class ChatRoomDao {
                 pstmt.setString(1, id);
                 pstmt.setInt(2, Integer.parseInt(u));
                 res = pstmt.executeUpdate();
-            }        } catch (SQLException e) {
+            }
+        } catch (SQLException e) {
             e.printStackTrace();
             res = -1;
         } finally {

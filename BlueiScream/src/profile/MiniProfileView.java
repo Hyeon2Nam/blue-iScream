@@ -59,7 +59,7 @@ public class MiniProfileView extends JFrame {
         cp.add(name, gbc);
 
         if (isClient) {
-            JButton btn = mc.setIconButton("BlueiScream/images/editProfileImageIcon.png", 30);
+            JButton btn = mc.setIconButton("images/editProfileImageIcon.png", 30);
 
             btn.addActionListener(new ActionListener() {
                 @Override
