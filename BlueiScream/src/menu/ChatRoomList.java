@@ -67,8 +67,8 @@ public class ChatRoomList extends JFrame {
     }
 
     private void createHeader() {
-        JButton optionBtn = mc.setIconButton("BlueiScream/images/kebabIcon.png", 20);
-        JButton refreshBtn = mc.setIconButton("BlueiScream/images/refreshIcon.png", 25);
+        JButton optionBtn = mc.setIconButton("images/kebabIcon.png", 20);
+        JButton refreshBtn = mc.setIconButton("images/refreshIcon.png", 25);
         Header headerP = new Header(refreshBtn, "Chat", optionBtn);
 
         optionBtn.setFocusPainted(false);

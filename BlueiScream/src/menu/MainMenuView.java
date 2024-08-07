@@ -47,9 +47,9 @@ public class MainMenuView extends JFrame {
         int size = 40;
         JPanel btnP = new JPanel();
         JPanel BtnWrapper = new JPanel();
-        JButton profileBtn = mc.setIconButton("BlueiScream/images/profileBtnIcon.png", size);
-        JButton chatBtn = mc.setIconButton("BlueiScream/images/chatBtnIcon.png", size);
-        JButton settingBtn = mc.setIconButton("BlueiScream/images/settingBtnIcon.png", size);
+        JButton profileBtn = mc.setIconButton("images/profileBtnIcon.png", size);
+        JButton chatBtn = mc.setIconButton("images/chatBtnIcon.png", size);
+        JButton settingBtn = mc.setIconButton("images/settingBtnIcon.png", size);
 
         chatBtn.setBorder(BorderFactory.createEmptyBorder(0, 20, 0, 20));
         BtnWrapper.setLayout(new FlowLayout(FlowLayout.CENTER));

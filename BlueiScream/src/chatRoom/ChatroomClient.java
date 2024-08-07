@@ -97,7 +97,20 @@ public class ChatroomClient extends JFrame {
 
         // message view --------------------------------------------------------
 
-        messageP = new JPanel();
+        Image bgImg = mc.loadBgImage(clientId, roomId);
+
+        messageP = new JPanel() {
+            @Override
+            protected void paintComponent(Graphics g) {
+                super.paintComponent(g);
+                if (bgImg != null) {
+                    g.drawImage(bgImg, 0, 0, getWidth(), getHeight(), this);
+                } else {
+                    setBackground(Color.white);
+                }
+            }
+        };
+
         messageP.setBackground(Color.white);
         messageP.setLayout(new GridBagLayout());
         scroll = new JScrollPane(messageP);
@@ -167,9 +180,9 @@ public class ChatroomClient extends JFrame {
 
         isAlram = dao.getisAlram(clientId, roomId);
         if (isAlram)
-            alramBtn = mc.setNoneBorderIconButton("BlueiScream/images/alramOnIcon.png", iconSize);
+            alramBtn = mc.setNoneBorderIconButton("images/alramOnIcon.png", iconSize);
         else
-            alramBtn = mc.setNoneBorderIconButton("BlueiScream/images/alramOffIcon.png", iconSize);
+            alramBtn = mc.setNoneBorderIconButton("images/alramOffIcon.png", iconSize);
         alramBtn.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 15));
         alramBtn.setFocusPainted(false);
         alramBtn.setContentAreaFilled(false);
@@ -182,9 +195,9 @@ public class ChatroomClient extends JFrame {
             isAlram = !isAlram;
 
             if (isAlram)
-                alramBtn.setIcon(mc.resizeIcon("BlueiScream/images/alramOnIcon.png", iconSize));
+                alramBtn.setIcon(mc.resizeIcon("images/alramOnIcon.png", iconSize));
             else
-                alramBtn.setIcon(mc.resizeIcon("BlueiScream/images/alramOffIcon.png", iconSize));
+                alramBtn.setIcon(mc.resizeIcon("images/alramOffIcon.png", iconSize));
 
             try {
                 dao.setIsAlram(clientId, roomId, isAlram);
@@ -209,8 +222,8 @@ public class ChatroomClient extends JFrame {
         inputMessage = new JTextField(18);
         sendBtn = new ColorRoundButton("send", new Color(0, 38, 66), Color.white, 10);
 
-        JButton moreContentsBtn = mc.setNoneBorderIconButton("BlueiScream/images/plusIcon.png", 20);
-        JButton emoticonBtn = mc.setNoneBorderIconButton("BlueiScream/images/emojiIcon.png", 20);
+        JButton moreContentsBtn = mc.setNoneBorderIconButton("images/plusIcon.png", 20);
+        JButton emoticonBtn = mc.setNoneBorderIconButton("images/emojiIcon.png", 20);
 
         inputMessage.setText("input message");
         inputMessage.setForeground(Color.lightGray);
@@ -291,13 +304,13 @@ public class ChatroomClient extends JFrame {
         ImageIcon img = null;
 
         if (reaction == 1)
-            img = mc.resizeIcon("BlueiScream/images/heartIcon.png", 20);
+            img = mc.resizeIcon("images/heartIcon.png", 20);
         else if (reaction == 2)
-            img = mc.resizeIcon("BlueiScream/images/exciteIcon.png", 20);
+            img = mc.resizeIcon("images/exciteIcon.png", 20);
         else if (reaction == 3)
-            img = mc.resizeIcon("BlueiScream/images/umIcon.png", 20);
+            img = mc.resizeIcon("images/umIcon.png", 20);
         else if (reaction == 4)
-            img = mc.resizeIcon("BlueiScream/images/angryIcon.png", 20);
+            img = mc.resizeIcon("images/angryIcon.png", 20);
 
         return img;
     }
@@ -324,8 +337,11 @@ public class ChatroomClient extends JFrame {
         m = new ColorRoundTextView(reformText(c), backColor, Color.BLACK);
 
         p.setBackground(null);
+        p.setOpaque(false);
         wp.setBackground(null);
-        rp.setBackground(null);
+        wp.setOpaque(false);
+        wp.setBackground(null);
+        rp.setOpaque(false);
 
         reactionLb.setBorder(BorderFactory.createEmptyBorder(0, 5, 0, 0));
         rp.setLayout(new BorderLayout());
@@ -355,7 +371,6 @@ public class ChatroomClient extends JFrame {
         gbc.gridy = gy;
         gbc.weighty = 1.0;
         messageP.add(Box.createVerticalGlue(), gbc);
-
 
         m.addMouseListener(new MouseCustomAdapter() {
             @Override

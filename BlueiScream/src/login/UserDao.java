@@ -12,7 +12,7 @@ public class UserDao {
     ResultSet rs;
 
     public void joinAcces() {
-        String propfile = "BlueiScream/config/config.properties";
+        String propfile = "config/config.properties";
         Properties p = new Properties();
 
         try {
