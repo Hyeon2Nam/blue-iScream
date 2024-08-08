@@ -1,5 +1,6 @@
 package menu;
 
+import chatRoom.Alram;
 import chatRoom.ChatRoomDao;
 import chatRoom.ChatRoomListMenu;
 import components.DarkPanel;
@@ -16,12 +17,14 @@ public class MainMenuView extends JFrame {
     private final int TOTALWIDTH = 400;
     private MakeComponent mc;
     private JPanel mainContentsP;
+    public static Alram alram;
 
     public MainMenuView(String clientId) {
         this.clientId = clientId;
         mc = new MakeComponent();
 
         initializeComponents();
+        alram = new Alram(clientId);
         setVisible(true);
     }
 
@@ -83,6 +86,6 @@ public class MainMenuView extends JFrame {
     }
 
     public static void main(String[] args) {
-        new MainMenuView("qqq");
+        new MainMenuView("aaa");
     }
 }
