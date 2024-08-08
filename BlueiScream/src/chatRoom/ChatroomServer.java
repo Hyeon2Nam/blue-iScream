@@ -72,8 +72,6 @@ public class ChatroomServer {
             }
         }
 
-
-
         private void broadcast(DataPost data) throws IOException {
             for (ObjectOutputStream client : clients.values()) {
                 client.writeObject(data);
