@@ -41,7 +41,10 @@ public class ChatRoomList extends JFrame {
         main = new JPanel(new BorderLayout());
 
         initializeComponents();
+
+        JOptionPane op = new JOptionPane("채팅방을 불러오고 있습니다.");
         loadChatRooms();
+        op.setVisible(false);
 //        JScrollBar vertical = scroll.getVerticalScrollBar();
 //        vertical.setValue(vertical.getMaximum());
 
@@ -100,7 +103,7 @@ public class ChatRoomList extends JFrame {
     public void makeChatRoomView(String roomName, int roomId) {
         JPanel roomP = new JPanel();
         JPanel rightP = new JPanel();
-        JButton leftB = new JButton();
+        JButton leftB = new JButton(mc.resizeIcon("images/defaultRoomIcon.png", 40));
         JLabel roomNameLb = new JLabel(roomName);
         JPanel btmP = new JPanel();
 
@@ -123,6 +126,10 @@ public class ChatRoomList extends JFrame {
             alramCntLb.setText(String.valueOf(alramCnt));
             alramCntLb.setForeground(Color.red);
         }
+
+        leftB.setFocusable(false);
+        leftB.setBackground(Color.white);
+        leftB.setBorder(BorderFactory.createEmptyBorder());
 
         roomP.setLayout(new BorderLayout());
         roomP.setBackground(null);

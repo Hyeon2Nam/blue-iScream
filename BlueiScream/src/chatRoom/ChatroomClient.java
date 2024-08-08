@@ -412,7 +412,7 @@ public class ChatroomClient extends JFrame {
     }
 
     public static void main(String[] args) {
-        ChatroomClient c = new ChatroomClient("111", 2);
+        ChatroomClient c = new ChatroomClient("aaa", 2);
 //        ChatroomClient c = new ChatroomClient("aaa", 1);
     }
 }
