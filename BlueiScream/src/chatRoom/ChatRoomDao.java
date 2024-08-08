@@ -484,4 +484,28 @@ public class ChatRoomDao {
             closeAcces();
         }
     }
+
+    public List<Integer> getAlramOffRooms(String id) {
+        joinAcces();
+        List<Integer> rooms = new ArrayList<>();
+
+        try {
+            String sql = "select  chatroom_id from user_chat_rooms where user_id = ? and is_delete = ? and is_alram = ?";
+            pstmt = conn.prepareCall(sql);
+            pstmt.setString(1, id);
+            pstmt.setInt(2, 0);
+            pstmt.setInt(3, 0);
+            rs = pstmt.executeQuery();
+
+            while (rs.next()) {
+                rooms.add(rs.getInt(1));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            closeAcces();
+        }
+
+        return rooms;
+    }
 }

@@ -5,6 +5,7 @@ import components.ColorRoundButton;
 import components.ColorRoundTextView;
 import components.DarkPanel;
 import components.Header;
+import menu.MainMenuView;
 import profile.MiniProfileView;
 import profile.Profile;
 import profile.ProfileDao;
@@ -40,10 +41,6 @@ public class ChatroomClient extends JFrame {
     private MakeComponent mc;
 
     // socket
-    private JList<String> userList;
-    private JList<String> chatList;
-    private DefaultListModel<String> userListModel;
-    private DefaultListModel<String> chatListModel;
     private Socket socket;
     private BufferedReader reader;
     private PrintWriter writer;
@@ -55,8 +52,10 @@ public class ChatroomClient extends JFrame {
         if (chatroomClient == null) {
             chatroomClient = this;
         }
+
         this.clientId = clientId;
         this.roomId = roomId;
+
         mc = new MakeComponent();
 
         initializeComponents();
@@ -65,6 +64,13 @@ public class ChatroomClient extends JFrame {
         vertical.setValue(vertical.getMaximum());
         setupNetwirking();
         setVisible(true);
+
+        this.addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowActivated(WindowEvent e) {
+             MainMenuView.alram.setActiveRoom(roomId);
+            }
+        });
     }
 
     public void initializeComponents() {
@@ -78,14 +84,7 @@ public class ChatroomClient extends JFrame {
         gbc.anchor = GridBagConstraints.NORTH;
 
         dao = new ChatRoomDao();
-
         isFirst = true;
-        userListModel = new DefaultListModel<>();
-        userList = new JList<>(userListModel);
-
-        // Chat list with a model
-        chatListModel = new DefaultListModel<>();
-        chatList = new JList<>(chatListModel);
 
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         setBackground(Color.white);
@@ -196,8 +195,9 @@ public class ChatroomClient extends JFrame {
 
             if (isAlram)
                 alramBtn.setIcon(mc.resizeIcon("images/alramOnIcon.png", iconSize));
-            else
+            else{
                 alramBtn.setIcon(mc.resizeIcon("images/alramOffIcon.png", iconSize));
+            }
 
             try {
                 dao.setIsAlram(clientId, roomId, isAlram);
@@ -205,6 +205,8 @@ public class ChatroomClient extends JFrame {
             } catch (InterruptedException ex) {
                 ex.printStackTrace();
             }
+
+            MainMenuView.alram.setAlramOffRooms();
         });
     }
 
@@ -273,9 +275,6 @@ public class ChatroomClient extends JFrame {
 
                 if (!chat[2].equals(String.valueOf(roomId)))
                     continue;
-
-                SwingUtilities.invokeLater(() -> userListModel.addElement(chat[0]));
-                SwingUtilities.invokeLater(() -> chatListModel.addElement(chat[1]));
 
                 msgId = dao.getMsgId(chat[0], roomId);
                 makeMessageView(chat[1], chat[0], dao.getUserName(chat[0]), 0, msgId);
@@ -412,7 +411,7 @@ public class ChatroomClient extends JFrame {
     }
 
     public static void main(String[] args) {
-        ChatroomClient c = new ChatroomClient("aaa", 2);
+//        ChatroomClient c = new ChatroomClient("aaa", 2);
 //        ChatroomClient c = new ChatroomClient("aaa", 1);
     }
 }
