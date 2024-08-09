@@ -93,19 +93,16 @@ public class SearchUserInfo extends JFrame {
 
         add(fieldP, BorderLayout.CENTER);
 
-        idBtn.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                String id = dao.searchUserId(idEmail.getText());
+        idBtn.addActionListener(e -> {
+            String id = dao.searchUserId(idEmail.getText());
 
-                if (idEmail.getText().isEmpty())
-                    return;
+            if (idEmail.getText().isEmpty())
+                return;
 
-                if (id != null && !id.isEmpty())
-                    JOptionPane.showMessageDialog(SearchUserInfo.this, "ID는 " + id + "입니다.");
-                else
-                    JOptionPane.showMessageDialog(SearchUserInfo.this, "가입되지 않은 이메일입니다.");
-            }
+            if (id != null && !id.isEmpty())
+                JOptionPane.showMessageDialog(SearchUserInfo.this, "ID는 " + id + "입니다.");
+            else
+                JOptionPane.showMessageDialog(SearchUserInfo.this, "가입되지 않은 이메일입니다.");
         });
         pwBtn.addActionListener(e -> {
             String pw = dao.searchUserPw(pwEmail.getText());

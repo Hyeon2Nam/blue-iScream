@@ -151,7 +151,7 @@ public class UserJoin extends JFrame {
                 return;
 
             if (dao.isAlreadyUser(id, email) > 0) {
-                JOptionPane.showMessageDialog(UserJoin.this, "이미 존재하는 ID입니다.");
+                JOptionPane.showMessageDialog(UserJoin.this, "사용하실 수 없는 ID입니다.");
                 return;
             }
 
