@@ -2,7 +2,10 @@ package menu;
 
 import javax.swing.*;
 
-import chatRoom.*;
+import chatRoom.ChatRoom;
+import chatRoom.ChatRoomDao;
+import chatRoom.ChatRoomListMenu;
+import chatRoom.ChatroomClient;
 import components.ColorRoundLabel;
 import components.DarkPanel;
 import components.Header;
@@ -24,13 +27,11 @@ public class ChatRoomList extends JFrame {
     private final int TOTALWIDTH = 400;
     private MakeComponent mc;
     private JPanel main;
-    public static Alram alram;
 
     public ChatRoomList(String clientId) {
         super("Room list");
 
         this.clientId = clientId;
-        this.alram = alram;
 
         mc = new MakeComponent();
         dao = new ChatRoomDao();
@@ -40,10 +41,9 @@ public class ChatRoomList extends JFrame {
         main = new JPanel(new BorderLayout());
 
         initializeComponents();
-
-        JOptionPane op = new JOptionPane("채팅방을 불러오고 있습니다.");
         loadChatRooms();
-        op.setVisible(false);
+//        JScrollBar vertical = scroll.getVerticalScrollBar();
+//        vertical.setValue(vertical.getMaximum());
 
         return main;
     }
@@ -100,7 +100,7 @@ public class ChatRoomList extends JFrame {
     public void makeChatRoomView(String roomName, int roomId) {
         JPanel roomP = new JPanel();
         JPanel rightP = new JPanel();
-        JButton leftB = new JButton(mc.resizeIcon("images/defaultRoomIcon.png", 40));
+        JButton leftB = new JButton();
         JLabel roomNameLb = new JLabel(roomName);
         JPanel btmP = new JPanel();
 
@@ -123,10 +123,6 @@ public class ChatRoomList extends JFrame {
             alramCntLb.setText(String.valueOf(alramCnt));
             alramCntLb.setForeground(Color.red);
         }
-
-        leftB.setFocusable(false);
-        leftB.setBackground(Color.white);
-        leftB.setBorder(BorderFactory.createEmptyBorder());
 
         roomP.setLayout(new BorderLayout());
         roomP.setBackground(null);
@@ -170,7 +166,7 @@ public class ChatRoomList extends JFrame {
         chatList.add(btmP);
     }
 
-//    public static void main(String[] args) {
-//        ChatRoomList c = new ChatRoomList("qqq");
-//    }
+    public static void main(String[] args) {
+        ChatRoomList c = new ChatRoomList("qqq");
+    }
 }

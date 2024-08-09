@@ -47,10 +47,6 @@ public class ChatRoomListMenu extends JFrame {
             new CreateChatRoom(clientId);
             dispose();
         });
-        b2.addActionListener(e -> {
-            new DeleteChatRoom(clientId);
-            dispose();
-        });
     }
 
     public static void main(String[] args) {

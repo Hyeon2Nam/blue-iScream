@@ -4,8 +4,6 @@ import profile.ProfileDao;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.io.File;
 
 public class MoreMenu extends JFrame {
@@ -13,11 +11,13 @@ public class MoreMenu extends JFrame {
     private ChatRoomDao dao;
     private String clientId;
     private int roomId;
+    private ChatroomClient chatClient;
 
-    public MoreMenu(String clientId, int roomId) {
+    public MoreMenu(String clientId, int roomId, ChatroomClient chatClient) {
         super("MENU");
         this.clientId = clientId;
         this.roomId = roomId;
+        this.chatClient = chatClient;
         profileDao = new ProfileDao();
 
         setSize(450, 200);
@@ -41,6 +41,20 @@ public class MoreMenu extends JFrame {
         add(p, BorderLayout.CENTER);
 
         // ----------[EVENTS]---------------
+        picBtn.addActionListener(e -> {
+            JFileChooser fileChooser = new JFileChooser();
+            File selectedFile = null;
+
+            int result = fileChooser.showOpenDialog(null);
+            if (result == JFileChooser.APPROVE_OPTION)
+                selectedFile = fileChooser.getSelectedFile();
+
+            if (selectedFile == null)
+                return;
+
+            // 파일을 ChatroomClient로 전송
+            chatClient.sendFile(selectedFile);
+        });
 
         bgBtn.addActionListener(e -> {
             JFileChooser fileChooser = new JFileChooser();
@@ -65,7 +79,7 @@ public class MoreMenu extends JFrame {
         int size = 90;
 
         btn.setBackground(new Color(0, 38, 66));
-        btn.setPreferredSize(new Dimension(size,size));
+        btn.setPreferredSize(new Dimension(size, size));
         btn.setForeground(Color.white);
         btn.setBorderPainted(false);
 

@@ -3,7 +3,6 @@ package chatRoom;
 import components.ColorRoundButton;
 import components.Header;
 import login.UserDao;
-import utils.MakeComponent;
 
 import javax.swing.*;
 import java.awt.*;
@@ -21,12 +20,10 @@ public class DeleteChatRoom extends JFrame {
     private String clientId;
     private JPanel centerP;
     private Set<String> selectedItems;
-    private MakeComponent mc;
 
     public DeleteChatRoom(String clientId) {
         this.clientId = clientId;
         chatDao = new ChatRoomDao();
-        mc = new MakeComponent();
 
         setSize(TOTALWIDTH, 700);
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
@@ -121,16 +118,11 @@ public class DeleteChatRoom extends JFrame {
 
         for (ChatRoom u : rooms) {
             JPanel p = new JPanel(new BorderLayout());
-            JButton b = new JButton(mc.resizeIcon("images/defaultRoomIcon.png", 40));
+            JButton b = new JButton("");
             JLabel lb = new JLabel(u.getChatroomName());
             JLabel id = new JLabel(String.valueOf(u.getChatroomId()));
             JCheckBox cb = new JCheckBox();
 
-            b.setFocusable(false);
-            b.setBackground(Color.white);
-            b.setBorder(BorderFactory.createEmptyBorder());
-
-            b.setBackground(Color.white);
             id.setForeground(new Color(0, 0, 0, 0));
             p.setBorder(BorderFactory.createEmptyBorder(0, 5, 10, 5));
             lb.setBorder(BorderFactory.createEmptyBorder(0, 20, 0, 5));

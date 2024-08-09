@@ -1,6 +1,5 @@
 package login;
 
-import chatRoom.Alram;
 import menu.ChatRoomList;
 import components.*;
 import menu.MainMenuView;
@@ -10,18 +9,16 @@ import javax.swing.border.Border;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
 
 public class UserLogin extends JFrame {
+
     private UserDao dao;
     private UnderLineTextField userTextField;
     private UnderLinePasswordField passwordField;
-    private int LIMIT = 30;
 
     public UserLogin() {
         Color white = Color.white;
-
+        
         dao = new UserDao();
         Insets in = new Insets(50, 0, 0, 0);
         Color textColor = white;
@@ -37,7 +34,7 @@ public class UserLogin extends JFrame {
         setResizable(false);
 
         // chat icon
-        ImageIcon chatIcon = new ImageIcon("images/chat_icon.png");
+        ImageIcon chatIcon = new ImageIcon("BlueiScream/images/chat_icon.png");
         JLabel icon = new JLabel(chatIcon);
         icon.setBackground(new Color(0, 38, 66));
         icon.setOpaque(true);
@@ -69,13 +66,6 @@ public class UserLogin extends JFrame {
         lb2.setFont(lb2.getFont().deriveFont(fontSize));
         userTextField = new UnderLineTextField(white, white);
         userTextField.setPreferredSize(new Dimension(tfWidth, 50));
-        userTextField.addKeyListener(new KeyAdapter() {
-            @Override
-            public void keyTyped(KeyEvent e) {
-                if (userTextField.getText().length() >= LIMIT)
-                    e.consume();
-            }
-        });
 
         centerP.add(lb2, gbc);
         gbc.insets = new Insets(0, 0, 0, 0);
@@ -93,13 +83,7 @@ public class UserLogin extends JFrame {
         lb3.setForeground(textColor);
         passwordField = new UnderLinePasswordField();
         passwordField.setPreferredSize(new Dimension(tfWidth, 50));
-        passwordField.addKeyListener(new KeyAdapter() {
-            @Override
-            public void keyTyped(KeyEvent e) {
-                if (passwordField.getText().length() >= LIMIT)
-                    e.consume();
-            }
-        });
+
         centerP.add(lb3, gbc);
         gbc.insets = new Insets(0, 0, 0, 0);
         p3.add(passwordField, BorderLayout.CENTER);
@@ -146,10 +130,8 @@ public class UserLogin extends JFrame {
             int res = dao.userLoginCheck(userTextField.getText(), passwordField.getText());
 
             if (res > 0) {
-                JOptionPane op = new JOptionPane("로딩중......");
-                new MainMenuView(userTextField.getText());
-                op.setVisible(false);
                 dispose();
+                new MainMenuView(userTextField.getText());
             } else {
                 JOptionPane.showMessageDialog(UserLogin.this, "로그인 실패");
             }
@@ -158,6 +140,7 @@ public class UserLogin extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 new UserJoin();
+                dispose();
             }
         });
         searchBtn.addActionListener(new ActionListener() {
