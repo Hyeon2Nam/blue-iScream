@@ -1,5 +1,6 @@
 package menu;
 
+import chatRoom.Alram;
 import chatRoom.ChatRoomDao;
 import chatRoom.ChatRoomListMenu;
 import components.DarkPanel;
@@ -16,12 +17,14 @@ public class MainMenuView extends JFrame {
     private final int TOTALWIDTH = 400;
     private MakeComponent mc;
     private JPanel mainContentsP;
+    public static Alram alram;
 
     public MainMenuView(String clientId) {
         this.clientId = clientId;
         mc = new MakeComponent();
 
         initializeComponents();
+        alram = new Alram(clientId);
         setVisible(true);
     }
 
@@ -34,8 +37,8 @@ public class MainMenuView extends JFrame {
         mainContentsP = new JPanel(new CardLayout());
         mainContentsP.setBackground(Color.white);
 
-        mainContentsP.add(new ChatRoomList(clientId).makeNewChatRoomList(), "chat");
         mainContentsP.add(new ProfileList(clientId).makeNewProfilesList(), "profile");
+        mainContentsP.add(new ChatRoomList(clientId).makeNewChatRoomList(), "chat");
 
         add(mainContentsP, BorderLayout.CENTER);
 
@@ -47,9 +50,9 @@ public class MainMenuView extends JFrame {
         int size = 40;
         JPanel btnP = new JPanel();
         JPanel BtnWrapper = new JPanel();
-        JButton profileBtn = mc.setIconButton("BlueiScream/images/profileBtnIcon.png", size);
-        JButton chatBtn = mc.setIconButton("BlueiScream/images/chatBtnIcon.png", size);
-        JButton settingBtn = mc.setIconButton("BlueiScream/images/settingBtnIcon.png", size);
+        JButton profileBtn = mc.setIconButton("images/profileBtnIcon.png", size);
+        JButton chatBtn = mc.setIconButton("images/chatBtnIcon.png", size);
+        JButton settingBtn = mc.setIconButton("images/settingBtnIcon.png", size);
 
         chatBtn.setBorder(BorderFactory.createEmptyBorder(0, 20, 0, 20));
         BtnWrapper.setLayout(new FlowLayout(FlowLayout.CENTER));
@@ -67,22 +70,13 @@ public class MainMenuView extends JFrame {
 
         CardLayout card = (CardLayout) mainContentsP.getLayout();
 
-        profileBtn.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                card.show(mainContentsP, "profile");
-            }
-        });
+        profileBtn.addActionListener(e -> card.show(mainContentsP, "profile"));
 
-        chatBtn.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                card.show(mainContentsP, "chat");
-            }
-        });
+        chatBtn.addActionListener(e -> card.show(mainContentsP, "chat"));
     }
 
     public static void main(String[] args) {
-        new MainMenuView("qqq");
+        new MainMenuView("111");
+//        new MainMenuView("admin");
     }
 }

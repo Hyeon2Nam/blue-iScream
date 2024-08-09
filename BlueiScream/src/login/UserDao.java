@@ -49,7 +49,7 @@ public class UserDao {
         int result = 0;
 
         try {
-            String sql = "insert into users (user_id, user_name, password, email) values (?,?,?,?);";
+            String sql = "insert into users (user_id, user_name, password, email) values (?,?,?,?)";
             pstmt = conn.prepareStatement(sql);
             pstmt.setString(1, id);
             pstmt.setString(2, name);
@@ -97,7 +97,7 @@ public class UserDao {
         joinAcces();
 
         try {
-            String sql = "select user_id from users where email = ?";
+            String sql = "select user_id from users where email = ? and is_delete = 0";
             pstmt = conn.prepareStatement(sql);
             pstmt.setString(1, email);
             rs = pstmt.executeQuery();
@@ -120,7 +120,7 @@ public class UserDao {
         joinAcces();
 
         try {
-            String sql = "select password from users where email = ?";
+            String sql = "select password from users where email = ? and is_delete = 0";
             pstmt = conn.prepareStatement(sql);
             pstmt.setString(1, email);
             rs = pstmt.executeQuery();
@@ -172,10 +172,9 @@ public class UserDao {
         List<User> res = new ArrayList<>();
 
         try {
-            String sql = "select user_id, user_name, email, profile_image from users where user_id != ? and user_id != ?";
+            String sql = "select user_id, user_name, email, profile_image from users where user_id != ? and is_delete = 0";
             pstmt = conn.prepareStatement(sql);
-            pstmt.setString(1, "1");
-            pstmt.setString(2, "admin");
+            pstmt.setString(1, "admin");
             rs = pstmt.executeQuery();
 
             while (rs.next()) {
@@ -200,7 +199,7 @@ public class UserDao {
         User u = null;
 
         try {
-            String sql = "select user_id, user_name, email, profile_image from users where user_id = ? ";
+            String sql = "select user_id, user_name, email, profile_image from users where user_id = ? and is_delete = 0";
             pstmt = conn.prepareStatement(sql);
             pstmt.setString(1, id);
             rs = pstmt.executeQuery();
@@ -219,5 +218,26 @@ public class UserDao {
         }
 
         return u;
+    }
+
+    public int deleteUser(String id) {
+        joinAcces();
+        int result = 0;
+
+        try {
+            String sql = "update users set is_delete = ? where user_id = ?";
+            pstmt = conn.prepareStatement(sql);
+            pstmt.setInt(1, 1);
+            pstmt.setString(2, id);
+
+            result = pstmt.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+            result = -1;
+        } finally {
+            closeAcces();
+        }
+
+        return result;
     }
 }

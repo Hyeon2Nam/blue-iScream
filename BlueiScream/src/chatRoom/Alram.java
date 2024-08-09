@@ -36,7 +36,7 @@ public class Alram extends JFrame {
 
     private void setupNetwirking() {
         try {
-            socket = new Socket("114.70.127.232", 5000);
+            socket = new Socket("114.70.127.231", 5000);
             oos = new ObjectOutputStream(socket.getOutputStream());
             oos.flush();
 

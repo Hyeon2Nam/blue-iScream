@@ -6,6 +6,7 @@ import components.ColorRoundTextView;
 import components.DarkPanel;
 import components.Header;
 import emoticon.emoji;
+import menu.MainMenuView;
 import profile.MiniProfileView;
 import utils.MakeComponent;
 
@@ -203,6 +204,7 @@ public class ChatroomClient extends JFrame {
             } catch (InterruptedException ex) {
                 ex.printStackTrace();
             }
+            MainMenuView.alram.setAlramOffRooms();
         });
     }
 

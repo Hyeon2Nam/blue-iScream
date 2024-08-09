@@ -11,13 +11,10 @@ public class ProfileDao {
     ResultSet rs;
 
     public void joinAcces() {
-    	
-//        String propfile = "BlueiScream/config/config.properties";
         String propfile = "src/config.properties";
         Properties p = new Properties();
 
         try {
-        	
             FileInputStream fis = new FileInputStream(propfile);
             p.load(new java.io.BufferedInputStream(fis));
 
@@ -164,6 +161,32 @@ public class ProfileDao {
         return b;
     }
 
+    public Blob getClientBackgroundImage(String id, int roomId) {
+        joinAcces();
+        Blob b = null;
+
+        try {
+            String sql = "select f.file " +
+                    "from user_chat_rooms ucr " +
+                    "left outer join files f on ucr.background_img = f.file_id " +
+                    "where ucr.user_id = ? and ucr.chatroom_id = ?";
+            pstmt = conn.prepareStatement(sql);
+
+            pstmt.setString(1, id);
+            pstmt.setInt(2, roomId);
+            rs = pstmt.executeQuery();
+
+            if (rs.next())
+                b = rs.getBlob(1);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            closeAcces();
+        }
+
+        return b;
+    }
+
     public int getLastUploadImageId(String id) {
         joinAcces();
         int res = 0;
@@ -212,11 +235,28 @@ public class ProfileDao {
         } finally {
             closeAcces();
         }
-        
     }
 
-	public void updateBackgroundImage(String clientId, int roomId) {
-		// TODO Auto-generated method stub
-		
-	}
+    public void updateBackgroundImage(String id, int roomId) {
+        int iid = getLastUploadImageId(id);
+        joinAcces();
+
+        int result = 0;
+
+        try {
+            String sql = "update user_chat_rooms set background_img = ? where user_id = ? and chatroom_id = ?";
+            pstmt = conn.prepareStatement(sql);
+
+            pstmt.setInt(1, iid);
+            pstmt.setString(2, id);
+            pstmt.setInt(3, roomId);
+
+            result = pstmt.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+            result = -1;
+        } finally {
+            closeAcces();
+        }
+    }
 }
