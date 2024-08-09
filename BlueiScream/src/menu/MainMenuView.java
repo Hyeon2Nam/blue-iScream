@@ -37,8 +37,8 @@ public class MainMenuView extends JFrame {
         mainContentsP = new JPanel(new CardLayout());
         mainContentsP.setBackground(Color.white);
 
-        mainContentsP.add(new ChatRoomList(clientId).makeNewChatRoomList(), "chat");
         mainContentsP.add(new ProfileList(clientId).makeNewProfilesList(), "profile");
+        mainContentsP.add(new ChatRoomList(clientId).makeNewChatRoomList(), "chat");
 
         add(mainContentsP, BorderLayout.CENTER);
 
@@ -70,22 +70,12 @@ public class MainMenuView extends JFrame {
 
         CardLayout card = (CardLayout) mainContentsP.getLayout();
 
-        profileBtn.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                card.show(mainContentsP, "profile");
-            }
-        });
+        profileBtn.addActionListener(e -> card.show(mainContentsP, "profile"));
 
-        chatBtn.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                card.show(mainContentsP, "chat");
-            }
-        });
+        chatBtn.addActionListener(e -> card.show(mainContentsP, "chat"));
     }
 
     public static void main(String[] args) {
-        new MainMenuView("aaa");
+        new MainMenuView("admin");
     }
 }
