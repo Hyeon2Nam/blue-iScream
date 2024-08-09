@@ -25,8 +25,11 @@ public class ChatRoomDao {
             conn = DriverManager.getConnection(url, user, pw);
         } catch (Exception e) {
             e.printStackTrace();
+            
         }
     }
+    
+    
 
     public void closeAcces() {
         try {
@@ -504,4 +507,7 @@ public class ChatRoomDao {
 
         return rooms;
     }
+
+
+
 }

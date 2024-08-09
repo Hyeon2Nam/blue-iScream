@@ -17,6 +17,9 @@ import java.awt.event.*;
 import java.io.*;
 import java.net.Socket;
 import java.nio.file.Files;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 import java.util.List;
 
 public class ChatroomClient extends JFrame {
@@ -44,8 +47,6 @@ public class ChatroomClient extends JFrame {
     private DefaultListModel<String> userListModel;
     private DefaultListModel<String> chatListModel;
     private Socket socket;
-    private BufferedReader reader;
-    private PrintWriter writer;
     private ObjectOutputStream oos;
     private ObjectInputStream ois;
 
@@ -409,6 +410,7 @@ public class ChatroomClient extends JFrame {
                 public void longActionPerformed(MouseEvent e) {
                     if (id.equals(clientId))
                         return;
+                    Alram.makeAlram(id, dao.getChatRoomName(roomId), c, 2000); // 알림 생성 코드
                     new ReactionMenu(chatroomClient, reactionLb, msgId);
                 }
             });
@@ -457,31 +459,55 @@ public class ChatroomClient extends JFrame {
     }
 
     public void sendFile(File file) {
+        Connection conn = null;
+        PreparedStatement pstmt = null;
+
         try {
             String fileType = Files.probeContentType(file.toPath());
             if (fileType == null) {
                 fileType = "application/octet-stream"; // 기본 MIME 타입
             }
 
-            DataPost dp = new DataPost();
             String messageType = fileType.startsWith("image/") ? "image" : "file";
 
+            // 파일 데이터를 읽어와서 byte[]로 변환
+            byte[] fileData = Files.readAllBytes(file.toPath());
+
+            // DB 연결
+            dao.joinAcces();  // joinAcces()를 사용하여 DB 연결 설정
+            conn = dao.conn;  // 연결된 Connection 객체를 사용
+            String sql = "INSERT INTO files (user_id, chatroom_id, file, file_path, file_type, uploaded_at) VALUES (?, ?, ?, ?, ?, NOW())";
+
+            pstmt = conn.prepareStatement(sql);
+            pstmt.setString(1, clientId);
+            pstmt.setInt(2, roomId);
+            pstmt.setBytes(3, fileData);
+            pstmt.setString(4, file.getAbsolutePath());
+            pstmt.setString(5, messageType);
+            pstmt.executeUpdate();
+
+            // 파일 경로와 메타데이터를 사용하여 채팅 메시지를 전송
+            DataPost dp = new DataPost();
             dp.setChat(new String[]{clientId, file.getAbsolutePath(), String.valueOf(roomId), messageType});
             oos.writeObject(dp);
             oos.flush();
 
-            // 파일이 이미지인 경우 DB에 저장
-            if (messageType.equals("image")) {
-                dao.insertMessage(roomId, clientId, file.getAbsolutePath(), "image");
-            } else {
-                dao.insertMessage(roomId, clientId, file.getAbsolutePath(), "file");
-            }
+            // 메시지 데이터를 데이터베이스에 저장
+            dao.insertMessage(roomId, clientId, file.getAbsolutePath(), messageType);
+
         } catch (Exception e) {
             e.printStackTrace();
+        } finally {
+            try {
+                if (pstmt != null) pstmt.close();
+                dao.closeAcces();  // DB 연결 종료
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
         }
     }
 
     public static void main(String[] args) {
-        ChatroomClient c = new ChatroomClient("111", 2);
+        ChatroomClient c = new ChatroomClient("aaa", 2);
     }
 }
