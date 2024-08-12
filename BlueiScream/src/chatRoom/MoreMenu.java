@@ -13,6 +13,7 @@ public class MoreMenu extends JFrame {
     private ChatRoomDao dao;
     private String clientId;
     private int roomId;
+    private ChatroomClient chatClient;
 
     public MoreMenu(String clientId, int roomId) {
         super("MENU");
@@ -41,6 +42,20 @@ public class MoreMenu extends JFrame {
         add(p, BorderLayout.CENTER);
 
         // ----------[EVENTS]---------------
+        picBtn.addActionListener(e -> {
+            JFileChooser fileChooser = new JFileChooser();
+            File selectedFile = null;
+
+            int result = fileChooser.showOpenDialog(null);
+            if (result == JFileChooser.APPROVE_OPTION)
+                selectedFile = fileChooser.getSelectedFile();
+
+            if (selectedFile == null)
+                return;
+
+            // 파일을 ChatroomClient로 전송
+            chatClient.sendFile(selectedFile);
+        });
 
         bgBtn.addActionListener(e -> {
             JFileChooser fileChooser = new JFileChooser();

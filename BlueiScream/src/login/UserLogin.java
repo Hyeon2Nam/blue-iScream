@@ -100,6 +100,7 @@ public class UserLogin extends JFrame {
                     e.consume();
             }
         });
+
         centerP.add(lb3, gbc);
         gbc.insets = new Insets(0, 0, 0, 0);
         p3.add(passwordField, BorderLayout.CENTER);
@@ -154,18 +155,8 @@ public class UserLogin extends JFrame {
                 JOptionPane.showMessageDialog(UserLogin.this, "로그인 실패");
             }
         });
-        joinBtn.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                new UserJoin();
-            }
-        });
-        searchBtn.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                new SearchUserInfo();
-            }
-        });
+        joinBtn.addActionListener(e -> new UserJoin());
+        searchBtn.addActionListener(e -> new SearchUserInfo());
 
         setVisible(true);
     }
