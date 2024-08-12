@@ -328,7 +328,7 @@ public class ChatroomClient extends JFrame {
         gbc.weighty = 0.0;
 
         JButton bb = new JButton();
-        JLabel reactionLb = new JLabel(setReactionImage(0));
+        JLabel reactionLb = new JLabel(setReactionImage(0)); // 기존 리액션 불러오기
         JPanel p = new JPanel();
         JPanel wp = new JPanel();
         JPanel rp = new JPanel();
@@ -343,6 +343,19 @@ public class ChatroomClient extends JFrame {
         if (messageType.equals("text")) {
             ColorRoundTextView m = new ColorRoundTextView(reformText(c), backColor, Color.BLACK);
             rp.add(m, BorderLayout.CENTER);
+            m.addMouseListener(new MouseCustomAdapter() {
+                @Override
+                public void shortActionPerformed(MouseEvent e) {
+                    return;
+                }
+
+                public void longActionPerformed(MouseEvent e) {
+                    if (id.equals(clientId))
+                        return;
+                    new ReactionMenu(chatroomClient, reactionLb, msgId);
+                }
+            });
+
         } else if (messageType.equals("image")) {
             ImageIcon icon = new ImageIcon(c);
             JLabel imgLabel = new JLabel(new ImageIcon(icon.getImage().getScaledInstance(100, 100, Image.SCALE_SMOOTH)));
@@ -400,21 +413,19 @@ public class ChatroomClient extends JFrame {
         gbc.weighty = 1.0;
         messageP.add(Box.createVerticalGlue(), gbc);
 
-        if (messageType.equals("text")) {
-            rp.addMouseListener(new MouseCustomAdapter() {
-                @Override
-                public void shortActionPerformed(MouseEvent e) {
-                    return;
-                }
+        // 리액션 메뉴 나오기
+        rp.addMouseListener(new MouseCustomAdapter() {
+            @Override
+            public void shortActionPerformed(MouseEvent e) {
+                return;
+            }
 
-                public void longActionPerformed(MouseEvent e) {
-                    if (id.equals(clientId))
-                        return;
-                    Alram.makeAlram(id, dao.getChatRoomName(roomId), c, 2000); // 알림 생성 코드
-                    new ReactionMenu(chatroomClient, reactionLb, msgId);
-                }
-            });
-        }
+            public void longActionPerformed(MouseEvent e) {
+                if (id.equals(clientId))
+                    return;
+                new ReactionMenu(chatroomClient, reactionLb, msgId);
+            }
+        });
 
         bb.addActionListener(new ActionListener() {
             @Override

@@ -1,6 +1,7 @@
 package emoticon;
 
 import javax.swing.*;
+
 import chatRoom.ChatroomClient;
 import java.awt.*;
 import java.awt.event.WindowAdapter;
