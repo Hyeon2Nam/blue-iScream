@@ -50,7 +50,7 @@ public class UserLogin extends JFrame {
         DarkPanel rightPadding = new DarkPanel(sidePaddingSize, "right");
         add(rightPadding, BorderLayout.EAST);
 
-        // input field
+        // input fieldaaa
         DarkPanel centerP = new DarkPanel();
         centerP.setSize(tfWidth + 100, 400);
         centerP.setLayout(new GridBagLayout());
@@ -100,6 +100,7 @@ public class UserLogin extends JFrame {
                     e.consume();
             }
         });
+
         centerP.add(lb3, gbc);
         gbc.insets = new Insets(0, 0, 0, 0);
         p3.add(passwordField, BorderLayout.CENTER);
@@ -141,7 +142,6 @@ public class UserLogin extends JFrame {
         buttonP.add(loginButton);
         add(buttonP, BorderLayout.SOUTH);
 
-        // 암호화 추가
         loginButton.addActionListener(e -> {
             int res = dao.userLoginCheck(userTextField.getText(), passwordField.getText());
 
@@ -154,18 +154,8 @@ public class UserLogin extends JFrame {
                 JOptionPane.showMessageDialog(UserLogin.this, "로그인 실패");
             }
         });
-        joinBtn.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                new UserJoin();
-            }
-        });
-        searchBtn.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                new SearchUserInfo();
-            }
-        });
+        joinBtn.addActionListener(e -> new UserJoin());
+        searchBtn.addActionListener(e -> new SearchUserInfo());
 
         setVisible(true);
     }

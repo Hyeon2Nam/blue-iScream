@@ -65,6 +65,7 @@ public class CreateChatRoom extends JFrame {
                     category = 2;
 
                 selectedItems.add(clientId);
+                selectedItems.add("admin");
 
                 Timestamp ts = new Timestamp(System.currentTimeMillis());
                 chatDao.createNewChatRoom(titleField.getText(), category, ts);
