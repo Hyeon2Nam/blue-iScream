@@ -26,7 +26,7 @@ public class MiniProfileView extends JFrame {
     public MiniProfileView(String userId, boolean isClient) {
         this.userId = userId;
         profileDao = new ProfileDao();
-        chatRoomDao = new ChatRoomDao();
+        chatRoomDao = new ChatRoomDao(null);
         mc = new MakeComponent();
         int totalHeight = 300;
         int imageSize = 120;
@@ -59,7 +59,7 @@ public class MiniProfileView extends JFrame {
         cp.add(name, gbc);
 
         if (isClient) {
-            JButton btn = mc.setIconButton("images/editProfileImageIcon.png", 30);
+            JButton btn = mc.setIconButton("BlueiScream/images/editProfileImageIcon.png", 30);
 
             btn.addActionListener(new ActionListener() {
                 @Override

@@ -2,8 +2,6 @@ package login;
 
 import components.*;
 import java.awt.*;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
 import javax.swing.*;
 
 public class UserJoin extends JFrame {
@@ -12,10 +10,6 @@ public class UserJoin extends JFrame {
     private UnderLineTextField emailField;
     private UnderLineTextField userTextField;
     private UnderLinePasswordField passwordField;
-    private final int LIMIT = 30;
-    private final int totalSize = 400;
-    private final int sidePaddingSize = 30;
-    private final int tfWidth = totalSize - sidePaddingSize * 3 - 100;
 
     public UserJoin() {
         dao = new UserDao();
@@ -25,10 +19,14 @@ public class UserJoin extends JFrame {
         Color white =Color.white;
 
         float fontSize = 24f;
+        int sidePaddingSize = 30;
+        int totalSize = 400;
+        int tfWidth = totalSize - sidePaddingSize * 3 - 100;
 
         setTitle("Join");
         setSize(totalSize, 800);
         setLocationRelativeTo(null);
+        setDefaultCloseOperation(EXIT_ON_CLOSE);
         setResizable(false);
 
         // chat icon
@@ -66,7 +64,8 @@ public class UserJoin extends JFrame {
         p2.setSize(totalSize - sidePaddingSize * 2, 100);
         lb2.setForeground(textColor);
         lb2.setFont(lb2.getFont().deriveFont(fontSize));
-        userTextField = makeTextField();
+        userTextField = new UnderLineTextField(white, white);
+        userTextField.setPreferredSize(new Dimension(tfWidth, 50));
 
         centerP.add(lb2, gbc);
         p2.add(userTextField);
@@ -83,19 +82,13 @@ public class UserJoin extends JFrame {
         lb3.setForeground(textColor);
         passwordField = new UnderLinePasswordField();
         passwordField.setPreferredSize(new Dimension(tfWidth, 50));
-        passwordField.addKeyListener(new KeyAdapter() {
-            @Override
-            public void keyTyped(KeyEvent e) {
-                if (passwordField.getText().length() >= LIMIT)
-                    e.consume();
-            }
-        });
 
         centerP.add(lb3, gbc);
         gbc.insets = new Insets(0, 0, 0, 0);
         p3.add(passwordField);
         centerP.add(p3, gbc);
         gbc.insets = in;
+
 
         // --
 
@@ -105,7 +98,8 @@ public class UserJoin extends JFrame {
         p1.setLayout(new FlowLayout());
         lb.setFont(lb.getFont().deriveFont(fontSize));
         lb.setForeground(textColor);
-        userNameField = makeTextField();
+        userNameField = new UnderLineTextField(white, white);
+        userNameField.setPreferredSize(new Dimension(tfWidth, 50));
 
         centerP.add(lb, gbc);
         gbc.insets = new Insets(0, 0, 0, 0);
@@ -122,7 +116,8 @@ public class UserJoin extends JFrame {
         p4.setSize(totalSize - sidePaddingSize * 2, 100);
         lb1.setForeground(textColor);
         lb1.setFont(lb1.getFont().deriveFont(fontSize));
-        emailField = makeTextField();
+        emailField = new UnderLineTextField(white, white);
+        emailField.setPreferredSize(new Dimension(tfWidth, 50));
 
         centerP.add(lb1, gbc);
         gbc.insets = new Insets(0, 0, 0, 0);
@@ -151,7 +146,7 @@ public class UserJoin extends JFrame {
                 return;
 
             if (dao.isAlreadyUser(id, email) > 0) {
-                JOptionPane.showMessageDialog(UserJoin.this, "사용하실 수 없는 ID입니다.");
+                JOptionPane.showMessageDialog(UserJoin.this, "이미 존재하는 ID입니다.");
                 return;
             }
 
@@ -163,20 +158,6 @@ public class UserJoin extends JFrame {
         });
 
         setVisible(true);
-    }
-
-    private UnderLineTextField makeTextField() {
-        UnderLineTextField ultf = new UnderLineTextField(Color.white, Color.white);
-        ultf.setPreferredSize(new Dimension(tfWidth, 50));
-        ultf.addKeyListener(new KeyAdapter() {
-            @Override
-            public void keyTyped(KeyEvent e) {
-                if (ultf.getText().length() >= LIMIT)
-                    e.consume();
-            }
-        });
-
-        return ultf;
     }
 
     public static void main(String[] args) {

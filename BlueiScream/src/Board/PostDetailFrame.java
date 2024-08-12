@@ -11,49 +11,93 @@ public class PostDetailFrame extends JFrame {
     private JTextArea contentArea;
     private JButton saveButton;
     private JButton cancelButton;
-    private Post post;
+    private JButton fileButton;
+    private JLabel fileLabel;
     private BoardMain boardMain;
+    private User currentUser;
+    private Post post; // 기존 게시물 수정 모드인지 확인하기 위해 추가
+    private String filePath = null;
 
-    public PostDetailFrame(Post post, BoardMain boardMain) {
-        this.post = post;
+    // 새 게시물 작성 시 사용하는 생성자
+    public PostDetailFrame(BoardMain boardMain, User currentUser) {
         this.boardMain = boardMain;
-        setTitle("Edit Post");
+        this.currentUser = currentUser;
+        this.post = null; // 새 게시물 작성이므로 post는 null
+        setTitle("새 게시물 작성");
+        setSize(800, 600);
+        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        initialize();
+    }
+
+    // 기존 게시물 수정 시 사용하는 생성자
+    public PostDetailFrame(BoardMain boardMain, User currentUser, Post post) {
+        this.boardMain = boardMain;
+        this.currentUser = currentUser;
+        this.post = post; // 수정할 게시물 정보를 받음
+        setTitle("게시물 수정");
+        setSize(800, 600);
+        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         initialize();
     }
 
     private void initialize() {
-        setSize(500, 500);
         setLayout(new BorderLayout());
 
-        JPanel panel = new JPanel();
-        panel.setLayout(new GridLayout(3, 1));
+        // 제목 패널
+        JPanel titlePanel = new JPanel(new BorderLayout());
+        titleField = new JTextField();
+        
+        if (post != null) { // 수정 모드인 경우 기존 게시물의 제목을 설정
+            titleField.setText(post.getTitle());
+        }
+        
+        titlePanel.add(new JLabel("제목:"), BorderLayout.WEST);
+        titlePanel.add(titleField, BorderLayout.CENTER);
+        add(titlePanel, BorderLayout.NORTH);
 
-        titleField = new JTextField(post.getTitle());
-        contentArea = new JTextArea(post.getContent());
+        // 내용 패널
+        JPanel contentPanel = new JPanel(new BorderLayout());
+        contentArea = new JTextArea();
+        
+        if (post != null) { // 수정 모드인 경우 기존 게시물의 내용을 설정
+            contentArea.setText(post.getContent());
+        }
+        
         contentArea.setLineWrap(true);
         JScrollPane scrollPane = new JScrollPane(contentArea);
+        contentPanel.add(new JLabel("내용:"), BorderLayout.NORTH);
+        contentPanel.add(scrollPane, BorderLayout.CENTER);
+        add(contentPanel, BorderLayout.CENTER);
 
+        // 파일 선택 패널
+        JPanel filePanel = new JPanel(new BorderLayout());
+        fileButton = new JButton("파일 추가");
+        fileLabel = new JLabel("선택된 파일 없음");
+        filePanel.add(fileButton, BorderLayout.WEST);
+        filePanel.add(fileLabel, BorderLayout.CENTER);
+        add(filePanel, BorderLayout.SOUTH);
+
+        // 파일 선택 버튼 리스너
+        fileButton.addActionListener(e -> selectFile());
+
+        // 버튼 패널
+        JPanel buttonPanel = new JPanel();
         saveButton = new JButton("저장");
         cancelButton = new JButton("취소");
 
-        panel.add(new JLabel("제목:"+ Font.PLAIN, 20));
-        panel.add(titleField);
-        panel.add(new JLabel("내용:"));
-        panel.add(scrollPane);
-
-        JPanel buttonPanel = new JPanel();
         buttonPanel.add(saveButton);
         buttonPanel.add(cancelButton);
 
-        add(panel, BorderLayout.CENTER);
-        add(buttonPanel, BorderLayout.SOUTH);
+        add(buttonPanel, BorderLayout.PAGE_END);
 
+        // 저장 버튼 리스너
         saveButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 savePost();
             }
         });
 
+        // 취소 버튼 리스너
         cancelButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 dispose();
@@ -63,20 +107,42 @@ public class PostDetailFrame extends JFrame {
         setVisible(true);
     }
 
+    // 파일 선택 메서드
+    private void selectFile() {
+        JFileChooser fileChooser = new JFileChooser();
+        int result = fileChooser.showOpenDialog(this);
+        if (result == JFileChooser.APPROVE_OPTION) {
+            filePath = fileChooser.getSelectedFile().getAbsolutePath();
+            fileLabel.setText(fileChooser.getSelectedFile().getName());
+        }
+    }
+
     private void savePost() {
-        String newTitle = titleField.getText();
-        String newContent = contentArea.getText();
+        String title = titleField.getText();
+        String content = contentArea.getText();
         Timestamp currentTimestamp = new Timestamp(System.currentTimeMillis());
 
         try {
-            // Update the post with the new data
-            Dataconn.updatePost(post.getPostId(), post.getUserId(), post.getChatroomId(), newContent, newTitle, new Timestamp(post.getCreatedAt().getTime()), post.isDelete(), currentTimestamp, Integer.parseInt(post.getFile()), post.isNotice());
-            JOptionPane.showMessageDialog(this, "게시물 업데이트 완료!!");
-            boardMain.loadPosts();
+            Integer fileId = null;
+            if (filePath != null) {
+                fileId = Dataconn.createFile(filePath);
+            }
+            
+            if (post == null) {
+                // 새 게시물 추가
+                Dataconn.createPost(currentUser.getUserId(), 0, content, title, currentTimestamp, false, currentTimestamp, fileId, true);
+                JOptionPane.showMessageDialog(this, "게시물 작성 완료!");
+            } else {
+                // 기존 게시물 수정
+                Dataconn.updatePost(post.getPostId(), currentUser.getUserId(), post.getChatroomId(), content, title, post.getCreatedAt(), false, currentTimestamp, fileId, post.isNotice());
+                JOptionPane.showMessageDialog(this, "게시물 수정 완료!");
+            }
+            boardMain.loadPosts(true);
             dispose();
         } catch (SQLException e) {
             e.printStackTrace();
-            JOptionPane.showMessageDialog(this, "게시물 업데이트 실패: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, "게시물 저장 실패: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
+
 }

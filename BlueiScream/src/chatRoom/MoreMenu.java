@@ -1,15 +1,15 @@
 package chatRoom;
 
-import profile.ProfileDao;
-
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.File;
+
+import Board.BoardMain;
+import Board.inquiry;
+
 
 public class MoreMenu extends JFrame {
-    private ProfileDao profileDao;
     private ChatRoomDao dao;
     private String clientId;
     private int roomId;
@@ -18,7 +18,6 @@ public class MoreMenu extends JFrame {
         super("MENU");
         this.clientId = clientId;
         this.roomId = roomId;
-        profileDao = new ProfileDao();
 
         setSize(450, 200);
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
@@ -30,32 +29,41 @@ public class MoreMenu extends JFrame {
         p.setBackground(Color.white);
 
         JButton picBtn = makePickButton("사진");
-        JButton bgBtn = makePickButton("배경화면");
+        JButton BgBtn = makePickButton("배경화면");
         JButton mbBtn = makePickButton("게시판");
         JButton qBtn = makePickButton("문의사항");
 
         p.add(picBtn);
-        p.add(bgBtn);
+        p.add(BgBtn);
         p.add(mbBtn);
         p.add(qBtn);
         add(p, BorderLayout.CENTER);
 
         // ----------[EVENTS]---------------
-
-        bgBtn.addActionListener(e -> {
-            JFileChooser fileChooser = new JFileChooser();
-            File selectedFile = null;
-
-            int result = fileChooser.showOpenDialog(null);
-            if (result == JFileChooser.APPROVE_OPTION)
-                selectedFile = fileChooser.getSelectedFile();
-
-            if (selectedFile == null)
-                return;
-
-            profileDao.uploadFile(clientId, selectedFile);
-            profileDao.updateBackgroundImage(clientId, roomId);
-        });
+        
+        //사진
+        
+        //배경화면
+        
+        //게시판
+        mbBtn.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				// BoardMain (게시판 실행)
+				new BoardMain(null);
+			}
+		});
+        
+        //문의사항
+        qBtn.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				// inquiry (문의사항 실행)
+				new inquiry();
+			}
+		});
 
         setVisible(true);
     }
@@ -70,5 +78,14 @@ public class MoreMenu extends JFrame {
         btn.setBorderPainted(false);
 
         return btn;
+    }
+    public static void main(String[] args) {
+        // 테스트목적으로 애만 실행하게 함 없애도 됨
+        SwingUtilities.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                new MoreMenu("clientIdExample", 1);
+            }
+        });
     }
 }

@@ -12,7 +12,7 @@ public class ChatRoomDao {
 
 
     public void joinAcces() {
-        String propfile = "config/config.properties";
+        String propfile = "C:/Users/3401-06/Desktop/blue-iScream/BlueiScream/config/config.properties";
         Properties p = new Properties();
 
         try {
@@ -237,7 +237,7 @@ public class ChatRoomDao {
         joinAcces();
 
         try {
-            String sql = "select c.chatroom_id, chatroom_name, created_at, category, uc.is_alram, uc.background_img " +
+            String sql = "select c.chatroom_id, chatroom_name, created_at, category, background_img, uc.is_alram " +
                     "from chat_rooms c " +
                     "inner join user_chat_rooms uc on c.chatroom_id = uc.chatroom_id " +
                     "where user_id = ? and is_delete = false";
@@ -251,8 +251,8 @@ public class ChatRoomDao {
                 cr.setChatroomName(rs.getString(2));
                 cr.setCreatedAt(rs.getTimestamp(3));
                 cr.setCategory(rs.getString(4));
-                cr.setAlarm(rs.getBoolean(5));
                 cr.setBackgroundImg(rs.getInt(5));
+                cr.setAlarm(rs.getBoolean(6));
                 crlist.add(cr);
             }
         } catch (SQLException e) {
@@ -472,36 +472,23 @@ public class ChatRoomDao {
                 pstmt.setString(1, id);
                 pstmt.setInt(2, Integer.parseInt(u));
                 res = pstmt.executeUpdate();
-            }
-        } catch (SQLException e) {
+            }        } catch (SQLException e) {
             e.printStackTrace();
             res = -1;
         } finally {
             closeAcces();
         }
     }
+    
+    public ChatRoomDao(Connection connection) {
+        this.conn = connection;
+    }
 
-    public List<Integer> getAlramOffRooms(String id) {
-        joinAcces();
-        List<Integer> rooms = new ArrayList<>();
-
-        try {
-            String sql = "select  chatroom_id from user_chat_rooms where user_id = ? and is_delete = ? and is_alram = ?";
-            pstmt = conn.prepareCall(sql);
-            pstmt.setString(1, id);
-            pstmt.setInt(2, 0);
-            pstmt.setInt(3, 0);
-            rs = pstmt.executeQuery();
-
-            while (rs.next()) {
-                rooms.add(rs.getInt(1));
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        } finally {
-            closeAcces();
+    public void deleteMessage(int msgId) throws SQLException {
+        String sql = "UPDATE messages SET is_delete = true WHERE message_id = ?";
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, msgId);
+            stmt.executeUpdate();
         }
-
-        return rooms;
     }
 }

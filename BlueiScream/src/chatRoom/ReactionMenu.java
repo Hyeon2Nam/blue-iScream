@@ -22,10 +22,10 @@ public class ReactionMenu extends JFrame {
         p.setBackground(Color.white);
         p.setLayout(new FlowLayout(FlowLayout.CENTER));
 
-        JButton b1 = mc.setNoneBorderIconButton("images/heartIcon.png", 20);
-        JButton b2 = mc.setNoneBorderIconButton("images/exciteIcon.png", 20);
-        JButton b3 = mc.setNoneBorderIconButton("images/umIcon.png", 20);
-        JButton b4 = mc.setNoneBorderIconButton("images/angryIcon.png", 20);
+        JButton b1 = mc.setNoneBorderIconButton("BlueiScream/images/heartIcon.png", 20);
+        JButton b2 = mc.setNoneBorderIconButton("BlueiScream/images/exciteIcon.png", 20);
+        JButton b3 = mc.setNoneBorderIconButton("BlueiScream/images/umIcon.png", 20);
+        JButton b4 = mc.setNoneBorderIconButton("BlueiScream/images/angryIcon.png", 20);
         JButton b5 = new JButton("취소");
 
         b1.addActionListener(e -> {

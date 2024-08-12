@@ -57,7 +57,7 @@ public class MakeComponent extends JFrame {
     public ImageIcon loadImage(String userId, int iconSize) {
         ProfileDao pDao = new ProfileDao();
         Blob blob = pDao.getClientProfileImage(userId);
-        ImageIcon icon = resizeIcon("images/userDefaultImg.png", iconSize);
+        ImageIcon icon = resizeIcon("BlueiScream/images/userDefaultImg.png", iconSize);
 
         if (blob == null) return icon;
 
@@ -85,39 +85,6 @@ public class MakeComponent extends JFrame {
         }
 
         return icon;
-    }
-
-    public Image loadBgImage(String userId, int roomId) {
-        ProfileDao pDao = new ProfileDao();
-        Blob blob = pDao.getClientBackgroundImage(userId, roomId);
-        Image image = null;
-
-        if (blob == null) return image;
-
-        try {
-            InputStream inputStream = blob.getBinaryStream();
-            ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-            byte[] buffer = new byte[4096];
-            int bytesRead = -1;
-
-            while ((bytesRead = inputStream.read(buffer)) != -1) {
-                outputStream.write(buffer, 0, bytesRead);
-            }
-
-            byte[] imageBytes = outputStream.toByteArray();
-            inputStream.close();
-            outputStream.close();
-
-            ImageIcon icon = new ImageIcon(imageBytes);
-            image = icon.getImage();
-
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-
-        return image;
     }
 
     public JButton setImageButton(String userId, int iconSize) {

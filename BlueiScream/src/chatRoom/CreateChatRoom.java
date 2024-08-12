@@ -6,7 +6,6 @@ import components.Header;
 import components.UnderLineTextField;
 import login.User;
 import login.UserDao;
-import utils.MakeComponent;
 
 import javax.swing.*;
 import java.awt.*;
@@ -26,13 +25,11 @@ public class CreateChatRoom extends JFrame {
     private JPanel centerP;
     private Set<String> selectedItems;
     UnderLineTextField titleField;
-    private MakeComponent mc;
 
     public CreateChatRoom(String clientId) {
         this.clientId = clientId;
         userDao = new UserDao();
-        chatDao = new ChatRoomDao();
-        mc = new MakeComponent();
+        chatDao = new ChatRoomDao(null);
 
         setSize(TOTALWIDTH, 700);
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
@@ -159,11 +156,10 @@ public class CreateChatRoom extends JFrame {
                 continue;
 
             JPanel p = new JPanel(new BorderLayout());
-            JButton b = mc.setImageButton(u.getUserName(), 45);
+            JButton b = new JButton("");
             JLabel lb = new JLabel(u.getUserName());
             JCheckBox cb = new JCheckBox();
 
-            b.setBackground(Color.white);
             p.setBorder(BorderFactory.createEmptyBorder(10, 5, 10, 5));
             lb.setBorder(BorderFactory.createEmptyBorder(0, 20, 0, 5));
             cb.setBackground(null);

@@ -5,7 +5,6 @@ import components.ColorRoundButton;
 import components.ColorRoundTextView;
 import components.DarkPanel;
 import components.Header;
-import menu.MainMenuView;
 import profile.MiniProfileView;
 import profile.Profile;
 import profile.ProfileDao;
@@ -41,6 +40,10 @@ public class ChatroomClient extends JFrame {
     private MakeComponent mc;
 
     // socket
+    private JList<String> userList;
+    private JList<String> chatList;
+    private DefaultListModel<String> userListModel;
+    private DefaultListModel<String> chatListModel;
     private Socket socket;
     private BufferedReader reader;
     private PrintWriter writer;
@@ -52,10 +55,8 @@ public class ChatroomClient extends JFrame {
         if (chatroomClient == null) {
             chatroomClient = this;
         }
-
         this.clientId = clientId;
         this.roomId = roomId;
-
         mc = new MakeComponent();
 
         initializeComponents();
@@ -64,13 +65,6 @@ public class ChatroomClient extends JFrame {
         vertical.setValue(vertical.getMaximum());
         setupNetwirking();
         setVisible(true);
-
-        this.addWindowListener(new WindowAdapter() {
-            @Override
-            public void windowActivated(WindowEvent e) {
-             MainMenuView.alram.setActiveRoom(roomId);
-            }
-        });
     }
 
     public void initializeComponents() {
@@ -83,8 +77,15 @@ public class ChatroomClient extends JFrame {
         gbc.fill = GridBagConstraints.HORIZONTAL;
         gbc.anchor = GridBagConstraints.NORTH;
 
-        dao = new ChatRoomDao();
+        dao = new ChatRoomDao(null);
+
         isFirst = true;
+        userListModel = new DefaultListModel<>();
+        userList = new JList<>(userListModel);
+
+        // Chat list with a model
+        chatListModel = new DefaultListModel<>();
+        chatList = new JList<>(chatListModel);
 
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         setBackground(Color.white);
@@ -96,20 +97,7 @@ public class ChatroomClient extends JFrame {
 
         // message view --------------------------------------------------------
 
-        Image bgImg = mc.loadBgImage(clientId, roomId);
-
-        messageP = new JPanel() {
-            @Override
-            protected void paintComponent(Graphics g) {
-                super.paintComponent(g);
-                if (bgImg != null) {
-                    g.drawImage(bgImg, 0, 0, getWidth(), getHeight(), this);
-                } else {
-                    setBackground(Color.white);
-                }
-            }
-        };
-
+        messageP = new JPanel();
         messageP.setBackground(Color.white);
         messageP.setLayout(new GridBagLayout());
         scroll = new JScrollPane(messageP);
@@ -179,9 +167,9 @@ public class ChatroomClient extends JFrame {
 
         isAlram = dao.getisAlram(clientId, roomId);
         if (isAlram)
-            alramBtn = mc.setNoneBorderIconButton("images/alramOnIcon.png", iconSize);
+            alramBtn = mc.setNoneBorderIconButton("C:/Users/3401-06/Desktop/blue-iScream/blue-iScream/blue-iScream/BlueiScream/images/alramOnIcon.png", iconSize);
         else
-            alramBtn = mc.setNoneBorderIconButton("images/alramOffIcon.png", iconSize);
+            alramBtn = mc.setNoneBorderIconButton("C:/Users/3401-06/Desktop/blue-iScream/blue-iScream/blue-iScream/BlueiScream/images/alramOffIcon.png", iconSize);
         alramBtn.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 15));
         alramBtn.setFocusPainted(false);
         alramBtn.setContentAreaFilled(false);
@@ -194,10 +182,9 @@ public class ChatroomClient extends JFrame {
             isAlram = !isAlram;
 
             if (isAlram)
-                alramBtn.setIcon(mc.resizeIcon("images/alramOnIcon.png", iconSize));
-            else{
-                alramBtn.setIcon(mc.resizeIcon("images/alramOffIcon.png", iconSize));
-            }
+                alramBtn.setIcon(mc.resizeIcon("C:/Users/3401-06/Desktop/blue-iScream/blue-iScream/blue-iScream/BlueiScream/images/alramOnIcon.png", iconSize));
+            else
+                alramBtn.setIcon(mc.resizeIcon("C:/Users/3401-06/Desktop/blue-iScream/blue-iScream/blue-iScream/BlueiScream/images/alramOffIcon.png", iconSize));
 
             try {
                 dao.setIsAlram(clientId, roomId, isAlram);
@@ -205,8 +192,6 @@ public class ChatroomClient extends JFrame {
             } catch (InterruptedException ex) {
                 ex.printStackTrace();
             }
-
-            MainMenuView.alram.setAlramOffRooms();
         });
     }
 
@@ -224,8 +209,8 @@ public class ChatroomClient extends JFrame {
         inputMessage = new JTextField(18);
         sendBtn = new ColorRoundButton("send", new Color(0, 38, 66), Color.white, 10);
 
-        JButton moreContentsBtn = mc.setNoneBorderIconButton("images/plusIcon.png", 20);
-        JButton emoticonBtn = mc.setNoneBorderIconButton("images/emojiIcon.png", 20);
+        JButton moreContentsBtn = mc.setNoneBorderIconButton("C:/Users/3401-06/Desktop/blue-iScream/blue-iScream/blue-iScream/BlueiScream/images/plusIcon.png", 20);
+        JButton emoticonBtn = mc.setNoneBorderIconButton("C:/Users/3401-06/Desktop/blue-iScream/blue-iScream/blue-iScream/BlueiScream/images/emojiIcon.png", 20);
 
         inputMessage.setText("input message");
         inputMessage.setForeground(Color.lightGray);
@@ -276,6 +261,9 @@ public class ChatroomClient extends JFrame {
                 if (!chat[2].equals(String.valueOf(roomId)))
                     continue;
 
+                SwingUtilities.invokeLater(() -> userListModel.addElement(chat[0]));
+                SwingUtilities.invokeLater(() -> chatListModel.addElement(chat[1]));
+
                 msgId = dao.getMsgId(chat[0], roomId);
                 makeMessageView(chat[1], chat[0], dao.getUserName(chat[0]), 0, msgId);
                 validate();
@@ -303,13 +291,13 @@ public class ChatroomClient extends JFrame {
         ImageIcon img = null;
 
         if (reaction == 1)
-            img = mc.resizeIcon("images/heartIcon.png", 20);
+            img = mc.resizeIcon("C:/Users/3401-06/Desktop/blue-iScream/blue-iScream/blue-iScream/BlueiScream/images/heartIcon.png", 20);
         else if (reaction == 2)
-            img = mc.resizeIcon("images/exciteIcon.png", 20);
+            img = mc.resizeIcon("C:/Users/3401-06/Desktop/blue-iScream/blue-iScream/blue-iScream/BlueiScream/images/exciteIcon.png", 20);
         else if (reaction == 3)
-            img = mc.resizeIcon("images/umIcon.png", 20);
+            img = mc.resizeIcon("C:/Users/3401-06/Desktop/blue-iScream/blue-iScream/blue-iScream/BlueiScream/images/umIcon.png", 20);
         else if (reaction == 4)
-            img = mc.resizeIcon("images/angryIcon.png", 20);
+            img = mc.resizeIcon("C:/Users/3401-06/Desktop/blue-iScream/blue-iScream/blue-iScream/BlueiScream/images/angryIcon.png", 20);
 
         return img;
     }
@@ -336,11 +324,8 @@ public class ChatroomClient extends JFrame {
         m = new ColorRoundTextView(reformText(c), backColor, Color.BLACK);
 
         p.setBackground(null);
-        p.setOpaque(false);
         wp.setBackground(null);
-        wp.setOpaque(false);
-        wp.setBackground(null);
-        rp.setOpaque(false);
+        rp.setBackground(null);
 
         reactionLb.setBorder(BorderFactory.createEmptyBorder(0, 5, 0, 0));
         rp.setLayout(new BorderLayout());
@@ -371,16 +356,14 @@ public class ChatroomClient extends JFrame {
         gbc.weighty = 1.0;
         messageP.add(Box.createVerticalGlue(), gbc);
 
-        m.addMouseListener(new MouseCustomAdapter() {
-            @Override
-            public void shortActionPerformed(MouseEvent e) {
-                return;
-            }
 
-            public void longActionPerformed(MouseEvent e) {
-                if (id.equals(clientId))
-                    return;
-                new ReactionMenu(chatroomClient, reactionLb, msgId);
+        m.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                if (SwingUtilities.isRightMouseButton(e)) {
+                    MessageDeleteMenu deleteMenu = new MessageDeleteMenu(ChatroomClient.this, msgId, p);
+                    deleteMenu.show(e.getComponent(), e.getX(), e.getY());
+                }
             }
         });
 
@@ -411,7 +394,18 @@ public class ChatroomClient extends JFrame {
     }
 
     public static void main(String[] args) {
-//        ChatroomClient c = new ChatroomClient("aaa", 2);
-//        ChatroomClient c = new ChatroomClient("aaa", 1);
+        ChatroomClient c = new ChatroomClient("111", 2);
+        // ChatroomClient c = new ChatroomClient("aaa", 1);
     }
+
+	public void refreshMessages() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public ChatRoomDao getDao() {
+		// TODO Auto-generated method stub
+		return dao;
+	}
+
 }
