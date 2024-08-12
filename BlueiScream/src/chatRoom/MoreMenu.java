@@ -1,5 +1,9 @@
 package chatRoom;
 
+import Board.BoardMain;
+import Board.User;
+import Board.inquiry;
+import login.UserDao;
 import profile.ProfileDao;
 
 import javax.swing.*;
@@ -15,10 +19,11 @@ public class MoreMenu extends JFrame {
     private int roomId;
     private ChatroomClient chatClient;
 
-    public MoreMenu(String clientId, int roomId) {
+    public MoreMenu(String clientId, int roomId, ChatroomClient chatClient) {
         super("MENU");
         this.clientId = clientId;
         this.roomId = roomId;
+        this.chatClient = chatClient;
         profileDao = new ProfileDao();
 
         setSize(450, 200);
@@ -72,6 +77,21 @@ public class MoreMenu extends JFrame {
             profileDao.updateBackgroundImage(clientId, roomId);
         });
 
+        mbBtn.addActionListener(e -> {
+            UserDao uu = new UserDao();
+            login.User u = uu.getUser(clientId);
+            User udao = new User(clientId, u.getUserName(), clientId.equals("admin"));
+
+            // BoardMain (게시판 실행)
+            new BoardMain(udao);
+        });
+
+        //문의사항
+        qBtn.addActionListener(e -> {
+            // inquiry (문의사항 실행)
+            new inquiry();
+        });
+
         setVisible(true);
     }
 
@@ -80,7 +100,7 @@ public class MoreMenu extends JFrame {
         int size = 90;
 
         btn.setBackground(new Color(0, 38, 66));
-        btn.setPreferredSize(new Dimension(size,size));
+        btn.setPreferredSize(new Dimension(size, size));
         btn.setForeground(Color.white);
         btn.setBorderPainted(false);
 

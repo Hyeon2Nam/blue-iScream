@@ -50,7 +50,7 @@ public class UserLogin extends JFrame {
         DarkPanel rightPadding = new DarkPanel(sidePaddingSize, "right");
         add(rightPadding, BorderLayout.EAST);
 
-        // input field
+        // input fieldaaa
         DarkPanel centerP = new DarkPanel();
         centerP.setSize(tfWidth + 100, 400);
         centerP.setLayout(new GridBagLayout());
@@ -142,7 +142,6 @@ public class UserLogin extends JFrame {
         buttonP.add(loginButton);
         add(buttonP, BorderLayout.SOUTH);
 
-        // 암호화 추가
         loginButton.addActionListener(e -> {
             int res = dao.userLoginCheck(userTextField.getText(), passwordField.getText());
 

@@ -4,6 +4,8 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.io.*;
 import java.net.Socket;
 import java.util.ArrayList;
@@ -62,7 +64,7 @@ public class Alram extends JFrame {
                 if (activeRoom == roomId || user.equals(clientId) || alramOffRooms.contains(roomId))
                     continue;
 
-                makeAlram(user, dao.getChatRoomName(roomId), chat[1], 2000);
+                makeAlram(user, dao.getChatRoomName(roomId), chat[1], 2000, roomId);
             }
         } catch (IOException e) {
             System.err.println("Error reading from the server: " + e.getMessage());
@@ -80,7 +82,7 @@ public class Alram extends JFrame {
         this.activeRoom = roomId;
     }
 
-    public static void makeAlram(String id, String roomName, String msg, int duration) {
+    public static void makeAlram(String id, String roomName, String msg, int duration, int roomId) {
         // JDialog 생성
         JDialog dialog = new JDialog();
         dialog.setTitle(roomName);
@@ -108,5 +110,12 @@ public class Alram extends JFrame {
         timer.start();
 
         dialog.setVisible(true);
+
+        dialog.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                new ChatroomClient(alram.clientId, roomId);
+            }
+        });
     }
 }

@@ -8,18 +8,18 @@ import components.Header;
 import emoticon.emoji;
 import menu.MainMenuView;
 import profile.MiniProfileView;
-import profile.Profile;
-import profile.ProfileDao;
 import utils.MakeComponent;
 
+
+import java.nio.file.Files;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
 import javax.swing.*;
 import javax.swing.border.Border;
 import java.awt.*;
 import java.awt.event.*;
 import java.io.*;
 import java.net.Socket;
-import java.nio.file.Files;
-import java.sql.Blob;
 import java.sql.SQLException;
 import java.util.List;
 
@@ -280,7 +280,7 @@ public class ChatroomClient extends JFrame {
                     continue;
 
                 msgId = dao.getMsgId(chat[0], roomId);
-                makeMessageView(chat[1], chat[0], dao.getUserName(chat[0]), chat[3], msgId);
+                makeMessageView(chat[1], chat[0], dao.getUserName(chat[0]), chat[3], msgId, 0);
 //                makeMessageView(chat[1], chat[0], dao.getUserName(chat[0]), 0, msgId);
                 validate();
                 repaint();
@@ -299,7 +299,7 @@ public class ChatroomClient extends JFrame {
         List<Messages> msgs = dao.loadMessages(roomId);
         for (Messages msg : msgs) {
             String name = dao.getUserName(msg.getUserId());
-            makeMessageView(msg.getContent(), msg.getUserId(), name, msg.getMessageType(), msg.getMsgId());
+            makeMessageView(msg.getContent(), msg.getUserId(), name, msg.getMessageType(), msg.getMsgId(), msg.getReaction());
         }
     }
 
@@ -318,7 +318,7 @@ public class ChatroomClient extends JFrame {
         return img;
     }
 
-    public void makeMessageView(String c, String id, String name, String messageType, int msgId) {
+    public void makeMessageView(String c, String id, String name, String messageType, int msgId, int reaction) {
         if (messageP.getComponentCount() > 0)
             messageP.remove(messageP.getComponentCount() - 1);
 
@@ -326,12 +326,13 @@ public class ChatroomClient extends JFrame {
         gbc.weighty = 0.0;
 
         JButton bb = new JButton();
-        JLabel reactionLb = new JLabel(setReactionImage(0));
+        JLabel reactionLb = new JLabel(setReactionImage(reaction));
         JPanel p = new JPanel();
         JPanel wp = new JPanel();
         JPanel rp = new JPanel();
         JLabel n = new JLabel(name);
         Color backColor = new Color(229, 218, 218);
+        ColorRoundTextView m = null;
 
         if (id.equals(clientId))
             backColor = new Color(229, 149, 0);
@@ -339,8 +340,21 @@ public class ChatroomClient extends JFrame {
         rp.setLayout(new BorderLayout());
 
         if (messageType.equals("text")) {
-            ColorRoundTextView m = new ColorRoundTextView(reformText(c), backColor, Color.BLACK);
+            m = new ColorRoundTextView(reformText(c), backColor, Color.BLACK);
             rp.add(m, BorderLayout.CENTER);
+            m.addMouseListener(new MouseCustomAdapter() {
+                @Override
+                public void shortActionPerformed(MouseEvent e) {
+                    return;
+                }
+
+                public void longActionPerformed(MouseEvent e) {
+                    if (id.equals(clientId))
+                        return;
+                    new ReactionMenu(chatroomClient, reactionLb, msgId);
+                }
+            });
+
         } else if (messageType.equals("image")) {
             ImageIcon icon = new ImageIcon(c);
             JLabel imgLabel = new JLabel(new ImageIcon(icon.getImage().getScaledInstance(100, 100, Image.SCALE_SMOOTH)));
@@ -398,20 +412,30 @@ public class ChatroomClient extends JFrame {
         gbc.weighty = 1.0;
         messageP.add(Box.createVerticalGlue(), gbc);
 
-//        if (messageType.equals("text")) {
-            rp.addMouseListener(new MouseCustomAdapter() {
-                @Override
-                public void shortActionPerformed(MouseEvent e) {
-                    return;
-                }
+        rp.addMouseListener(new MouseCustomAdapter() {
+            @Override
+            public void shortActionPerformed(MouseEvent e) {
+                return;
+            }
 
-                public void longActionPerformed(MouseEvent e) {
-                    if (id.equals(clientId))
-                        return;
-                    new ReactionMenu(chatroomClient, reactionLb, msgId);
+            public void longActionPerformed(MouseEvent e) {
+                if (id.equals(clientId))
+                    return;
+                new ReactionMenu(chatroomClient, reactionLb, msgId);
+            }
+        });
+
+        if (m != null && clientId.equals("admin")) {
+            m.addMouseListener(new MouseAdapter() {
+                @Override
+                public void mouseClicked(MouseEvent e) {
+                    if (SwingUtilities.isRightMouseButton(e)) {
+                        MessageDeleteMenu deleteMenu = new MessageDeleteMenu(ChatroomClient.this, msgId, p);
+                        deleteMenu.show(e.getComponent(), e.getX(), e.getY());
+                    }
                 }
             });
-//        }
+        }
 
         bb.addActionListener(e -> new MiniProfileView(id, false));
     }
@@ -451,28 +475,62 @@ public class ChatroomClient extends JFrame {
     }
 
     public void sendFile(File file) {
+        Connection conn = null;
+        PreparedStatement pstmt = null;
+
         try {
             String fileType = Files.probeContentType(file.toPath());
             if (fileType == null) {
                 fileType = "application/octet-stream"; // 기본 MIME 타입
             }
 
-            DataPost dp = new DataPost();
             String messageType = fileType.startsWith("image/") ? "image" : "file";
 
+            // 파일 데이터를 읽어와서 byte[]로 변환
+            byte[] fileData = Files.readAllBytes(file.toPath());
+
+            // DB 연결
+            dao.joinAcces();  // joinAcces()를 사용하여 DB 연결 설정
+            conn = dao.conn;  // 연결된 Connection 객체를 사용
+            String sql = "INSERT INTO files (user_id, chatroom_id, file, file_path, file_type, uploaded_at) VALUES (?, ?, ?, ?, ?, NOW())";
+
+            pstmt = conn.prepareStatement(sql);
+            pstmt.setString(1, clientId);
+            pstmt.setInt(2, roomId);
+            pstmt.setBytes(3, fileData);
+            pstmt.setString(4, file.getAbsolutePath());
+            pstmt.setString(5, messageType);
+            pstmt.executeUpdate();
+
+            // 파일 경로와 메타데이터를 사용하여 채팅 메시지를 전송
+            DataPost dp = new DataPost();
             dp.setChat(new String[]{clientId, file.getAbsolutePath(), String.valueOf(roomId), messageType});
             oos.writeObject(dp);
             oos.flush();
 
-            // 파일이 이미지인 경우 DB에 저장
-            if (messageType.equals("image")) {
-                dao.insertMessage(roomId, clientId, file.getAbsolutePath(), "image");
-            } else {
-                dao.insertMessage(roomId, clientId, file.getAbsolutePath(), "file");
-            }
+            // 메시지 데이터를 데이터베이스에 저장
+            dao.insertMessage(roomId, clientId, file.getAbsolutePath(), messageType);
+
         } catch (Exception e) {
             e.printStackTrace();
+        } finally {
+            try {
+                if (pstmt != null) pstmt.close();
+                dao.closeAcces();  // DB 연결 종료
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
         }
+    }
+
+    public void refreshMessages() {
+        // TODO Auto-generated method stub
+
+    }
+
+    public ChatRoomDao getDao() {
+        // TODO Auto-generated method stub
+        return dao;
     }
 
     public static void main(String[] args) {

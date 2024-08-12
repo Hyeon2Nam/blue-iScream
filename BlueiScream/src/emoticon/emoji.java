@@ -53,6 +53,7 @@ public class emoji extends JFrame {
 
     private void loadEmoticons() {
         File dir = new File("emojiimg");
+        System.out.println(dir);
         File[] files = dir.listFiles((d, name) -> name.endsWith(".png") || name.endsWith(".jpg"));
         if (files != null) {
             for (File file : files) {

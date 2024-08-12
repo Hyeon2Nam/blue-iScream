@@ -109,7 +109,6 @@ public class ChatRoomList extends JFrame {
             date = LocalDate.now().format(DateTimeFormatter.ofPattern("YYYY-MM-dd"));
         JLabel timeLb = new JLabel(date);
 
-
         JLabel alramCntLb;
         int alramCnt = dao.getNotReadMessageCnt(clientId, roomId);
 

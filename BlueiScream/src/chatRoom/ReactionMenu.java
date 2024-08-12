@@ -28,6 +28,12 @@ public class ReactionMenu extends JFrame {
         JButton b4 = mc.setNoneBorderIconButton("images/angryIcon.png", 20);
         JButton b5 = new JButton("취소");
 
+        b1.setFocusable(false);
+        b2.setFocusable(false);
+        b3.setFocusable(false);
+        b4.setFocusable(false);
+        b5.setFocusable(false);
+
         b1.addActionListener(e -> {
             chatroomClient.setNewReaction(1, c, msgId);
             dispose();

@@ -144,13 +144,13 @@ public class UserDao {
         int res = 0;
 
         try {
-            String sql = "select password from users where user_id = ?";
+            String sql = "select password, is_delete from users where user_id = ?";
             pstmt = conn.prepareStatement(sql);
             pstmt.setString(1, id);
             rs = pstmt.executeQuery();
 
             if (rs.next()) {
-                if (rs.getString(1).equals(pw)) {
+                if (rs.getString(1).equals(pw) && !rs.getBoolean(2)) {
                     res = 1;
                 } else
                     res = -1;

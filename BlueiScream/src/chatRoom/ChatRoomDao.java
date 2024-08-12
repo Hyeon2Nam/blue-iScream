@@ -10,6 +10,11 @@ public class ChatRoomDao {
     PreparedStatement pstmt;
     ResultSet rs;
 
+    public ChatRoomDao(Connection connection) {
+        this.conn = connection;
+    }
+
+    public ChatRoomDao() { }
 
     public void joinAcces() {
         String propfile = "config/config.properties";
@@ -243,6 +248,36 @@ public class ChatRoomDao {
                     "where user_id = ? and is_delete = false";
             pstmt = conn.prepareCall(sql);
             pstmt.setString(1, id);
+            rs = pstmt.executeQuery();
+
+            while (rs.next()) {
+                ChatRoom cr = new ChatRoom();
+                cr.setChatroomId(rs.getInt(1));
+                cr.setChatroomName(rs.getString(2));
+                cr.setCreatedAt(rs.getTimestamp(3));
+                cr.setCategory(rs.getString(4));
+                cr.setAlarm(rs.getBoolean(5));
+                cr.setBackgroundImg(rs.getInt(5));
+                crlist.add(cr);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            closeAcces();
+        }
+
+        return crlist;
+    }
+
+    public List<ChatRoom> getChatRoomList() {
+        List<ChatRoom> crlist = new ArrayList<>();
+        joinAcces();
+
+        try {
+            String sql = "select c.chatroom_id, chatroom_name, created_at, category, uc.is_alram, uc.background_img " +
+                    "from chat_rooms c " +
+                    "inner join user_chat_rooms uc on c.chatroom_id = uc.chatroom_id and is_delete = false";
+            pstmt = conn.prepareCall(sql);
             rs = pstmt.executeQuery();
 
             while (rs.next()) {
@@ -503,5 +538,13 @@ public class ChatRoomDao {
         }
 
         return rooms;
+    }
+
+    public void deleteMessage(int msgId) throws SQLException {
+        String sql = "UPDATE messages SET is_delete = true WHERE message_id = ?";
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, msgId);
+            stmt.executeUpdate();
+        }
     }
 }
