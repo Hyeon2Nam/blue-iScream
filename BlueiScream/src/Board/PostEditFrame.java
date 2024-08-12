@@ -1,12 +1,11 @@
 package Board;
 
+import javax.swing.*;
 import comments.CDataconn;
 import comments.Comment;
 
-import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import java.awt.event.*;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.List;
@@ -14,11 +13,10 @@ import java.util.List;
 public class PostEditFrame extends JFrame {
     private JTextField titleField;
     private JTextArea contentArea;
-    private JButton saveButton;
-    private JButton cancelButton;
-    private JButton editButton;  // 수정 버튼 추가
     private Post post;
     private BoardMain boardMain;
+    private String writerId;
+    private String clientId;
 
     // 댓글 관련 필드 추가
     private DefaultListModel<String> commentListModel;
@@ -29,19 +27,13 @@ public class PostEditFrame extends JFrame {
     public PostEditFrame(Post post, BoardMain boardMain) {
         this.post = post;
         this.boardMain = boardMain;
+        this.writerId = writerId;
+        this.clientId = clientId;
         setTitle("게시물 상세보기");
         setSize(800, 600);
-        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE); // 창 닫기 동작 설정
         initialize();
     }
 
-    public PostEditFrame(BoardMain boardMain) {
-        this.boardMain = boardMain;
-        setTitle("새 게시물 작성");
-        setSize(800, 600);  // 창 크기를 800x600으로 설정
-        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE); // 창 닫기 동작 설정
-        initialize(); // 창을 초기화하는 메서드 호출
-    }
 
 	private void initialize() {
 		setSize(800, 600);
@@ -76,14 +68,6 @@ public class PostEditFrame extends JFrame {
 
         // 버튼 패널
         JPanel buttonPanel = new JPanel();
-        editButton = new JButton("수정");
-        saveButton = new JButton("저장");
-        cancelButton = new JButton("취소");
-        saveButton.setEnabled(false); // 처음에는 저장 버튼 비활성화
-
-        buttonPanel.add(editButton);
-        buttonPanel.add(saveButton);
-        buttonPanel.add(cancelButton);
 
         // 댓글 쓰기 버튼 추가
         addCommentButton = new JButton("댓글 쓰기");
@@ -107,33 +91,6 @@ public class PostEditFrame extends JFrame {
 
         add(buttonPanel, BorderLayout.PAGE_END);
 
-        // 수정 버튼 리스너
-        editButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                enableEditing();
-            }
-        });
-
-        // 저장 버튼 리스너
-        saveButton.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                savePost();
-            }
-        });
-
-        // 취소 버튼 리스너
-        cancelButton.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                dispose();
-            }
-        });
-
-        // 사용자가 작성한 게시물이 아니라면 수정 버튼 비활성화
-        if (!isUserPostOwner()) {
-            editButton.setEnabled(false);
-        }
-
         loadComments(); // 댓글 로드
         setVisible(true);
     }
@@ -148,8 +105,6 @@ public class PostEditFrame extends JFrame {
     private void enableEditing() {
         titleField.setEditable(true);
         contentArea.setEditable(true);
-        saveButton.setEnabled(true);
-        editButton.setEnabled(false); // 수정 버튼 비활성화
     }
 
     // 댓글을 데이터베이스에서 불러오는 메서드
@@ -240,7 +195,7 @@ public class PostEditFrame extends JFrame {
             // 게시물 업데이트
             Dataconn.updatePost(post.getPostId(), post.getUserId(), post.getChatroomId(), newContent, newTitle, 
                                 new Timestamp(post.getCreatedAt().getTime()), post.isDelete(), currentTimestamp, 
-                                fileId, post.isNotice());
+                                fileId, post.getIsNotice());
             JOptionPane.showMessageDialog(this, "게시물 업데이트 완료!");
             boardMain.loadPosts(true);
             dispose();

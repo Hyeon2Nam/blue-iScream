@@ -2,8 +2,7 @@ package Board;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import java.awt.event.*;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 
@@ -135,7 +134,7 @@ public class PostDetailFrame extends JFrame {
                 JOptionPane.showMessageDialog(this, "게시물 작성 완료!");
             } else {
                 // 기존 게시물 수정
-                Dataconn.updatePost(post.getPostId(), currentUser.getUserId(), post.getChatroomId(), content, title, post.getCreatedAt(), false, currentTimestamp, fileId, post.isNotice());
+                Dataconn.updatePost(post.getPostId(), currentUser.getUserId(), post.getChatroomId(), content, title, post.getCreatedAt(), false, currentTimestamp, fileId, post.getIsNotice());
                 JOptionPane.showMessageDialog(this, "게시물 수정 완료!");
             }
             boardMain.loadPosts(true);

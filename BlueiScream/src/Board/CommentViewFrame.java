@@ -1,10 +1,9 @@
 package Board;
 
-import comments.Comment;
-
 import javax.swing.*;
 import java.awt.*;
 import java.util.List;
+import comments.Comment;
 
 public class CommentViewFrame extends JFrame {
     private DefaultListModel<String> commentListModel;

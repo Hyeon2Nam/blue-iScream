@@ -38,23 +38,19 @@ public class Dataconn {
         }
     }
     
-    public static void createInquiry(String title, String content, Timestamp createdAt, int fileId) throws SQLException {
-        String sql = "INSERT INTO posts (title, content, created_at, file) VALUES (?, ?, ?, ?)";
+    public static void createInquiry(String title, String content, Timestamp createdAt, boolean isNotice) throws SQLException {
+        String sql = "INSERT INTO posts (title, content, created_at, is_notice) VALUES (?, ?, ?, ?)";
         try (Connection conn = getConnection(); PreparedStatement pstmt = conn.prepareStatement(sql)) {
             pstmt.setString(1, title);
             pstmt.setString(2, content);
             pstmt.setTimestamp(3, createdAt);
-            if (fileId == -1) {
-                pstmt.setNull(4, Types.INTEGER);
-            } else {
-                pstmt.setInt(4, fileId);
-            }
+            pstmt.setBoolean(4, isNotice);
             pstmt.executeUpdate();
         }
     }
 
     public static void createPost(int userId, int chatroomId, String content, String title, Timestamp createdAt, boolean isDelete, Timestamp editDate, Integer fileId, boolean isNotice) throws SQLException {
-        String sql = "INSERT INTO posts(user_id, chatroom_id, content, title, created_at, is_delete, edit_date, file, is_notice) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO posts(user_id, chatroom_id, content, title, created_at, is_delete, edit_date, is_notice) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
         try (Connection conn = getConnection(); 
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
@@ -65,7 +61,8 @@ public class Dataconn {
             pstmt.setTimestamp(5, createdAt);
             pstmt.setBoolean(6, isDelete);
             pstmt.setTimestamp(7, editDate);
-            
+            pstmt.setBoolean(8, isNotice);
+
             // fileId가 null이면 SQL에서 해당 컬럼을 NULL로 설정
             if (fileId != null) {
                 pstmt.setInt(8, fileId);
@@ -84,7 +81,7 @@ public class Dataconn {
 
 
     public static void deletePost(int postId) throws SQLException {
-        String sql = "DELETE FROM posts WHERE post_id = ?";
+        String sql = "update posts set is_delete = 1 where post_id = ?";
         try (Connection conn = getConnection(); PreparedStatement pstmt = conn.prepareStatement(sql)) {
             pstmt.setInt(1, postId);
             pstmt.executeUpdate();
@@ -94,8 +91,8 @@ public class Dataconn {
         }
     }
 
-    public static List<Post> getAllPosts() throws SQLException {
-        String sql = "SELECT * FROM posts";
+    public static List<Post> getPosts() throws SQLException {
+        String sql = "SELECT * FROM posts WHERE is_delete = 0 and is_notice = 0";
         List<Post> posts = new ArrayList<>();
         try (Connection conn = getConnection(); PreparedStatement pstmt = conn.prepareStatement(sql); ResultSet rs = pstmt.executeQuery()) {
             while (rs.next()) {
@@ -115,7 +112,38 @@ public class Dataconn {
                 if (createdAt == null) createdAt = new Timestamp(System.currentTimeMillis());
                 if (editDate == null) editDate = new Timestamp(System.currentTimeMillis());
 
-                Post post = new Post(postId, userId, chatroomId, content, title, new Date(createdAt.getTime()), isDelete, new Date(editDate.getTime()), String.valueOf(file), isNotice);
+                Post post = new Post(postId, userId, chatroomId, content, title, new java.util.Date(createdAt.getTime()), isDelete, new java.util.Date(editDate.getTime()), String.valueOf(file), isNotice);
+                posts.add(post);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            throw e;
+        }
+        return posts;
+    }
+
+    public static List<Post> getNotice() throws SQLException {
+        String sql = "SELECT * FROM posts WHERE is_delete = 0 and is_notice = 1";
+        List<Post> posts = new ArrayList<>();
+        try (Connection conn = getConnection(); PreparedStatement pstmt = conn.prepareStatement(sql); ResultSet rs = pstmt.executeQuery()) {
+            while (rs.next()) {
+                int postId = rs.getInt("post_id");
+                int userId = rs.getInt("user_id");
+                int chatroomId = rs.getInt("chatroom_id");
+                String content = rs.getString("content");
+                String title = rs.getString("title");
+                Timestamp createdAt = rs.getTimestamp("created_at");
+                boolean isDelete = rs.getBoolean("is_delete");
+                Timestamp editDate = rs.getTimestamp("edit_date");
+                int file = rs.getInt("file");
+                boolean isNotice = rs.getBoolean("is_notice");
+
+                if (content == null) content = "";
+                if (title == null) title = "";
+                if (createdAt == null) createdAt = new Timestamp(System.currentTimeMillis());
+                if (editDate == null) editDate = new Timestamp(System.currentTimeMillis());
+
+                Post post = new Post(postId, userId, chatroomId, content, title, new java.util.Date(createdAt.getTime()), isDelete, new java.util.Date(editDate.getTime()), String.valueOf(file), isNotice);
                 posts.add(post);
             }
         } catch (SQLException e) {

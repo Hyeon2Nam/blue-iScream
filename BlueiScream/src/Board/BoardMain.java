@@ -1,13 +1,12 @@
 package Board;
 
-import javax.swing.*;
 import java.awt.*;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
+import java.awt.event.*;
 import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
+import javax.swing.*;
 
 public class BoardMain extends JFrame {
     private JList<String> TitleList = new JList<>();
@@ -31,9 +30,9 @@ public class BoardMain extends JFrame {
         this.setVisible(true);
     }
 
-    public void loadPosts(boolean isNotice) {
+    public void loadPosts() {
         try {
-            posts = Dataconn.getAllPosts();
+            posts = Dataconn.getPosts();
             TitleModel.clear();
             DateModel.clear();
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
@@ -42,9 +41,7 @@ public class BoardMain extends JFrame {
             for (Post post : posts) {
                 String postUserId = String.valueOf(post.getUserId()); // post의 UserId를 String으로 변환
 
-                // 게시물 작성자이거나, 어드민만 볼 수 있게 체크
-                if ((postUserId.equals(currentUserId) || currentUser.isAdmin()) && 
-                    post.isNotice() == isNotice && !post.isDelete()) {
+                if (!post.isDelete() ) {
                     TitleModel.addElement(post.getTitle());
                     DateModel.addElement(sdf.format(post.getCreatedAt()));
                 }
@@ -56,6 +53,28 @@ public class BoardMain extends JFrame {
         }
     }
 
+    public void loadPosts(boolean isNotice) {
+        try {
+            posts = Dataconn.getNotice();
+            TitleModel.clear();
+            DateModel.clear();
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            String currentUserId = String.valueOf(currentUser.getUserId()); // currentUser의 ID를 String으로 변환
+
+            for (Post post : posts) {
+                String postUserId = String.valueOf(post.getUserId()); // post의 UserId를 String으로 변환
+
+                if (!post.isDelete()) {
+                    TitleModel.addElement(post.getTitle());
+                    DateModel.addElement(sdf.format(post.getCreatedAt()));
+                }
+            }
+            TitleList.setModel(TitleModel);
+            DateList.setModel(DateModel);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
 
 
     private class InitialScreen extends JPanel {
@@ -103,8 +122,10 @@ public class BoardMain extends JFrame {
             InquiryBtn.setBounds(10, 430, 120, 25);
 
             add(WriteBtn);
-            add(DeleteBtn);
-            add(NoticeBtn);
+            if (currentUser.getUserId().equals("admin")) {
+                add(DeleteBtn);
+                add(NoticeBtn);
+            }
             add(InquiryBtn);
 
             loadPosts(true); // 디폴트로 게시물 표시

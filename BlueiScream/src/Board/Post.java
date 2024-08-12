@@ -60,7 +60,7 @@ public class Post {
     public String getFile() { return file; }
     public void setFile(String file) { this.file = file; }
     
-    public boolean isNotice() { return isNotice; }
+    public boolean getIsNotice() { return isNotice; }
     public void setNotice(boolean notice) { isNotice = notice; }
     
     public List<String> getComments() { return comments; }

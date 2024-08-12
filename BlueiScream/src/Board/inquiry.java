@@ -2,8 +2,7 @@ package Board;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import java.awt.event.*;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 
@@ -61,22 +60,9 @@ public class inquiry extends JFrame {
         gbc.gridy = 1;
         mainPanel.add(scrollPane, gbc);
         
-        JLabel imgLabel = new JLabel("첨부파일");
         gbc.gridx = 0;
         gbc.gridy = 2;
         gbc.gridwidth = 2;
-        mainPanel.add(imgLabel, gbc);
-        attachFileButton = new JButton(new ImageIcon("C:/Users/3401-06/Desktop/blue-iScream/blue-iScream/blue-iScream/BlueiScream/images/camera.png")); // Replace with actual path to the icon
-        attachFileButton.setPreferredSize(new Dimension(50, 50));
-        attachFileButton.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                attachFile();
-            }
-        });
-        gbc.gridx = 1;
-        gbc.gridy = 2;
-        gbc.gridwidth = 2;
-        mainPanel.add(attachFileButton, gbc);
 
         saveButton = new JButton("작성");
         gbc.gridx = 1;
@@ -111,12 +97,8 @@ public class inquiry extends JFrame {
         Timestamp currentTimestamp = new Timestamp(System.currentTimeMillis());
 
         try {
-            int fileId = -1; // Default file ID
-            if (attachedFilePath != null) {
-                fileId = Dataconn.createFile(attachedFilePath); // Save attached file
-            }
 
-            Dataconn.createInquiry(newTitle, newContent, currentTimestamp, fileId);
+            Dataconn.createInquiry(newTitle, newContent, currentTimestamp, true);
             JOptionPane.showMessageDialog(this, "Inquiry created successfully!");
 
             dispose();
