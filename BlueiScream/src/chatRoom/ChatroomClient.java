@@ -42,10 +42,6 @@ public class ChatroomClient extends JFrame {
     private MakeComponent mc;
 
     // socket
-    private JList<String> userList;
-    private JList<String> chatList;
-    private DefaultListModel<String> userListModel;
-    private DefaultListModel<String> chatListModel;
     private Socket socket;
     private ObjectOutputStream oos;
     private ObjectInputStream ois;
@@ -80,12 +76,6 @@ public class ChatroomClient extends JFrame {
         dao = new ChatRoomDao();
 
         isFirst = true;
-        userListModel = new DefaultListModel<>();
-        userList = new JList<>(userListModel);
-
-        // Chat list with a model
-        chatListModel = new DefaultListModel<>();
-        chatList = new JList<>(chatListModel);
 
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         setBackground(Color.white);
@@ -244,9 +234,7 @@ public class ChatroomClient extends JFrame {
         bottomP.add(buttonP, BorderLayout.CENTER);
         add(bottomP, BorderLayout.SOUTH);
 
-        moreContentsBtn.addActionListener(e -> {
-            new MoreMenu(clientId, roomId, this);
-        });
+        moreContentsBtn.addActionListener(e -> new MoreMenu(clientId, roomId, this));
 
         emoticonBtn.addActionListener(e -> {
             new emoji(this);
