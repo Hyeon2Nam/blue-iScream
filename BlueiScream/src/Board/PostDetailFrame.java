@@ -25,7 +25,6 @@ public class PostDetailFrame extends JFrame {
         this.post = null; // 새 게시물 작성이므로 post는 null
         setTitle("새 게시물 작성");
         setSize(800, 600);
-        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         initialize();
     }
 
@@ -36,7 +35,6 @@ public class PostDetailFrame extends JFrame {
         this.post = post; // 수정할 게시물 정보를 받음
         setTitle("게시물 수정");
         setSize(800, 600);
-        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         initialize();
     }
 
@@ -130,14 +128,14 @@ public class PostDetailFrame extends JFrame {
             
             if (post == null) {
                 // 새 게시물 추가
-                Dataconn.createPost(currentUser.getUserId(), 0, content, title, currentTimestamp, false, currentTimestamp, fileId, true);
+                Dataconn.createPost(currentUser.getUserId(), 0, content, title, currentTimestamp, false, currentTimestamp, false);
                 JOptionPane.showMessageDialog(this, "게시물 작성 완료!");
             } else {
                 // 기존 게시물 수정
                 Dataconn.updatePost(post.getPostId(), currentUser.getUserId(), post.getChatroomId(), content, title, post.getCreatedAt(), false, currentTimestamp, fileId, post.getIsNotice());
                 JOptionPane.showMessageDialog(this, "게시물 수정 완료!");
             }
-            boardMain.loadPosts(true);
+            boardMain.loadPosts();
             dispose();
         } catch (SQLException e) {
             e.printStackTrace();

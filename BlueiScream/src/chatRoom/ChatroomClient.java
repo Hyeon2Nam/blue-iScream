@@ -279,6 +279,7 @@ public class ChatroomClient extends JFrame {
                 if (!chat[2].equals(String.valueOf(roomId)))
                     continue;
 
+                System.out.println(chat.length);
                 msgId = dao.getMsgId(chat[0], roomId);
                 makeMessageView(chat[1], chat[0], dao.getUserName(chat[0]), chat[3], msgId, 0);
 //                makeMessageView(chat[1], chat[0], dao.getUserName(chat[0]), 0, msgId);
@@ -457,7 +458,6 @@ public class ChatroomClient extends JFrame {
 
         return sb.toString();
     }
-
 
     public void sendMessageToChat(String imagePath) {
         try {

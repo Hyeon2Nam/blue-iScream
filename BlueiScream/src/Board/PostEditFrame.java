@@ -188,21 +188,16 @@ public class PostEditFrame extends JFrame {
         String newContent = contentArea.getText();
         Timestamp currentTimestamp = new Timestamp(System.currentTimeMillis());
 
-        try {
-            // 파일 ID가 비어있을 경우 null로 설정
-            Integer fileId = (post.getFile() != null && !post.getFile().isEmpty()) ? Integer.parseInt(post.getFile()) : null;
+        // 파일 ID가 비어있을 경우 null로 설정
+        Integer fileId = (post.getFile() != null && !post.getFile().isEmpty()) ? Integer.parseInt(post.getFile()) : null;
 
-            // 게시물 업데이트
-            Dataconn.updatePost(post.getPostId(), post.getUserId(), post.getChatroomId(), newContent, newTitle, 
-                                new Timestamp(post.getCreatedAt().getTime()), post.isDelete(), currentTimestamp, 
-                                fileId, post.getIsNotice());
-            JOptionPane.showMessageDialog(this, "게시물 업데이트 완료!");
-            boardMain.loadPosts(true);
-            dispose();
-        } catch (SQLException e) {
-            e.printStackTrace();
-            JOptionPane.showMessageDialog(this, "게시물 업데이트 실패: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
-        }
+        // 게시물 업데이트
+        Dataconn.updatePost(post.getPostId(), post.getUserId(), post.getChatroomId(), newContent, newTitle,
+                            new Timestamp(post.getCreatedAt().getTime()), post.isDelete(), currentTimestamp,
+                            fileId, post.getIsNotice());
+        JOptionPane.showMessageDialog(this, "게시물 업데이트 완료!");
+        boardMain.loadPosts(true);
+        dispose();
     }
 
 }

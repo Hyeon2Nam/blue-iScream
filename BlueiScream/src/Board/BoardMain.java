@@ -128,7 +128,7 @@ public class BoardMain extends JFrame {
             }
             add(InquiryBtn);
 
-            loadPosts(true); // 디폴트로 게시물 표시
+            loadPosts(); // 디폴트로 게시물 표시
 
             WriteBtn.addActionListener(e -> {
                 if (TitleModel.size() == 17) {
@@ -157,7 +157,7 @@ public class BoardMain extends JFrame {
             });
 
             NoticeBtn.addActionListener(e -> loadPosts(true)); // 게시물만 표시
-            InquiryBtn.addActionListener(e -> loadPosts(false)); // 문의사항만 표시
+            InquiryBtn.addActionListener(e -> loadPosts()); // 문의사항만 표시
         }
     }
 
