@@ -6,7 +6,7 @@ import java.util.List;
 
 public class Post {
     private int postId;
-    private int userId;
+    private String userId;
     private int chatroomId;
     private String content;
     private String title;
@@ -18,7 +18,7 @@ public class Post {
     private List<String> comments;
 
     // Constructor
-    public Post(int postId, int userId, int chatroomId, String content, String title, Date createdAt, boolean isDelete, Date editDate, String file, boolean isNotice) {
+    public Post(int postId, String userId, int chatroomId, String content, String title, Date createdAt, boolean isDelete, Date editDate, String file, boolean isNotice) {
         this.postId = postId;
         this.userId = userId;
         this.chatroomId = chatroomId;
@@ -36,8 +36,8 @@ public class Post {
     public int getPostId() { return postId; }
     public void setPostId(int postId) { this.postId = postId; }
     
-    public int getUserId() { return userId; }
-    public void setUserId(int userId) { this.userId = userId; }
+    public String getUserId() { return userId; }
+    public void setUserId(String userId) { this.userId = userId; }
     
     public int getChatroomId() { return chatroomId; }
     public void setChatroomId(int chatroomId) { this.chatroomId = chatroomId; }

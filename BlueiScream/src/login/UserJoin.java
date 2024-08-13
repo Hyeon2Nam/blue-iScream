@@ -158,7 +158,6 @@ public class UserJoin extends JFrame {
             dao.userInsert(id, name, pw, email);
             JOptionPane.showMessageDialog(UserJoin.this, "회원가입에 성공하셨습니다.");
 
-            new UserLogin();
             dispose();
         });
 

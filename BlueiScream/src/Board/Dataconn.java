@@ -39,38 +39,30 @@ public class Dataconn {
     }
     
     public static void createInquiry(String title, String content, Timestamp createdAt, boolean isNotice) throws SQLException {
-        String sql = "INSERT INTO posts (title, content, created_at, is_notice) VALUES (?, ?, ?, ?)";
+        String sql = "INSERT INTO posts (title, content, created_at, is_notice, is_delete) VALUES (?, ?, ?, ?, ?)";
         try (Connection conn = getConnection(); PreparedStatement pstmt = conn.prepareStatement(sql)) {
             pstmt.setString(1, title);
             pstmt.setString(2, content);
             pstmt.setTimestamp(3, createdAt);
             pstmt.setBoolean(4, isNotice);
+            pstmt.setBoolean(5, false);
             pstmt.executeUpdate();
         }
     }
 
-    public static void createPost(int userId, int chatroomId, String content, String title, Timestamp createdAt, boolean isDelete, Timestamp editDate, Integer fileId, boolean isNotice) throws SQLException {
+    public static void createPost(String userId, int chatroomId, String content, String title, Timestamp createdAt, boolean isDelete, Timestamp editDate, boolean isNotice) throws SQLException {
         String sql = "INSERT INTO posts(user_id, chatroom_id, content, title, created_at, is_delete, edit_date, is_notice) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
         try (Connection conn = getConnection(); 
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
-            pstmt.setInt(1, userId);
-            pstmt.setInt(2, chatroomId);
+            pstmt.setString(1, userId);
+            pstmt.setInt(2, 1);
             pstmt.setString(3, content);
             pstmt.setString(4, title);
             pstmt.setTimestamp(5, createdAt);
-            pstmt.setBoolean(6, isDelete);
+            pstmt.setBoolean(6, false);
             pstmt.setTimestamp(7, editDate);
             pstmt.setBoolean(8, isNotice);
-
-            // fileId가 null이면 SQL에서 해당 컬럼을 NULL로 설정
-            if (fileId != null) {
-                pstmt.setInt(8, fileId);
-            } else {
-                pstmt.setNull(8, Types.INTEGER);
-            }
-            
-            pstmt.setBoolean(9, isNotice);
 
             pstmt.executeUpdate();
         } catch (SQLException e) {
@@ -97,7 +89,7 @@ public class Dataconn {
         try (Connection conn = getConnection(); PreparedStatement pstmt = conn.prepareStatement(sql); ResultSet rs = pstmt.executeQuery()) {
             while (rs.next()) {
                 int postId = rs.getInt("post_id");
-                int userId = rs.getInt("user_id");
+                String userId = rs.getString("user_id");
                 int chatroomId = rs.getInt("chatroom_id");
                 String content = rs.getString("content");
                 String title = rs.getString("title");
@@ -128,7 +120,7 @@ public class Dataconn {
         try (Connection conn = getConnection(); PreparedStatement pstmt = conn.prepareStatement(sql); ResultSet rs = pstmt.executeQuery()) {
             while (rs.next()) {
                 int postId = rs.getInt("post_id");
-                int userId = rs.getInt("user_id");
+                String userId = rs.getString("user_id");
                 int chatroomId = rs.getInt("chatroom_id");
                 String content = rs.getString("content");
                 String title = rs.getString("title");
@@ -169,7 +161,7 @@ public class Dataconn {
     	        pstmt.setString(3, content);
     	        pstmt.setString(4, title);
     	        pstmt.setTimestamp(5, createdAt);
-    	        pstmt.setBoolean(6, isDelete);
+    	        pstmt.setBoolean(6, false);
     	        pstmt.setTimestamp(7, editDate);
     	        pstmt.setBoolean(8, isNotice);
 
@@ -207,12 +199,6 @@ public class Dataconn {
         return inquiries;
     }
 
-	public static void createPost(String userId, int chatroomId, String content, String title,
-			Timestamp currentTimestamp, boolean isDelete, Timestamp currentTimestamp2, Integer fileId,
-			boolean isNotice) {
-		// TODO Auto-generated method stub
-		
-	}
 
 	public static void updatePost(int postId, String userId, int chatroomId, String content, String title,
 			Date createdAt, boolean isDelete, Timestamp currentTimestamp, Integer fileId, boolean notice) {
