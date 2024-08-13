@@ -1,20 +1,38 @@
 package comments;
 
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Properties;
 
 public class CDataconn {
-    private static final String url = "jdbc:mysql://114.70.127.232:3306/blue_iscream?useSSL=false&allowPublicKeyRetrieval=true";
-    private static final String user = "won";
-    private static final String pw = "1234";
+    private static String url;
+    private static String user;
+    private static String pw;
 
     static {
+        String propfile = "config/config.properties";
+        Properties p = new Properties();
+
         try {
+            FileInputStream fis = new FileInputStream(propfile);
+            p.load(new java.io.BufferedInputStream(fis));
+
+            url = p.getProperty("db_url");
+            user = p.getProperty("db_user");
+            pw = p.getProperty("db_pw");
+
             Class.forName("com.mysql.cj.jdbc.Driver");
         } catch (ClassNotFoundException e) {
             System.out.println("MySQL JDBC 드라이버를 찾을 수 없습니다.");
             e.printStackTrace();
+        } catch (FileNotFoundException e) {
+            throw new RuntimeException(e);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
     }
 

@@ -5,6 +5,7 @@ import java.awt.*;
 import java.io.*;
 import java.nio.file.*;
 import java.sql.*;
+import java.util.Properties;
 
 public class FileDownload extends JFrame {
     private static final long serialVersionUID = 1L;
@@ -20,11 +21,18 @@ public class FileDownload extends JFrame {
 
     // 데이터베이스 연결 메서드
     private void connectDatabase() {
+        String propfile = "config/config.properties";
+        Properties p = new Properties();
+
         try {
-            String url = "jdbc:mysql://114.70.127.232/blue_iscream?serverTimezone=UTC";
-            String user = "kkk";
-            String password = "1234";
-            conn = DriverManager.getConnection(url, user, password);
+            FileInputStream fis = new FileInputStream(propfile);
+            p.load(new java.io.BufferedInputStream(fis));
+
+            String url = p.getProperty("db_url");
+            String user = p.getProperty("db_user");
+            String pw = p.getProperty("db_pw");
+
+            conn = DriverManager.getConnection(url, user, pw);
             System.out.println("Database connected!");
         } catch (SQLException e) {
             e.printStackTrace();
