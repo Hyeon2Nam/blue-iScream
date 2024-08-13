@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<eclipse-userlibraries>
+  <library name="mysql-connector-j-9.0.0">
+    <archive path="C:/Users/남현이/Desktop/blue-iScream/BlueiScream/libFiles/activation-1.1.1.jar" />
+    <archive path="C:/Users/남현이/Desktop/blue-iScream/BlueiScream/libFiles/mail-1.4.7.jar" />
+    <archive path="C:/Users/남현이/Desktop/blue-iScream/BlueiScream/libFiles/mysql-connector-j-9.0.0.jar" />
+  </library>
+</eclipse-userlibraries>
+

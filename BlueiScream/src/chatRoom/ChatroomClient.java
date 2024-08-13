@@ -255,7 +255,7 @@ public class ChatroomClient extends JFrame {
 
     private void setupNetworking() {
         try {
-            socket = new Socket("114.70.127.232", 5000);
+            socket = new Socket("[ip]", 5000);
             oos = new ObjectOutputStream(socket.getOutputStream());
             oos.flush();
 
